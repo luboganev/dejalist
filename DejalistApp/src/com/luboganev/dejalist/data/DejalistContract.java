@@ -16,7 +16,7 @@ public class DejalistContract {
     
     interface CategoryColumns {
     	String CATEGORY_NAME = "name";
-    	String CATEGORY_COLOR = "uri";
+    	String CATEGORY_COLOR = "color";
     }
     
     public static final String CONTENT_AUTHORITY = "com.luboganev.dejalist";

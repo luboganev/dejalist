@@ -16,34 +16,39 @@
 
 package com.luboganev.dejalist.ui;
 
-import java.util.Locale;
-
-import butterknife.InjectView;
-
-import com.luboganev.dejalist.R;
-
-import android.app.Activity;
+import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.SearchManager;
-import android.content.Intent;
+import android.content.Context;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.MergeCursor;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+import butterknife.InjectView;
+import butterknife.Views;
+
+import com.luboganev.dejalist.DummyDataGenerator;
+import com.luboganev.dejalist.R;
+import com.luboganev.dejalist.data.DejalistContract;
+import com.luboganev.dejalist.data.DejalistContract.Categories;
+import com.luboganev.dejalist.data.entities.Category;
 
 /**
  * This example illustrates a common usage of the DrawerLayout widget
@@ -72,30 +77,48 @@ import android.widget.Toast;
  * An action should be an operation performed on the current contents of the window,
  * for example enabling or disabling a data overlay on top of the current content.</p>
  */
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cursor> {
 	@InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 	@InjectView(R.id.left_drawer) ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+    
+    private NavigationCursorAdapter mAdapter;
+	
+	private static final int LOADER_NAVIGATION_ID = 1;
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private String[] mPlanetTitles;
+//    private String[] mPlanetTitles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Views.inject(this);
+        
+		Cursor c = cupboard().withContext(getApplicationContext()).query(DejalistContract.Categories.CONTENT_URI, Category.class).getCursor();
+		if(!c.moveToFirst()) {
+			DummyDataGenerator.populateDB(getApplicationContext());
+		}
+		c.close();
 
         mTitle = mDrawerTitle = getTitle();
-        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        
+        if(getSupportLoaderManager().getLoader(LOADER_NAVIGATION_ID) != null) {
+        	getSupportLoaderManager().restartLoader(LOADER_NAVIGATION_ID, null, this);
+        }
+        else getSupportLoaderManager().initLoader(LOADER_NAVIGATION_ID, null, this);
+        
         // set up the drawer's list view with items and click listener
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mPlanetTitles));
+//        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+//                R.layout.drawer_list_item, mPlanetTitles));
+        
+        mAdapter = new NavigationCursorAdapter(getApplicationContext(), CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        mDrawerList.setAdapter(mAdapter);
+        
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
@@ -178,10 +201,11 @@ public class MainActivity extends Activity {
     }
 
     private void selectItem(int position) {
+    	String selectedCategory = cupboard().withCursor((Cursor)mAdapter.getItem(position)).get(Category.class).name;
         // update the main content by replacing fragments
         Fragment fragment = new PlanetFragment();
         Bundle args = new Bundle();
-        args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+        args.putString(PlanetFragment.ARG_CATEGORY, selectedCategory);
         fragment.setArguments(args);
 
         FragmentManager fragmentManager = getFragmentManager();
@@ -189,7 +213,7 @@ public class MainActivity extends Activity {
 
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
-        setTitle(mPlanetTitles[position]);
+    	setTitle(selectedCategory);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
 
@@ -222,7 +246,7 @@ public class MainActivity extends Activity {
      * Fragment that appears in the "content_frame", shows a planet
      */
     public static class PlanetFragment extends Fragment {
-        public static final String ARG_PLANET_NUMBER = "planet_number";
+        public static final String ARG_CATEGORY = "category";
 
         public PlanetFragment() {
             // Empty constructor required for fragment subclasses
@@ -232,12 +256,87 @@ public class MainActivity extends Activity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_planet, container, false);
-            int i = getArguments().getInt(ARG_PLANET_NUMBER);
-            String planet = "The planet" + getResources().getStringArray(R.array.planets_array)[i];
-
+            String planet = getArguments().getString(ARG_CATEGORY);
             ((TextView) rootView.findViewById(R.id.text)).setText(planet);
             getActivity().setTitle(planet);
             return rootView;
         }
     }
+    
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+	    CursorLoader cursorLoader = new CursorLoader(getApplicationContext(), DejalistContract.Categories.CONTENT_URI, null, null, null, null);
+	    return cursorLoader;
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		mAdapter.swapCursor(data);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		mAdapter.swapCursor(null);
+	}
+    
+    public static class NavigationCursorAdapter extends CursorAdapter {
+		public static final long NAV_CHECKLIST_ITEM_ID = -101;
+		public static final long NAV_ALL_ITEMS_ITEM_ID = -102;
+		
+		private static Cursor addMainNavigationItems(Cursor categories) {
+			MatrixCursor mainNavigation = new MatrixCursor(new String[] {Categories._ID, Categories.CATEGORY_NAME, Categories.CATEGORY_COLOR});
+			mainNavigation.addRow(new Object[]{NAV_CHECKLIST_ITEM_ID, "Checklist", 0});
+			mainNavigation.addRow(new Object[]{NAV_ALL_ITEMS_ITEM_ID, "All items", 0});
+			if(categories != null) return new MergeCursor(new Cursor[]{mainNavigation, categories});
+			else return mainNavigation;
+		}
+
+		public NavigationCursorAdapter(Context context, int flags) {
+			super(context, addMainNavigationItems(null), flags);
+		}
+		
+		@Override
+		public Cursor swapCursor(Cursor categories) {
+			return super.swapCursor(addMainNavigationItems(categories));
+		}
+
+		@Override
+		public void bindView(View view, Context context, Cursor cursor) {
+			ViewHolder holder = (ViewHolder) view.getTag();
+			Category category = cupboard().withCursor(cursor).get(Category.class);
+			
+			if(category._id == NAV_CHECKLIST_ITEM_ID) {
+				holder.name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_nav_list, 0, 0, 0);
+				holder.catColor.setVisibility(View.GONE);
+			}
+			else if(category._id == NAV_ALL_ITEMS_ITEM_ID){
+				holder.name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_nav_items, 0, 0, 0);
+				holder.catColor.setVisibility(View.GONE);
+			}
+			else {
+				holder.name.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+				holder.catColor.setVisibility(View.VISIBLE);
+				holder.catColor.setBackgroundColor(category.color);
+			}
+			holder.name.setText(category.name);
+		}
+
+		@Override
+		public View newView(Context context, Cursor cursor, ViewGroup parent) {
+		    View view = LayoutInflater.from(context).inflate(R.layout.list_item_navigation, parent, false);
+		    ViewHolder holder = new ViewHolder(view);
+		    view.setTag(holder);
+		    return view;
+		}
+		
+		static class ViewHolder {
+			@InjectView(R.id.tv_nav_name) TextView name;
+			@InjectView(R.id.v_nav_cat_color) View catColor;
+
+			public ViewHolder(View view) {
+				Views.inject(this, view);
+				name.setCompoundDrawablePadding(8);
+			}
+		}
+	}
 }

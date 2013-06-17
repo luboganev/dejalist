@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/v_category_marker"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:orientation="horizontal"
+    android:padding="8dp" 
+    android:background="?android:attr/activatedBackgroundIndicator">
+    
+	<View
+	    android:id="@+id/v_nav_cat_color"
+	    android:layout_width="8dp"
+	    android:layout_gravity="center_vertical"
+	    android:layout_height="36dp"
+	    android:layout_marginRight="8dp"
+	    android:layout_marginLeft="36dp"
+	    android:background="#C3C3C3" />
+
+    <TextView
+        android:id="@+id/tv_nav_name"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="left|center_vertical"
+        android:layout_marginRight="56dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="Medium Text"
+        android:textColor="#000000"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+</LinearLayout>

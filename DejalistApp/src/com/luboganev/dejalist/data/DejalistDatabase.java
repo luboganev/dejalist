@@ -1,7 +1,11 @@
 package com.luboganev.dejalist.data;
 
+import static nl.qbusict.cupboard.CupboardFactory.cupboard;
+
 import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.DejalistContract.Products;
+import com.luboganev.dejalist.data.entities.Category;
+import com.luboganev.dejalist.data.entities.Product;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,6 +21,11 @@ public class DejalistDatabase extends SQLiteOpenHelper {
 	interface Tables {
 		String PRODUCTS = "products";
 		String CATEGORIES = "categories";
+	}
+	
+	static {
+		cupboard().register(Product.class);
+		cupboard().register(Category.class);
 	}
 	
     public DejalistDatabase(Context context) {
