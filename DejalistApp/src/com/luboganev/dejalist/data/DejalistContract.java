@@ -12,6 +12,7 @@ public class DejalistContract {
     	String PRODUCT_INLIST = "inlist";
     	String PRODUCT_CHECKED = "checked";
     	String PRODUCT_CATEGORY_ID = "categoryId";
+    	String PRODUCT_LAST_USED = "lastUsed";
     }
     
     interface CategoryColumns {

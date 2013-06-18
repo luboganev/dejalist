@@ -6,5 +6,21 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="action_websearch">Web search</string>
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
-
+    
+    <string name="nav_checklist">Checklist</string>
+    <string name="nav_all_products">All products</string>
+    <string name="nav_categories">CATEGORIES</string>
+    
+    <string name="dialogfragment_category_utitled">Untitled</string>
+    <string name="dialogfragment_category_save">Save</string>
+    <string name="dialogfragment_category_cancel">Cancel</string>
+    <string name="dialogfragment_category_name_hint">Category name</string>
+    
+    <string name="menu_main_settings_label">Settings</string>
+    <string name="menu_main_help_label">Help</string>
+    <string name="menu_main_about_label">About</string>
+    
+    <string name="menu_categories_new">New category</string>
+    <string name="menu_categories_edit">Edit category</string>
+    <string name="menu_categories_delete">Delete category</string>
 </resources>

@@ -7,4 +7,5 @@ public class Product {
 	public Integer inlist;
 	public Integer checked;
 	public Long categoryId;
+	public Long lastUsed;
 }

@@ -17,6 +17,7 @@
 package com.luboganev.dejalist.ui;
 
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -25,7 +26,7 @@ import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
 import android.os.Bundle;
-import android.provider.BaseColumns;
+import android.provider.MediaStore.Audio.PlaylistsColumns;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -35,20 +36,24 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import butterknife.InjectView;
 import butterknife.Views;
 
-import com.luboganev.dejalist.DummyDataGenerator;
 import com.luboganev.dejalist.R;
 import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.entities.Category;
+import com.luboganev.dejalist.ui.PlanetFragment.ShowDialogListener;
 
 /**
  * This example illustrates a common usage of the DrawerLayout widget
@@ -77,7 +82,7 @@ import com.luboganev.dejalist.data.entities.Category;
  * An action should be an operation performed on the current contents of the window,
  * for example enabling or disabling a data overlay on top of the current content.</p>
  */
-public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cursor> {
+public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cursor>, ShowDialogListener {
 	@InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 	@InjectView(R.id.left_drawer) ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -96,12 +101,6 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
         setContentView(R.layout.activity_main);
         Views.inject(this);
         
-		Cursor c = cupboard().withContext(getApplicationContext()).query(DejalistContract.Categories.CONTENT_URI, Category.class).getCursor();
-		if(!c.moveToFirst()) {
-			DummyDataGenerator.populateDB(getApplicationContext());
-		}
-		c.close();
-
         mTitle = mDrawerTitle = getTitle();
 
         // set a custom shadow that overlays the main content when the drawer opens
@@ -151,13 +150,14 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
         }
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.main, menu);
-//        return super.onCreateOptionsMenu(menu);
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
+    // TODO: hide menu items of fragments on opened navigation
 //    /* Called whenever we call invalidateOptionsMenu() */
 //    @Override
 //    public boolean onPrepareOptionsMenu(Menu menu) {
@@ -176,7 +176,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
         }
         // Handle action buttons
         switch(item.getItemId()) {
-//        case R.id.action_websearch:
+        case R.id.menu_main_settings:
+        	// TODO:
 //            // create intent to perform web search for this planet
 //            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
 //            intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
@@ -186,7 +187,13 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 //            } else {
 //                Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
 //            }
-//            return true;
+            return true;
+        case R.id.menu_main_help:
+            // TODO:
+        	return true;
+        case R.id.menu_main_about:
+        	// TODO:
+        	return true;
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -201,11 +208,19 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
     }
 
     private void selectItem(int position) {
-    	String selectedCategory = cupboard().withCursor((Cursor)mAdapter.getItem(position)).get(Category.class).name;
+    	Category selectedCategory = cupboard().withCursor((Cursor)mAdapter.getItem(position)).get(Category.class);
+    	if(selectedCategory._id == NavigationCursorAdapter.NAV_CHECKLIST_ITEM_ID) {
+    		selectedCategory.name = getString(R.string.nav_checklist);
+    	}
+    	if(selectedCategory._id == NavigationCursorAdapter.NAV_ALL_ITEMS_ITEM_ID) {
+    		selectedCategory.name = getString(R.string.nav_all_products);
+    	}
+    		
         // update the main content by replacing fragments
         Fragment fragment = new PlanetFragment();
         Bundle args = new Bundle();
-        args.putString(PlanetFragment.ARG_CATEGORY, selectedCategory);
+        args.putString(PlanetFragment.ARG_CATEGORY, selectedCategory.name);
+        args.putLong(PlanetFragment.ARG_CATEGORY_ID, selectedCategory._id);
         fragment.setArguments(args);
 
         FragmentManager fragmentManager = getFragmentManager();
@@ -213,7 +228,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
-    	setTitle(selectedCategory);
+    	setTitle(selectedCategory.name);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
 
@@ -242,26 +257,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    /**
-     * Fragment that appears in the "content_frame", shows a planet
-     */
-    public static class PlanetFragment extends Fragment {
-        public static final String ARG_CATEGORY = "category";
-
-        public PlanetFragment() {
-            // Empty constructor required for fragment subclasses
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_planet, container, false);
-            String planet = getArguments().getString(ARG_CATEGORY);
-            ((TextView) rootView.findViewById(R.id.text)).setText(planet);
-            getActivity().setTitle(planet);
-            return rootView;
-        }
-    }
+    
     
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -271,6 +267,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		data.setNotificationUri(getContentResolver(), DejalistContract.Categories.CONTENT_URI);
 		mAdapter.swapCursor(data);
 	}
 
@@ -280,25 +277,100 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	}
     
     public static class NavigationCursorAdapter extends CursorAdapter {
+    	public static final int VIEW_TYPE_NAVIGATION = 0; 
+    	public static final int VIEW_TYPE_HEADER = 1; 
+    	
 		public static final long NAV_CHECKLIST_ITEM_ID = -101;
 		public static final long NAV_ALL_ITEMS_ITEM_ID = -102;
 		
+	    private Context mContext;
+		
 		private static Cursor addMainNavigationItems(Cursor categories) {
 			MatrixCursor mainNavigation = new MatrixCursor(new String[] {Categories._ID, Categories.CATEGORY_NAME, Categories.CATEGORY_COLOR});
-			mainNavigation.addRow(new Object[]{NAV_CHECKLIST_ITEM_ID, "Checklist", 0});
-			mainNavigation.addRow(new Object[]{NAV_ALL_ITEMS_ITEM_ID, "All items", 0});
+			mainNavigation.addRow(new Object[]{NAV_CHECKLIST_ITEM_ID, "", 0});
+			mainNavigation.addRow(new Object[]{NAV_ALL_ITEMS_ITEM_ID, "", 0});
 			if(categories != null) return new MergeCursor(new Cursor[]{mainNavigation, categories});
 			else return mainNavigation;
+		}
+		
+		@Override
+		public int getCount() {
+			return super.getCount() + 1;
+		}
+		
+		@Override
+		public int getItemViewType(int position) {
+			return position == 2 ? VIEW_TYPE_HEADER : VIEW_TYPE_NAVIGATION;
+		}
+		
+		@Override
+		public Object getItem(int position) {
+			if(position == 2) {
+				return null;
+			}
+			else {
+				if(position > 2) return super.getItem(position - 1);
+				else return super.getItem(position);
+			}
+		}
+		
+		@Override
+		public long getItemId(int position) {
+			if(position == 2) {
+				return -1;
+			}
+			else {
+				if(position > 2) return super.getItemId(position - 1);
+				else return super.getItemId(position);
+			}
+		}
+		
+		@Override
+		public boolean areAllItemsEnabled() {
+			return false;
+		}
+		
+		@Override
+		public boolean isEnabled(int position) {
+			return position != 2;
 		}
 
 		public NavigationCursorAdapter(Context context, int flags) {
 			super(context, addMainNavigationItems(null), flags);
+			mContext = context;
 		}
 		
 		@Override
 		public Cursor swapCursor(Cursor categories) {
 			return super.swapCursor(addMainNavigationItems(categories));
 		}
+		
+		
+		/**
+		 * @see android.widget.ListAdapter#getView(int, View, ViewGroup)
+		 */
+		public View getView(int position, View convertView, ViewGroup parent) {
+			switch (getItemViewType(position)) {
+			case VIEW_TYPE_HEADER: {
+				if (convertView == null) {
+					convertView = LayoutInflater.from(mContext)
+							.inflate(R.layout.list_item_categories_header,
+									parent, false);
+				}
+				convertView.setEnabled(isEnabled(position));
+				return convertView;
+			}
+			case VIEW_TYPE_NAVIGATION: {
+				if (position > 2)
+					position--;
+				return super.getView(position, convertView, parent);
+			}
+			}
+
+			return null;
+		}
+	    	
+		
 
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
@@ -308,17 +380,19 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 			if(category._id == NAV_CHECKLIST_ITEM_ID) {
 				holder.name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_nav_list, 0, 0, 0);
 				holder.catColor.setVisibility(View.GONE);
+				holder.name.setText(R.string.nav_checklist);
 			}
 			else if(category._id == NAV_ALL_ITEMS_ITEM_ID){
 				holder.name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_nav_items, 0, 0, 0);
 				holder.catColor.setVisibility(View.GONE);
+				holder.name.setText(R.string.nav_all_products);
 			}
 			else {
 				holder.name.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 				holder.catColor.setVisibility(View.VISIBLE);
 				holder.catColor.setBackgroundColor(category.color);
+				holder.name.setText(category.name);
 			}
-			holder.name.setText(category.name);
 		}
 
 		@Override
@@ -338,5 +412,11 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 				name.setCompoundDrawablePadding(8);
 			}
 		}
+	}
+
+	@Override
+	public void onShowDialogClick(long categoryId) {
+		CategoryDialogFragment dialog = CategoryDialogFragment.getInstance(categoryId);
+        dialog.show(getSupportFragmentManager(), "CategoryDialogFragment");
 	}
 }

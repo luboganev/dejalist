@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/v_category_marker"
     android:layout_width="match_parent"
-    android:layout_height="48dp"
+    android:layout_height="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
     android:padding="8dp" 
     android:background="?android:attr/activatedBackgroundIndicator">
@@ -11,9 +11,9 @@
 	    android:id="@+id/v_nav_cat_color"
 	    android:layout_width="8dp"
 	    android:layout_gravity="center_vertical"
-	    android:layout_height="36dp"
+	    android:layout_marginLeft="8dp"
 	    android:layout_marginRight="8dp"
-	    android:layout_marginLeft="36dp"
+	    android:layout_height="36dp"
 	    android:background="#C3C3C3" />
 
     <TextView

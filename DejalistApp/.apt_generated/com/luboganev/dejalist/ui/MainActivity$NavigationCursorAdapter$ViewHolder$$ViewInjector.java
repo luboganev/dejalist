@@ -7,9 +7,9 @@ import butterknife.Views.Finder;
 public class MainActivity$NavigationCursorAdapter$ViewHolder$$ViewInjector {
   public static void inject(Finder finder, com.luboganev.dejalist.ui.MainActivity.NavigationCursorAdapter.ViewHolder target, Object source) {
     View view;
-    view = finder.findById(source, 2131165190);
+    view = finder.findById(source, 2131296266);
     target.name = (android.widget.TextView) view;
-    view = finder.findById(source, 2131165189);
+    view = finder.findById(source, 2131296265);
     target.catColor = (android.view.View) view;
   }
 

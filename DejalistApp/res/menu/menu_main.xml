@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/menu_main_settings"
+        android:showAsAction="never"
+        android:title="@string/menu_main_settings_label"/>
+    <item
+        android:id="@+id/menu_main_help"
+        android:showAsAction="never"
+        android:title="@string/menu_main_help_label"/>
+    <item
+        android:id="@+id/menu_main_about"
+        android:showAsAction="never"
+        android:title="@string/menu_main_about_label"/>
+</menu>
