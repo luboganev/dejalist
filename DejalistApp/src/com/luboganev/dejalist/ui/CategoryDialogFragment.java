@@ -25,17 +25,42 @@ public class CategoryDialogFragment extends DialogFragment {
 	@InjectView(R.id.category_svbar) SVBar svBar;
 	@InjectView(R.id.et_category_name) EditText name;
 	
-	public static final String ARG_CATEGORY_ID = "category_id";
+	public static final String ARG_CATEGORY = "category";
 	
 	public CategoryDialogFragment() {}
 	
-	public static CategoryDialogFragment getInstance(long categoryId) {
+	public static CategoryDialogFragment getInstance(Category category) {
 		CategoryDialogFragment fragment = new CategoryDialogFragment();
 		Bundle arguments = new Bundle();
-		arguments.putLong(ARG_CATEGORY_ID, categoryId);
+		arguments.putParcelable(ARG_CATEGORY, category);
 		fragment.setArguments(arguments);
 		return fragment;
 	}
+	
+	public static CategoryDialogFragment getInstance() {
+		CategoryDialogFragment fragment = new CategoryDialogFragment();
+		fragment.setArguments(new Bundle());
+		return fragment;
+	}
+	
+    private CategoriesController mController;
+    
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        try {
+        	mController = (CategoriesController) getActivity();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().toString()
+                    + " must implement CategoriesController");
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mController = null;
+    }
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -47,10 +72,8 @@ public class CategoryDialogFragment extends DialogFragment {
 	    Views.inject(this, v);
 	    picker.addSVBar(svBar);
 	    
-    	if(getArguments().containsKey(ARG_CATEGORY_ID)) {
-    		Category category = cupboard().withContext(getActivity().getApplicationContext())
-    				.get(DejalistContract.Categories.buildCategoryUri(getArguments().getLong(ARG_CATEGORY_ID)), 
-    						Category.class);
+    	if(getArguments().containsKey(ARG_CATEGORY)) {
+    		Category category = getArguments().getParcelable(ARG_CATEGORY);
     		name.setText(category.name);
     		picker.setColor(category.color);
     		picker.setOldCenterColor(category.color);
@@ -84,11 +107,16 @@ public class CategoryDialogFragment extends DialogFragment {
 		category.color = picker.getColor();
 		ContentValues categoryValues = cupboard().withEntity(Category.class).toContentValues(category);
 		
-		if(getArguments().containsKey(ARG_CATEGORY_ID)) {
+		if(getArguments().containsKey(ARG_CATEGORY)) {
+			Category originalCategory = getArguments().getParcelable(ARG_CATEGORY);
 			// if we edit an existing category
 			getActivity().getContentResolver().update(
-					DejalistContract.Categories.buildCategoryUri(getArguments().getLong(ARG_CATEGORY_ID)),
+					DejalistContract.Categories.buildCategoryUri(originalCategory._id),
 					categoryValues, null, null);
+			category._id = originalCategory._id;
+			if(mController != null) {
+				mController.onCategoryEdited(category);
+			}
 		}
 		else {
 			// if we create a new category

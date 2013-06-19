@@ -1,7 +1,6 @@
 package com.luboganev.dejalist.data;
 
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
-import nl.qbusict.cupboard.CupboardFactory;
 import nl.qbusict.cupboard.EntityCompartment;
 
 import com.luboganev.dejalist.data.DejalistContract.Categories;
@@ -48,6 +47,7 @@ public class DejalistDatabase extends SQLiteOpenHelper {
 					Products.PRODUCT_INLIST + " INTEGER, " +
 					Products.PRODUCT_CHECKED + " INTEGER, " +
 					Products.PRODUCT_CATEGORY_ID + " INTEGER, " +
+					Products.PRODUCT_USED_COUNT + " INTEGER, " +
 					Products.PRODUCT_LAST_USED + " INTEGER " +
 				");");
 		 

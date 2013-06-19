@@ -3,13 +3,19 @@
     <item
         android:id="@+id/menu_main_settings"
         android:showAsAction="never"
-        android:title="@string/menu_main_settings_label"/>
+        android:title="@string/menu_main_settings_label"
+        android:menuCategory="container"
+        android:orderInCategory="1" />
     <item
         android:id="@+id/menu_main_help"
         android:showAsAction="never"
-        android:title="@string/menu_main_help_label"/>
+        android:title="@string/menu_main_help_label"
+        android:menuCategory="container"
+        android:orderInCategory="2" />
     <item
         android:id="@+id/menu_main_about"
         android:showAsAction="never"
-        android:title="@string/menu_main_about_label"/>
+        android:title="@string/menu_main_about_label"
+        android:menuCategory="container"
+        android:orderInCategory="3" />
 </menu>

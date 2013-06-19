@@ -17,18 +17,17 @@
 package com.luboganev.dejalist.ui;
 
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.MergeCursor;
 import android.os.Bundle;
-import android.provider.MediaStore.Audio.PlaylistsColumns;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -40,10 +39,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import butterknife.InjectView;
@@ -52,8 +49,8 @@ import butterknife.Views;
 import com.luboganev.dejalist.R;
 import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
+import com.luboganev.dejalist.data.DejalistContract.Products;
 import com.luboganev.dejalist.data.entities.Category;
-import com.luboganev.dejalist.ui.PlanetFragment.ShowDialogListener;
 
 /**
  * This example illustrates a common usage of the DrawerLayout widget
@@ -82,7 +79,7 @@ import com.luboganev.dejalist.ui.PlanetFragment.ShowDialogListener;
  * An action should be an operation performed on the current contents of the window,
  * for example enabling or disabling a data overlay on top of the current content.</p>
  */
-public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cursor>, ShowDialogListener {
+public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cursor>, CategoriesController {
 	@InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 	@InjectView(R.id.left_drawer) ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -211,20 +208,27 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
     	Category selectedCategory = cupboard().withCursor((Cursor)mAdapter.getItem(position)).get(Category.class);
     	if(selectedCategory._id == NavigationCursorAdapter.NAV_CHECKLIST_ITEM_ID) {
     		selectedCategory.name = getString(R.string.nav_checklist);
-    	}
-    	if(selectedCategory._id == NavigationCursorAdapter.NAV_ALL_ITEMS_ITEM_ID) {
-    		selectedCategory.name = getString(R.string.nav_all_products);
-    	}
     		
-        // update the main content by replacing fragments
-        Fragment fragment = new PlanetFragment();
-        Bundle args = new Bundle();
-        args.putString(PlanetFragment.ARG_CATEGORY, selectedCategory.name);
-        args.putLong(PlanetFragment.ARG_CATEGORY_ID, selectedCategory._id);
-        fragment.setArguments(args);
-
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+            // update the main content by replacing fragments
+            Fragment fragment = new ChecklistFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+    	}
+    	else if(selectedCategory._id == NavigationCursorAdapter.NAV_ALL_ITEMS_ITEM_ID) {
+    		selectedCategory.name = getString(R.string.nav_all_products);
+    		
+            // update the main content by replacing fragments
+            getSupportFragmentManager().beginTransaction().replace(
+            		R.id.content_frame, 
+            		ProductsGalleryFragment.getInstance()).commit();
+    	}
+    	else {
+    		
+            // update the main content by replacing fragments
+            getSupportFragmentManager().beginTransaction().replace(
+            		R.id.content_frame, 
+            		ProductsGalleryFragment.getInstance(selectedCategory)).commit();
+    	}
 
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -415,8 +419,41 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	}
 
 	@Override
-	public void onShowDialogClick(long categoryId) {
-		CategoryDialogFragment dialog = CategoryDialogFragment.getInstance(categoryId);
+	public void onCategoryEdited(Category category) {
+		categoryFragment.updateShownCategory(category);
+	}
+	
+	private CategoriesActionTaker categoryFragment;
+
+	@Override
+	public void registerCategories(CategoriesActionTaker categoriesDelegate) {
+		categoryFragment = categoriesDelegate;
+	}
+
+	@Override
+	public void unregisterCategories() {
+		categoryFragment = null;
+	}
+
+	@Override
+	public void onCategoryNewAction() {
+		CategoryDialogFragment dialog = CategoryDialogFragment.getInstance();
         dialog.show(getSupportFragmentManager(), "CategoryDialogFragment");
+	}
+
+	@Override
+	public void onCategoryEditAction(Category category) {
+		CategoryDialogFragment dialog = CategoryDialogFragment.getInstance(category);
+        dialog.show(getSupportFragmentManager(), "CategoryDialogFragment");
+	}
+
+	@Override
+	public void onCategoryDeleteAction(Category category) {
+		cupboard().withContext(getApplicationContext()).delete(Categories.CONTENT_URI, category);
+		ContentValues values = new ContentValues();
+		values.put(Products.PRODUCT_CATEGORY_ID, -1L);
+		getContentResolver().update(Products.buildCategoryProductsUri(category._id), values, null, null);
+		// go back to all categories
+		selectItem(1);
 	}
 }

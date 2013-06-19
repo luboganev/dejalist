@@ -20,7 +20,17 @@
     <string name="menu_main_help_label">Help</string>
     <string name="menu_main_about_label">About</string>
     
-    <string name="menu_categories_new">New category</string>
-    <string name="menu_categories_edit">Edit category</string>
-    <string name="menu_categories_delete">Delete category</string>
+    <string name="menu_products_new_product">New product</string>
+
+    <string name="menu_products_sort_group">Sort by</string>
+    <string name="menu_products_sort_az">A-Z</string>
+    <string name="menu_products_sort_usage">Most used</string>
+    <string name="menu_products_sort_recent">Often used</string>
+    
+    <string name="menu_categories_none">(No category)</string>
+    <string name="menu_categories_new_only">New category</string>
+    <string name="menu_categories_group">Category</string>
+    <string name="menu_categories_new">New</string>
+    <string name="menu_categories_edit">Edit</string>
+    <string name="menu_categories_delete">Delete</string>
 </resources>
