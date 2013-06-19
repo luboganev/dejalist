@@ -7,9 +7,9 @@ import butterknife.Views.Finder;
 public class MainActivity$$ViewInjector {
   public static void inject(Finder finder, com.luboganev.dejalist.ui.MainActivity target, Object source) {
     View view;
-    view = finder.findById(source, 2131296258);
+    view = finder.findById(source, 2131296264);
     target.mDrawerList = (android.widget.ListView) view;
-    view = finder.findById(source, 2131296256);
+    view = finder.findById(source, 2131296262);
     target.mDrawerLayout = (android.support.v4.widget.DrawerLayout) view;
   }
 

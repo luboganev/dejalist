@@ -1,0 +1,72 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp"
+    android:scrollbarStyle="outsideOverlay"
+    tools:context=".ProductActivity" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/iv_product_picture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="5dp"
+            android:maxHeight="180dp"
+            android:maxWidth="180dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_launcher" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:id="@+id/ib_product_change_image"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/crop_action_image"
+                android:padding="8dp"
+                android:src="@drawable/ic_action_image" />
+
+            <ImageButton
+                android:id="@+id/ib_product_change_camera"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/crop_action_camera"
+                android:padding="8dp"
+                android:src="@drawable/ic_action_camera" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/et_product_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:ems="10" 
+            android:singleLine="true"
+            android:scrollHorizontally="true"
+            android:hint="@string/et_product_name_hint">
+
+            <requestFocus />
+        </EditText>
+
+        <Spinner
+            android:id="@+id/sp_product_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" 
+            android:layout_marginTop="16dp"/>
+
+    </LinearLayout>
+
+</ScrollView>

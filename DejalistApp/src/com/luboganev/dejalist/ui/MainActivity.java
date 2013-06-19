@@ -19,6 +19,7 @@ package com.luboganev.dejalist.ui;
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -455,5 +456,11 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 		getContentResolver().update(Products.buildCategoryProductsUri(category._id), values, null, null);
 		// go back to all categories
 		selectItem(1);
+	}
+
+	@Override
+	public void onCategoryNewProduct() {
+		Intent intent = new Intent(this, ProductActivity.class);
+		startActivity(intent);
 	}
 }

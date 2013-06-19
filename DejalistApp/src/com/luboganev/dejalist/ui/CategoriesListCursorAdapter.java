@@ -60,15 +60,15 @@ public class CategoriesListCursorAdapter extends CursorAdapter {
 		else return super.getItemId(position);
 	}
 	
-	@Override
-	public boolean areAllItemsEnabled() {
-		return false;
-	}
-	
-	@Override
-	public boolean isEnabled(int position) {
-		return position != super.getCount();
-	}
+//	@Override
+//	public boolean areAllItemsEnabled() {
+//		return false;
+//	}
+//	
+//	@Override
+//	public boolean isEnabled(int position) {
+//		return position != super.getCount();
+//	}
 
 	public CategoriesListCursorAdapter(Context context, int flags) {
 		super(context, addCategoryNone(null), flags);
@@ -95,8 +95,6 @@ public class CategoriesListCursorAdapter extends CursorAdapter {
 			return convertView;
 		}
 		case VIEW_TYPE_CATEGORY: {
-			if (position > 2)
-				position--;
 			return super.getView(position, convertView, parent);
 		}
 		}

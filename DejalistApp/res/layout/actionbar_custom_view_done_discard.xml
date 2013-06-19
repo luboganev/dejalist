@@ -1,0 +1,60 @@
+<!--
+  Copyright 2012 Roman Nurik
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?android:actionBarSize"
+    android:baselineAligned="false"
+    android:divider="?android:dividerVertical"
+    android:dividerPadding="8dp"
+    android:orientation="horizontal"
+    android:showDividers="middle" >
+
+    <ImageButton
+        android:id="@+id/actionbar_crop_discard"
+        style="?android:borderlessButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@drawable/ic_action_discard" />
+
+    <ImageButton
+        android:id="@+id/actionbar_crop_rotate_ccw"
+        style="?android:borderlessButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:scaleType="center"
+        android:src="@drawable/ic_action_rotate_ccw" />
+
+    <ImageButton
+        android:id="@+id/actionbar_crop_rotate_cw"
+        style="?android:borderlessButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:scaleType="center"
+        android:src="@drawable/ic_action_rotate_cw" />
+
+    <ImageButton
+        android:id="@+id/actionbar_crop_done"
+        style="?android:borderlessButtonStyle"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:src="@drawable/ic_action_done" />
+
+</LinearLayout>
