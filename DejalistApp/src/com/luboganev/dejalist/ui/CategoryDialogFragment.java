@@ -120,8 +120,11 @@ public class CategoryDialogFragment extends DialogFragment {
 		}
 		else {
 			// if we create a new category
-			getActivity().getContentResolver().insert(
-					DejalistContract.Categories.CONTENT_URI, categoryValues);
+			category._id = DejalistContract.Categories.getCategoryId(getActivity().getContentResolver().insert(
+					DejalistContract.Categories.CONTENT_URI, categoryValues));
+			if(mController != null) {
+				mController.onCategoryCreated(category);
+			}
 		}
 	}
 }

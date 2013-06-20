@@ -14,38 +14,44 @@
 
         <ImageView
             android:id="@+id/iv_product_picture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="5dp"
             android:maxHeight="180dp"
             android:maxWidth="180dp"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_launcher" />
+            android:src="@drawable/product_no_pic_big" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:orientation="horizontal" >
+            android:divider="?android:attr/dividerVertical"
+            android:dividerPadding="8dp"
+            android:orientation="horizontal"
+            android:showDividers="middle" >
 
             <ImageButton
                 android:id="@+id/ib_product_change_image"
                 style="?android:borderlessButtonStyle"
-                android:layout_width="48dp"
+                android:layout_width="64dp"
                 android:layout_height="48dp"
                 android:contentDescription="@string/crop_action_image"
-                android:padding="8dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:src="@drawable/ic_action_image" />
 
             <ImageButton
                 android:id="@+id/ib_product_change_camera"
                 style="?android:borderlessButtonStyle"
-                android:layout_width="48dp"
+                android:layout_width="64dp"
                 android:layout_height="48dp"
                 android:contentDescription="@string/crop_action_camera"
-                android:padding="8dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:src="@drawable/ic_action_camera" />
+
         </LinearLayout>
 
         <EditText
@@ -61,11 +67,29 @@
             <requestFocus />
         </EditText>
 
-        <Spinner
-            android:id="@+id/sp_product_category"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_marginTop="16dp"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:divider="?android:attr/dividerVertical"
+            android:dividerPadding="8dp"
+            android:showDividers="middle" >
+
+            <Spinner
+                android:id="@+id/sp_product_category"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/ib_new_category"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="64dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_action_plus" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

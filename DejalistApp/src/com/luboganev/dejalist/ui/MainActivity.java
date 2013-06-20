@@ -273,12 +273,12 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		data.setNotificationUri(getContentResolver(), DejalistContract.Categories.CONTENT_URI);
-		mAdapter.swapCursor(data);
+		mAdapter.changeCursor(data);
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		mAdapter.swapCursor(null);
+		mAdapter.changeCursor(null);
 	}
     
     public static class NavigationCursorAdapter extends CursorAdapter {
@@ -288,7 +288,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 		public static final long NAV_CHECKLIST_ITEM_ID = -101;
 		public static final long NAV_ALL_ITEMS_ITEM_ID = -102;
 		
-	    private Context mContext;
+	    private LayoutInflater mInflater;
 		
 		private static Cursor addMainNavigationItems(Cursor categories) {
 			MatrixCursor mainNavigation = new MatrixCursor(new String[] {Categories._ID, Categories.CATEGORY_NAME, Categories.CATEGORY_COLOR});
@@ -306,6 +306,11 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 		@Override
 		public int getItemViewType(int position) {
 			return position == 2 ? VIEW_TYPE_HEADER : VIEW_TYPE_NAVIGATION;
+		}
+		
+		@Override
+		public int getViewTypeCount() {
+			return 2;
 		}
 		
 		@Override
@@ -342,40 +347,53 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 
 		public NavigationCursorAdapter(Context context, int flags) {
 			super(context, addMainNavigationItems(null), flags);
-			mContext = context;
+			mInflater = LayoutInflater.from(context);
 		}
 		
 		@Override
 		public Cursor swapCursor(Cursor categories) {
+			//change cursor internally calls swap cursor, so extra 
+			// values should be added only once during swap
 			return super.swapCursor(addMainNavigationItems(categories));
 		}
-		
 		
 		/**
 		 * @see android.widget.ListAdapter#getView(int, View, ViewGroup)
 		 */
 		public View getView(int position, View convertView, ViewGroup parent) {
-			switch (getItemViewType(position)) {
-			case VIEW_TYPE_HEADER: {
+			int viewType = getItemViewType(position);
+			if(viewType == VIEW_TYPE_HEADER) {
 				if (convertView == null) {
-					convertView = LayoutInflater.from(mContext)
-							.inflate(R.layout.list_item_categories_header,
+					convertView = mInflater.inflate(R.layout.list_item_categories_header,
 									parent, false);
 				}
 				convertView.setEnabled(isEnabled(position));
 				return convertView;
 			}
-			case VIEW_TYPE_NAVIGATION: {
-				if (position > 2)
-					position--;
+			else if(viewType == VIEW_TYPE_NAVIGATION) {
+				if (position > 2) position--;
 				return super.getView(position, convertView, parent);
 			}
-			}
-
-			return null;
+			else return null;
 		}
-	    	
 		
+		@Override
+		public View getDropDownView(int position, View convertView, ViewGroup parent) {
+			int viewType = getItemViewType(position);
+			if(viewType == VIEW_TYPE_HEADER) {
+				if (convertView == null) {
+					convertView = mInflater.inflate(R.layout.list_item_categories_header,
+									parent, false);
+				}
+				convertView.setEnabled(isEnabled(position));
+				return convertView;
+			}
+			else if(viewType == VIEW_TYPE_NAVIGATION) {
+				if (position > 2) position--;
+				return super.getDropDownView(position, convertView, parent);
+			}
+			else return null;
+		}
 
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
@@ -459,8 +477,14 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	}
 
 	@Override
-	public void onCategoryNewProduct() {
+	public void onCategoryNewProduct(Category category) {
 		Intent intent = new Intent(this, ProductActivity.class);
+		if(category != null) intent.putExtra(ProductActivity.EXTRA_CATEGORY_ID, category._id);
 		startActivity(intent);
+	}
+	
+	@Override
+	public void onCategoryCreated(Category category) {
+		//TODO cannot switch to it because of the loaders. See if you can do sth.
 	}
 }

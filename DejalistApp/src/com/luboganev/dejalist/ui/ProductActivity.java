@@ -1,35 +1,33 @@
 package com.luboganev.dejalist.ui;
 
-import butterknife.InjectView;
-import butterknife.Views;
+import java.io.File;
 
-import com.luboganev.dejalist.R;
-import com.luboganev.dejalist.crop.CropActivity;
-import com.luboganev.dejalist.data.DejalistContract;
-import com.luboganev.dejalist.data.entities.Category;
-import com.luboganev.dejalist.ui.MainActivity.NavigationCursorAdapter;
-
-import android.app.Activity;
+import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import butterknife.InjectView;
+import butterknife.Views;
 
-public class ProductActivity extends FragmentActivity implements
-		LoaderCallbacks<Cursor>, OnItemSelectedListener, CategoriesController {
+import com.luboganev.dejalist.R;
+import com.luboganev.dejalist.crop.CropActivity;
+import com.luboganev.dejalist.data.DejalistContract.Categories;
+import com.luboganev.dejalist.data.entities.Category;
+import com.luboganev.dejalist.data.entities.Product;
+import com.squareup.picasso.Picasso;
+
+public class ProductActivity extends FragmentActivity implements CategoriesController, OnItemSelectedListener {
 	private static final int REQUEST_CODE = 1;
 
 	@InjectView(R.id.iv_product_picture)
@@ -42,30 +40,58 @@ public class ProductActivity extends FragmentActivity implements
 	ImageButton mChangeCamera;
 	@InjectView(R.id.ib_product_change_image)
 	ImageButton mChangeImage;
+	@InjectView(R.id.ib_new_category)
+	ImageButton mNewCategory;
+	
+	private static final String STATE_NEW_PICTURE_URI = "state_new_picture_uri";
+	private Uri mNewPictureUri = null;
+	private static final String STATE_NEW_CATEGORY_ID = "state_new_category_id";
+	private long mNewCategoryId;
+	
+	public static final String EXTRA_PRODUCT = "extra_product";
+	private Product mOriginalProduct = null;
+	public static final String EXTRA_CATEGORY_ID = "extra_category_id";
 
 	private CategoriesListCursorAdapter mAdapter;
-
-	private static final int LOADER_NAVIGATION_ID = 1;
-
+	
+	private boolean deviceRotated;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_product);
 		Views.inject(this);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-
-		if (getSupportLoaderManager().getLoader(LOADER_NAVIGATION_ID) != null) {
-			getSupportLoaderManager().restartLoader(LOADER_NAVIGATION_ID, null,
-					this);
-		} else
-			getSupportLoaderManager().initLoader(LOADER_NAVIGATION_ID, null,
-					this);
+		
+		// Load just category sent to this activity
+		mNewCategoryId = getIntent().getLongExtra(EXTRA_CATEGORY_ID, CategoriesListCursorAdapter.CATEGORY_NONE_ITEM_ID);
+		
+		// Load the original Product sent to this activity
+		if(getIntent().hasExtra(EXTRA_PRODUCT)) {
+			mOriginalProduct = getIntent().getParcelableExtra(EXTRA_PRODUCT);
+		}
+		
+		if(savedInstanceState != null) {
+			if(savedInstanceState.containsKey(STATE_NEW_CATEGORY_ID)) mNewCategoryId = savedInstanceState.getLong(STATE_NEW_CATEGORY_ID);
+			if(savedInstanceState.containsKey(STATE_NEW_PICTURE_URI)) mNewPictureUri = Uri.parse(savedInstanceState.getString(STATE_NEW_PICTURE_URI));
+		}
+		else {
+			// no saved instance, if there is a whole product, load its properties
+			if(mOriginalProduct != null) {
+				mNewCategoryId = mOriginalProduct.categoryId;
+				mName.setText(mOriginalProduct.name);
+			}
+		}
+		
+		// Load all categories
+		
 
 		mAdapter = new CategoriesListCursorAdapter(getApplicationContext(),
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		mCategory.setAdapter(mAdapter);
-		mCategory.setOnItemSelectedListener(this);
-
+		
+		reloadSpinnerCategories();
+		
 		mChangeImage.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -89,35 +115,90 @@ public class ProductActivity extends FragmentActivity implements
 				startActivityForResult(intent, REQUEST_CODE);
 			}
 		});
-
+		
+		mNewCategory.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				CategoryDialogFragment dialog = CategoryDialogFragment.getInstance();
+		        dialog.show(getSupportFragmentManager(), "CategoryDialogFragment");
+			}
+		});
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		deviceRotated = true;
+		if(mNewPictureUri != null) outState.putString(STATE_NEW_PICTURE_URI, mNewPictureUri.toString());
+		outState.putLong(STATE_NEW_CATEGORY_ID, mNewCategoryId);
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if(!deviceRotated) {
+			if(mNewPictureUri != null) {
+				File tempFile = new File(mNewPictureUri.getPath());
+				if(tempFile.exists()) tempFile.delete();
+			}
+		}
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-
+		// for some reason the onSaveState is called when we open the other activity, 
+		// so we need to reset it to false once we come back
 		if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-			mImage.setImageURI(data.getData());
+			if(mNewPictureUri != null) {
+				File tempFile = new File(mNewPictureUri.getPath());
+				if(tempFile.exists()) tempFile.delete();
+			}
+			mNewPictureUri = data.getData();
 		}
 	}
-
+	
 	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		CursorLoader cursorLoader = new CursorLoader(getApplicationContext(),
-				DejalistContract.Categories.CONTENT_URI, null, null, null, null);
-		return cursorLoader;
+	protected void onResume() {
+		super.onResume();
+		loadPicture();
+		deviceRotated = false; 
+	}
+	
+	private void loadPicture() {
+		if(mNewPictureUri != null) 
+			Picasso.with(getApplicationContext()).load(mNewPictureUri)
+				.resizeDimen(R.dimen.product_picture_big, R.dimen.product_picture_big)
+				.error(R.drawable.product_no_pic_big).into(mImage);
+		else if(mOriginalProduct != null) Picasso.with(getApplicationContext()).load(mOriginalProduct.uri)
+				.resizeDimen(R.dimen.product_picture_big, R.dimen.product_picture_big)
+				.error(R.drawable.product_no_pic_big).into(mImage);
+	}
+	
+	@Override
+	public void onItemSelected(AdapterView<?> parent, View view,
+			int position, long id) {
+		mNewCategoryId = id;				
 	}
 
 	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		data.setNotificationUri(getContentResolver(),
-				DejalistContract.Categories.CONTENT_URI);
-		mAdapter.swapCursor(data);
+	public void onNothingSelected(AdapterView<?> parent) {
+		// do nothing
 	}
-
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) {
-		mAdapter.swapCursor(null);
+	
+	private void reloadSpinnerCategories() {
+		mCategory.setOnItemSelectedListener(null);
+		Cursor c = cupboard().withContext(getApplicationContext()).query(Categories.CONTENT_URI, Category.class).getCursor();
+		mAdapter.changeCursor(c);
+		mCategory.setSelection(getCategoryPositionById(mNewCategoryId));
+		mCategory.setOnItemSelectedListener(this);
+	}
+	
+	private int getCategoryPositionById(long categoryId) {
+		for (int i = 0; i < mCategory.getCount(); i++) {
+			if(mCategory.getItemIdAtPosition(i) == categoryId) return i;
+		}
+		return -1;
 	}
 
 	@Override
@@ -151,20 +232,13 @@ public class ProductActivity extends FragmentActivity implements
 	}
 
 	@Override
-	public void onCategoryNewProduct() {
+	public void onCategoryNewProduct(Category category) {
 		// do nothing, cause it cannot come from anywhere
 	}
 
 	@Override
-	public void onItemSelected(AdapterView<?> parent, View view, int position, long id)	 {
-		if (id == CategoriesListCursorAdapter.CATEGORY_ADD_ITEM_ID) {
-			CategoryDialogFragment dialog = CategoryDialogFragment.getInstance();
-	        dialog.show(getSupportFragmentManager(), "CategoryDialogFragment");
-		}
-	}
-
-	@Override
-	public void onNothingSelected(AdapterView<?> parent) {
-		// TODO Auto-generated method stub
+	public void onCategoryCreated(Category category) {
+		mNewCategoryId = category._id;
+		reloadSpinnerCategories();
 	}
 }

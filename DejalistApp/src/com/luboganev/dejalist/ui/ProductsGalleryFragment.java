@@ -99,7 +99,7 @@ public class ProductsGalleryFragment extends Fragment implements CategoriesActio
             Toast.makeText(getActivity(), "Clicked: sort usage", Toast.LENGTH_SHORT).show();
             return true;
         case R.id.menu_new_product:
-            if(mController != null) mController.onCategoryNewProduct();
+            if(mController != null) mController.onCategoryNewProduct(mSelectedCategory);
             return true;  
         case R.id.menu_categories_new:
         	if(mController != null) mController.onCategoryNewAction();
