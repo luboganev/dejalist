@@ -8,7 +8,7 @@
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
     
     <string name="nav_checklist">Checklist</string>
-    <string name="nav_all_products">All products</string>
+    <string name="nav_my_products">My products</string>
     <string name="nav_categories">CATEGORIES</string>
     
     <string name="dialogfragment_category_utitled">Untitled</string>
@@ -25,7 +25,7 @@
     <string name="menu_products_sort_group">Sort by</string>
     <string name="menu_products_sort_az">A-Z</string>
     <string name="menu_products_sort_usage">Most used</string>
-    <string name="menu_products_sort_recent">Often used</string>
+    <string name="menu_products_sort_recent">Recently used</string>
     
     <string name="menu_categories_none">(No category)</string>
     <string name="menu_categories_new_only">New category</string>
@@ -35,17 +35,22 @@
     <string name="menu_categories_delete">Delete</string>
     
     <string name="product_activity_title">Product</string>
+    <string name="menu_product_done">Done</string>
+    <string name="menu_product_discard">Discard</string>
     
     <string name="crop_activity_title">Edit picture</string>
-    <string name="crop_action_done">Done</string>
-    <string name="crop_action_discard">Discard</string>
-    <string name="crop_action_image">Pick image</string>
-    <string name="crop_action_camera">Take photo</string>
-    <string name="crop_action_rotate_ccw">Rotate left</string>
-    <string name="crop_action_rotate_cw">Rotate right</string>
-    <string name="crop_toast_img_load_failed">Could not load the image!</string>
-    <string name="crop_toast_not_local_image">Please select a local image!</string>
-    <string name="crop_toast_no_image">No image selected!</string>
-    <string name="crop_toast_save_failed">Failed to save image!</string>
+    <string name="menu_crop_done">Done</string>
+    <string name="menu_crop_discard">Discard</string>
+    <string name="menu_crop_image">Pick image</string>
+    <string name="menu_crop_camera">Take photo</string>
+    <string name="menu_crop_rotate_ccw">Rotate left</string>
+    <string name="menu_crop_rotate_cw">Rotate right</string>
+    <string name="toast_crop_img_load_failed">Could not load the image!</string>
+    <string name="toast_crop_not_local_image">Please select a local image!</string>
+    <string name="toast_crop_no_image">No image selected!</string>
+    <string name="toast_crop_save_failed">Failed to save image!</string>
+    <string name="dialog_crop_title">Saving...</string>
+    <string name="dialog_crop_message">Compressing and saving image</string>
+    <string name="dialog_crop_cancel">Cancelled saving image!</string>
     <string name="et_product_name_hint">Product name</string>
 </resources>

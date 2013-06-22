@@ -15,23 +15,24 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-public class ProductsGalleryFragment extends Fragment implements CategoriesActionTaker {
+public class ProductsGalleryFragment extends Fragment implements CategoryActionTaker {
     public static final String ARG_CATEGORY = "category";
     
     @InjectView(R.id.v_category_colorheader) View categoryColorHeader;
     
     private Category mSelectedCategory;
     
+    private static final String STATE_OPTIONMENUITEMSVISIBLE = "state_optionmenuitemsvisible"; 
+    private boolean mOptionMenuItemsVisible; 
+    
     public ProductsGalleryFragment() {
         // Empty constructor required for fragment subclasses
     }
     
-    CategoriesController mController;
+    CategoryController mCategoryController;
+    ProductController mProductController;
     
     public static ProductsGalleryFragment getInstance() {
     	ProductsGalleryFragment fragment = new ProductsGalleryFragment();
@@ -50,7 +51,22 @@ public class ProductsGalleryFragment extends Fragment implements CategoriesActio
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
+    	if(savedInstanceState != null) mOptionMenuItemsVisible = savedInstanceState.getBoolean(STATE_OPTIONMENUITEMSVISIBLE, true);
     	setHasOptionsMenu(true);
+    }
+    
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+    	super.onSaveInstanceState(outState);
+    	outState.putBoolean(STATE_OPTIONMENUITEMSVISIBLE, mOptionMenuItemsVisible);
+    }
+    
+    @Override
+    public void onDestroy() {
+    	super.onDestroy();
+    	if(mCategoryController != null) {
+    		mCategoryController.unregisterCategoryActionTaker();
+    	}
     }
 
     @Override
@@ -66,7 +82,7 @@ public class ProductsGalleryFragment extends Fragment implements CategoriesActio
         } else {
         	mSelectedCategory = null;
         	categoryColorHeader.setVisibility(View.GONE);
-        	getActivity().setTitle(R.string.nav_all_products);
+        	getActivity().setTitle(R.string.nav_my_products);
         }
         return rootView;
     }
@@ -78,6 +94,25 @@ public class ProductsGalleryFragment extends Fragment implements CategoriesActio
     					R.menu.menu_category : 
     						R.menu.menu_all_products), menu);
     	super.onCreateOptionsMenu(menu, inflater);
+    }
+    
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+    	super.onPrepareOptionsMenu(menu);
+		menu.findItem(R.id.menu_products_sort).setVisible(mOptionMenuItemsVisible);
+		menu.findItem(R.id.menu_products_sort).setEnabled(mOptionMenuItemsVisible);
+		
+		menu.findItem(R.id.menu_new_product).setVisible(mOptionMenuItemsVisible);
+		menu.findItem(R.id.menu_new_product).setEnabled(mOptionMenuItemsVisible);
+		
+		if(getArguments().containsKey(ARG_CATEGORY)) {
+			menu.findItem(R.id.menu_categories).setVisible(mOptionMenuItemsVisible);
+			menu.findItem(R.id.menu_categories).setEnabled(mOptionMenuItemsVisible);
+		}
+		else {
+			menu.findItem(R.id.menu_categories_new).setVisible(mOptionMenuItemsVisible);
+			menu.findItem(R.id.menu_categories_new).setEnabled(mOptionMenuItemsVisible);
+		}
     }
     
     @Override
@@ -99,16 +134,16 @@ public class ProductsGalleryFragment extends Fragment implements CategoriesActio
             Toast.makeText(getActivity(), "Clicked: sort usage", Toast.LENGTH_SHORT).show();
             return true;
         case R.id.menu_new_product:
-            if(mController != null) mController.onCategoryNewProduct(mSelectedCategory);
+            if(mProductController != null) mProductController.newProduct(mSelectedCategory);
             return true;  
         case R.id.menu_categories_new:
-        	if(mController != null) mController.onCategoryNewAction();
+        	if(mCategoryController != null) mCategoryController.newCategory();
             return true;
         case R.id.menu_categories_edit:
-        	if(mController != null) mController.onCategoryEditAction(mSelectedCategory);
+        	if(mCategoryController != null) mCategoryController.editCategory(mSelectedCategory);
             return true;   
         case R.id.menu_categories_delete:
-        	if(mController != null) mController.onCategoryDeleteAction(mSelectedCategory);
+        	if(mCategoryController != null) mCategoryController.deleteCategory(mSelectedCategory);
             return true;  
         default:
             return super.onOptionsItemSelected(item);
@@ -120,13 +155,21 @@ public class ProductsGalleryFragment extends Fragment implements CategoriesActio
         super.onAttach(activity);
         // Verify that the host activity implements the callback interface
         try {
-            // Instantiate the NoticeDialogListener so we can send events to the host
-        	mController = (CategoriesController) activity;
-        	mController.registerCategories(this);
+        	mCategoryController = (CategoryController) activity;
+        	mCategoryController.registerCategoryActionTaker(this);
+        	
+        	mProductController = (ProductController) activity;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
                     + " must implement CategoriesController");
+        }
+        try {
+        	mProductController = (ProductController) activity;
+        } catch (ClassCastException e) {
+        	// The activity doesn't implement the interface, throw exception
+        	throw new ClassCastException(activity.toString()
+        			+ " must implement ProductController");
         }
     }
 
@@ -138,5 +181,10 @@ public class ProductsGalleryFragment extends Fragment implements CategoriesActio
 			categoryColorHeader.setBackgroundColor(mSelectedCategory.color);
 			getActivity().setTitle(mSelectedCategory.name);
 		}
+	}
+
+	@Override
+	public void setOptionMenuItemsVisible(boolean visible) {
+		mOptionMenuItemsVisible = visible;
 	}
 }

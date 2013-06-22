@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import com.luboganev.dejalist.R;
+
 
 import junit.framework.Assert;
 import android.app.Activity;
@@ -54,14 +56,14 @@ public class CropDialogSave extends DialogFragment {
 	}
 	
 	private String getTitle() {
-		return "Saving...";
+		return getString(R.string.dialog_crop_title);
 	}
 
 	private String getMessage() {
-		return "Compressing and saving image";
+		return getString(R.string.dialog_crop_message);
 	}	
 	private String getCancelMessage() {
-		return "Cancelled saving image.";
+		return getString(R.string.dialog_crop_cancel);
 	}
 	
 	private void setProgress(int progress) {}

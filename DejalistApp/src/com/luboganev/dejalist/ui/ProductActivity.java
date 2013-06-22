@@ -3,12 +3,16 @@ package com.luboganev.dejalist.ui;
 import java.io.File;
 
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.CursorAdapter;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -25,9 +29,10 @@ import com.luboganev.dejalist.crop.CropActivity;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.entities.Category;
 import com.luboganev.dejalist.data.entities.Product;
+import com.luboganev.dejalist.ui.CategoryDialogFragment.CategoryEditorCallback;
 import com.squareup.picasso.Picasso;
 
-public class ProductActivity extends FragmentActivity implements CategoriesController, OnItemSelectedListener {
+public class ProductActivity extends FragmentActivity implements CategoryEditorCallback, OnItemSelectedListener {
 	private static final int REQUEST_CODE = 1;
 
 	@InjectView(R.id.iv_product_picture)
@@ -126,6 +131,31 @@ public class ProductActivity extends FragmentActivity implements CategoriesContr
 	}
 	
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_product, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_product_done:
+			if(saveProduct()) {
+				setResult(Activity.RESULT_OK);
+				finish();
+			}
+			return true;
+		case android.R.id.home:
+		case R.id.menu_product_discard:
+			setResult(Activity.RESULT_CANCELED);
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		deviceRotated = true;
@@ -200,39 +230,14 @@ public class ProductActivity extends FragmentActivity implements CategoriesContr
 		}
 		return -1;
 	}
+	
+	private boolean saveProduct() {
+		//TODO: save the new or edited product
+		return true;
+	}
 
 	@Override
 	public void onCategoryEdited(Category category) {
-		// do nothing, cause it cannot come from anywhere
-	}
-
-	@Override
-	public void onCategoryNewAction() {
-		// do nothing, cause it cannot come from anywhere
-	}
-
-	@Override
-	public void onCategoryEditAction(Category category) {
-		// do nothing, cause it cannot come from anywhere
-	}
-
-	@Override
-	public void onCategoryDeleteAction(Category category) {
-		// do nothing, cause it cannot come from anywhere
-	}
-
-	@Override
-	public void registerCategories(CategoriesActionTaker categoriesDelegate) {
-		// do nothing, cause it cannot come from anywhere
-	}
-
-	@Override
-	public void unregisterCategories() {
-		// do nothing, cause it cannot come from anywhere
-	}
-
-	@Override
-	public void onCategoryNewProduct(Category category) {
 		// do nothing, cause it cannot come from anywhere
 	}
 

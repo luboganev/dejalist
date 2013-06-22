@@ -29,6 +29,13 @@ public class CategoryDialogFragment extends DialogFragment {
 	
 	public CategoryDialogFragment() {}
 	
+	public static interface CategoryEditorCallback {
+		public void onCategoryCreated(Category category);
+		public void onCategoryEdited(Category category);
+	}
+	
+	private CategoryEditorCallback mCategoryEditorCallback;
+	
 	public static CategoryDialogFragment getInstance(Category category) {
 		CategoryDialogFragment fragment = new CategoryDialogFragment();
 		Bundle arguments = new Bundle();
@@ -43,23 +50,21 @@ public class CategoryDialogFragment extends DialogFragment {
 		return fragment;
 	}
 	
-    private CategoriesController mController;
-    
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         try {
-        	mController = (CategoriesController) getActivity();
+        	mCategoryEditorCallback = (CategoryEditorCallback) getActivity();
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString()
-                    + " must implement CategoriesController");
+                    + " must implement CategoryEditorCallback");
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mController = null;
+        mCategoryEditorCallback = null;
     }
 	
 	@Override
@@ -114,16 +119,16 @@ public class CategoryDialogFragment extends DialogFragment {
 					DejalistContract.Categories.buildCategoryUri(originalCategory._id),
 					categoryValues, null, null);
 			category._id = originalCategory._id;
-			if(mController != null) {
-				mController.onCategoryEdited(category);
+			if(mCategoryEditorCallback != null) {
+				mCategoryEditorCallback.onCategoryEdited(category);
 			}
 		}
 		else {
 			// if we create a new category
 			category._id = DejalistContract.Categories.getCategoryId(getActivity().getContentResolver().insert(
 					DejalistContract.Categories.CONTENT_URI, categoryValues));
-			if(mController != null) {
-				mController.onCategoryCreated(category);
+			if(mCategoryEditorCallback != null) {
+				mCategoryEditorCallback.onCategoryCreated(category);
 			}
 		}
 	}

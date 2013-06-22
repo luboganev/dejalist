@@ -1,0 +1,87 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="320dp"
+    android:layout_height="600dp"
+    android:orientation="vertical"
+    android:padding="8dp"
+    tools:context=".ProductActivity" 
+    android:layout_gravity="center">
+
+    <ImageView
+        android:id="@+id/iv_product_picture"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:maxHeight="180dp"
+        android:maxWidth="180dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/product_no_pic_big" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:divider="?android:attr/dividerVertical"
+        android:dividerPadding="8dp"
+        android:orientation="horizontal"
+        android:showDividers="middle" >
+
+        <ImageButton
+            android:id="@+id/ib_product_change_image"
+            style="?android:borderlessButtonStyle"
+            android:layout_width="64dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/menu_crop_image"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:src="@drawable/ic_action_image" />
+
+        <ImageButton
+            android:id="@+id/ib_product_change_camera"
+            style="?android:borderlessButtonStyle"
+            android:layout_width="64dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/menu_crop_camera"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:src="@drawable/ic_action_camera" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/et_product_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="@string/et_product_name_hint"
+        android:scrollHorizontally="true"
+        android:singleLine="true" >
+
+        <requestFocus />
+    </EditText>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:divider="?android:attr/dividerVertical"
+        android:dividerPadding="8dp"
+        android:showDividers="middle" >
+
+        <Spinner
+            android:id="@+id/sp_product_category"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/ib_new_category"
+            style="?android:borderlessButtonStyle"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_action_plus" />
+    </LinearLayout>
+
+</LinearLayout>

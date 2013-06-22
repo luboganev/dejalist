@@ -37,7 +37,7 @@
                 style="?android:borderlessButtonStyle"
                 android:layout_width="64dp"
                 android:layout_height="48dp"
-                android:contentDescription="@string/crop_action_image"
+                android:contentDescription="@string/menu_crop_image"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:src="@drawable/ic_action_image" />
@@ -47,7 +47,7 @@
                 style="?android:borderlessButtonStyle"
                 android:layout_width="64dp"
                 android:layout_height="48dp"
-                android:contentDescription="@string/crop_action_camera"
+                android:contentDescription="@string/menu_crop_camera"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:src="@drawable/ic_action_camera" />

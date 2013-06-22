@@ -171,7 +171,7 @@ public class CropActivity extends FragmentActivity {
 	
 	private void addToRotation(int degrees) {
 		if(bitmap == null) {
-			Toast.makeText(getApplicationContext(), R.string.crop_toast_no_image, Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), R.string.toast_crop_no_image, Toast.LENGTH_SHORT).show();
 			return;
 		}
         rotation = (rotation + degrees) % 360;
@@ -248,7 +248,7 @@ public class CropActivity extends FragmentActivity {
 				}
 				if (photoFile == null || !photoFile.exists()) {
 					photoFile = null;
-					Toast.makeText(this, R.string.crop_toast_img_load_failed,
+					Toast.makeText(this, R.string.toast_crop_img_load_failed,
 							Toast.LENGTH_LONG).show();
 					return;
 				}
@@ -288,7 +288,7 @@ public class CropActivity extends FragmentActivity {
 				Cursor cursor = getContentResolver().query(selectedImage,
 						filePathColumn, null, null, null);
 				if (cursor == null) {
-					Toast.makeText(this, R.string.crop_toast_img_load_failed, Toast.LENGTH_LONG)
+					Toast.makeText(this, R.string.toast_crop_img_load_failed, Toast.LENGTH_LONG)
 							.show();
 					return;
 				}
@@ -299,7 +299,7 @@ public class CropActivity extends FragmentActivity {
 					if (columnIndex == -1) {
 						return;
 					}
-					Toast.makeText(getApplicationContext(), getString(R.string.crop_toast_not_local_image), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), getString(R.string.toast_crop_not_local_image), Toast.LENGTH_SHORT).show();
 					return;
 				} else {
 					int columnIndex = cursor.getColumnIndex(MediaColumns.DATA);
@@ -309,7 +309,7 @@ public class CropActivity extends FragmentActivity {
 					String name = cursor.getString(columnIndex);
 					File file = new File(name);
 					if (!file.exists() || !file.canRead()) {
-						Toast.makeText(this, R.string.crop_toast_img_load_failed,
+						Toast.makeText(this, R.string.toast_crop_img_load_failed,
 								Toast.LENGTH_LONG).show();
 						return;
 					}
@@ -374,7 +374,7 @@ public class CropActivity extends FragmentActivity {
 	
 	private void saveImage() {
 		if(bitmap == null) {
-			Toast.makeText(getApplicationContext(), R.string.crop_toast_no_image, Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), R.string.toast_crop_no_image, Toast.LENGTH_SHORT).show();
 			return;
 		}
 		File destinationFile;
@@ -395,7 +395,7 @@ public class CropActivity extends FragmentActivity {
 							preview.getCropRect());
 			newFragment.show(getSupportFragmentManager(), "saveImage");
 		} catch (IOException e) {
-			Toast.makeText(getApplicationContext(), R.string.crop_toast_save_failed, Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), R.string.toast_crop_save_failed, Toast.LENGTH_SHORT).show();
 		}
 	}
 	

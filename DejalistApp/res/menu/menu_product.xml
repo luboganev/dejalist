@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/menu_product_done"
+        android:icon="@drawable/ic_action_done"
+        android:menuCategory="secondary"
+        android:orderInCategory="1"
+        android:showAsAction="always"
+        android:title="@string/menu_product_done"/>
+    <item
+        android:id="@+id/menu_product_discard"
+        android:icon="@drawable/ic_action_discard"
+        android:menuCategory="secondary"
+        android:orderInCategory="2"
+        android:showAsAction="always"
+        android:title="@string/menu_product_discard"/>
+</menu>
