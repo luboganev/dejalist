@@ -37,6 +37,9 @@
     <string name="product_activity_title">Product</string>
     <string name="menu_product_done">Done</string>
     <string name="menu_product_discard">Discard</string>
+    <string name="toast_product_no_name">Please enter product name</string>
+    <string name="toast_product_no_image">Please add product image</string>
+    <string name="toast_product_failed_save">Sorry, I could not save the product :( Please try again later.</string>
     
     <string name="crop_activity_title">Edit picture</string>
     <string name="menu_crop_done">Done</string>

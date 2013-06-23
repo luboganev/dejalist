@@ -1,9 +1,11 @@
 package com.luboganev.dejalist.ui;
 
+import static nl.qbusict.cupboard.CupboardFactory.cupboard;
+
 import java.io.File;
 
-import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -21,12 +23,15 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Toast;
 import butterknife.InjectView;
 import butterknife.Views;
 
 import com.luboganev.dejalist.R;
 import com.luboganev.dejalist.crop.CropActivity;
+import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
+import com.luboganev.dejalist.data.ProductImageFileHelper;
 import com.luboganev.dejalist.data.entities.Category;
 import com.luboganev.dejalist.data.entities.Product;
 import com.luboganev.dejalist.ui.CategoryDialogFragment.CategoryEditorCallback;
@@ -37,7 +42,7 @@ public class ProductActivity extends FragmentActivity implements CategoryEditorC
 
 	@InjectView(R.id.iv_product_picture)
 	ImageView mImage;
-	@InjectView(R.id.et_category_name)
+	@InjectView(R.id.et_product_name)
 	EditText mName;
 	@InjectView(R.id.sp_product_category)
 	Spinner mCategory;
@@ -232,8 +237,85 @@ public class ProductActivity extends FragmentActivity implements CategoryEditorC
 	}
 	
 	private boolean saveProduct() {
-		//TODO: save the new or edited product
-		return true;
+		if(mOriginalProduct != null) {
+			// we're editing a product
+			
+			//validate name
+			if(mName.getText().length() <=0) {
+				Toast.makeText(getApplicationContext(), R.string.toast_product_no_name, Toast.LENGTH_SHORT).show();
+				return false;
+			}
+			else mOriginalProduct.name = mName.getText().toString();
+			
+			// set the category id
+			mOriginalProduct.categoryId = mNewCategoryId;
+			
+			// if the image was changed
+			if(mNewPictureUri != null) {
+				// image was changed
+				Uri productFileUri = ProductImageFileHelper.copyToANewProductImageFile(getApplicationContext(), mNewPictureUri);
+				if(productFileUri != null) {
+					// delete old image
+					ProductImageFileHelper.deleteProductImageFile(Uri.parse(mOriginalProduct.uri));
+					// update image
+					mOriginalProduct.uri = productFileUri.toString();
+				}
+				else {
+					Toast.makeText(getApplicationContext(), R.string.toast_product_failed_save, Toast.LENGTH_SHORT).show();
+					return false;
+				}
+			}
+			
+			ContentValues values = cupboard().withEntity(Product.class).toContentValues(mOriginalProduct);
+			int updated = getContentResolver().update(DejalistContract.Products.buildProductUri(mOriginalProduct._id), values, null, null);
+			// check if it was successfully updated
+			if(updated > 0) return true;
+			else {
+				Toast.makeText(getApplicationContext(), R.string.toast_product_failed_save, Toast.LENGTH_SHORT).show();
+				return false;
+			}
+		}
+		else {
+			Product product = new Product();
+			// we're creating a new product
+			
+			//validate name
+			if(mName.getText().length() <=0) {
+				Toast.makeText(getApplicationContext(), R.string.toast_product_no_name, Toast.LENGTH_SHORT).show();
+				return false;
+			}
+			else product.name = mName.getText().toString();
+			
+			// set the category id
+			product.categoryId = mNewCategoryId;
+			
+			//validate image
+			if(mNewPictureUri == null) {
+				Toast.makeText(getApplicationContext(), R.string.toast_product_no_image, Toast.LENGTH_SHORT).show();
+				return false;
+			}
+			
+			// try to store the image file in the folder
+			Uri productFileUri = ProductImageFileHelper.copyToANewProductImageFile(getApplicationContext(), mNewPictureUri);
+			if(productFileUri != null) {
+				product.uri = productFileUri.toString();
+			}
+			else {
+				Toast.makeText(getApplicationContext(), R.string.toast_product_failed_save, Toast.LENGTH_SHORT).show();
+				return false;
+			}
+			
+			Uri insertedProductUri = cupboard().withContext(getApplicationContext()).put(DejalistContract.Products.CONTENT_URI, product);
+			// check if it was successfully inserted
+			try {
+				DejalistContract.Products.getProductId(insertedProductUri);
+				return true;
+			}
+			catch (NumberFormatException e) {
+				Toast.makeText(getApplicationContext(), R.string.toast_product_failed_save, Toast.LENGTH_SHORT).show();
+				return false;
+			}
+		}
 	}
 
 	@Override

@@ -4,25 +4,37 @@ import butterknife.InjectView;
 import butterknife.Views;
 
 import com.luboganev.dejalist.R;
+import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.entities.Category;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.Toast;
 
-public class ProductsGalleryFragment extends Fragment implements CategoryActionTaker {
+public class ProductsGalleryFragment extends Fragment implements CategoryActionTaker, LoaderCallbacks<Cursor> {
     public static final String ARG_CATEGORY = "category";
     
     @InjectView(R.id.v_category_colorheader) View categoryColorHeader;
+    @InjectView(R.id.grdv_products) GridView mProducts;
     
     private Category mSelectedCategory;
+    
+    private ProductsGalleryCursorAdapter mAdapter;
+    
+    private static final int LOADER_PRODUCTS_ID = 2;
     
     private static final String STATE_OPTIONMENUITEMSVISIBLE = "state_optionmenuitemsvisible"; 
     private boolean mOptionMenuItemsVisible; 
@@ -70,8 +82,7 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_productsgallery, container, false);
         Views.inject(this, rootView);
         
@@ -84,6 +95,7 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
         	categoryColorHeader.setVisibility(View.GONE);
         	getActivity().setTitle(R.string.nav_my_products);
         }
+        
         return rootView;
     }
     
@@ -172,6 +184,20 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
         			+ " must implement ProductController");
         }
     }
+    
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+    	super.onActivityCreated(savedInstanceState);
+    	
+        mAdapter = new ProductsGalleryCursorAdapter(getActivity().getApplicationContext(), 
+        		CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, mSelectedCategory == null);
+        mProducts.setAdapter(mAdapter);
+    	
+        if(getActivity().getSupportLoaderManager().getLoader(LOADER_PRODUCTS_ID) != null) {
+        	getActivity().getSupportLoaderManager().restartLoader(LOADER_PRODUCTS_ID, null, this);
+        }
+        else getActivity().getSupportLoaderManager().initLoader(LOADER_PRODUCTS_ID, null, this);
+    }
 
 	@Override
 	public void updateShownCategory(Category category) {
@@ -186,5 +212,28 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
 	@Override
 	public void setOptionMenuItemsVisible(boolean visible) {
 		mOptionMenuItemsVisible = visible;
+	}
+
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		if(mSelectedCategory != null) {
+			return new CursorLoader(getActivity().getApplicationContext(), 
+					DejalistContract.Products.buildCategoryProductsUri(mSelectedCategory._id), null, null, null, null);
+		}
+		else {
+			return new CursorLoader(getActivity().getApplicationContext(), 
+					DejalistContract.Products.CONTENT_URI, null, null, null, null);
+		}
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+		data.setNotificationUri(getActivity().getContentResolver(), DejalistContract.Products.CONTENT_URI);
+		mAdapter.changeCursor(data);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		mAdapter.changeCursor(null);
 	}
 }
