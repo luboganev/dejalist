@@ -26,7 +26,6 @@ public class NavigationCursorAdapter extends CursorAdapter {
 	
     private LayoutInflater mInflater;
 	
-    //FIXME: Find out why the custom categories get delesected when we rotate the device
 	private static Cursor addMainNavigationItems(Cursor categories) {
 		MatrixCursor mainNavigation = new MatrixCursor(new String[] {Categories._ID, Categories.CATEGORY_NAME, Categories.CATEGORY_COLOR});
 		mainNavigation.addRow(new Object[]{NAV_CHECKLIST_ITEM_ID, "", 0});

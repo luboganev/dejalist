@@ -22,6 +22,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -42,6 +44,7 @@ import butterknife.InjectView;
 import butterknife.Views;
 
 import com.luboganev.dejalist.R;
+import com.luboganev.dejalist.Utils;
 import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.DejalistContract.Products;
@@ -100,17 +103,27 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         
+        mAdapter = new NavigationCursorAdapter(getApplicationContext(), CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        mDrawerList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        mDrawerList.setAdapter(mAdapter);
+        
+        if (savedInstanceState == null) {
+        	selectItem(0);
+        }
+        else {
+        	mStateSelectedNavigationPosition = savedInstanceState.getInt(STATE_SELECTED_NAVIGATION, -1);
+        }
+        
         if(getSupportLoaderManager().getLoader(LOADER_NAVIGATION_ID) != null) {
         	getSupportLoaderManager().restartLoader(LOADER_NAVIGATION_ID, null, this);
         }
-        else getSupportLoaderManager().initLoader(LOADER_NAVIGATION_ID, null, this);
+        else {
+        	getSupportLoaderManager().initLoader(LOADER_NAVIGATION_ID, null, this);
+        }
         
         // set up the drawer's list view with items and click listener
 //        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
 //                R.layout.drawer_list_item, mPlanetTitles));
-        
-        mAdapter = new NavigationCursorAdapter(getApplicationContext(), CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-        mDrawerList.setAdapter(mAdapter);
         
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
@@ -140,17 +153,22 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-        if (savedInstanceState == null) {
-            selectItem(0);
-        }
     }
+    
+    private static final String STATE_SELECTED_NAVIGATION = "selected_navigation";
+    private int mStateSelectedNavigationPosition = -1;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    	super.onSaveInstanceState(outState);
+    	outState.putInt(STATE_SELECTED_NAVIGATION, mDrawerList.getCheckedItemPosition());
     }
 
     @Override
@@ -192,6 +210,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
     }
 
     private void selectItem(int position) {
+    	Utils.d("MainActivity", "select position" + position);
     	Category selectedCategory = cupboard().withCursor((Cursor)mAdapter.getItem(position)).get(Category.class);
     	if(selectedCategory._id == NavigationCursorAdapter.NAV_CHECKLIST_ITEM_ID) {
     		selectedCategory.name = getString(R.string.nav_checklist);
@@ -244,7 +263,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Pass any configuration change to the drawer toggls
+        // Pass any configuration change to the drawer toggle
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
@@ -260,8 +279,12 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		data.setNotificationUri(getContentResolver(), DejalistContract.Categories.CONTENT_URI);
 		mAdapter.changeCursor(data);
+		if(mStateSelectedNavigationPosition >= 0) {
+			mDrawerList.setItemChecked(mStateSelectedNavigationPosition, true);
+			mStateSelectedNavigationPosition = -1;
+		}
 	}
-
+	
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		mAdapter.changeCursor(null);
