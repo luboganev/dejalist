@@ -16,7 +16,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:paddingTop="8dp"
-        android:columnWidth="@dimen/product_picture_small"
+        android:columnWidth="@dimen/product_picture_small_width"
         android:stretchMode="spacingWidthUniform"
         android:horizontalSpacing="8dp"
         android:verticalSpacing="8dp"

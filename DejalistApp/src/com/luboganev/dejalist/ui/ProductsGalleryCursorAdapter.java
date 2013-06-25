@@ -72,7 +72,14 @@ public class ProductsGalleryCursorAdapter extends CursorAdapter {
 		}
 		
 		holder.name.setText(product.name);
+		
 		Picasso.with(context).load(product.uri).into(holder.image);
+		if(product.inlist == 1) {
+			holder.inList.setVisibility(View.VISIBLE);
+		}
+		else {
+			holder.inList.setVisibility(View.INVISIBLE);
+		}
 	}
 
 	@Override
@@ -87,6 +94,7 @@ public class ProductsGalleryCursorAdapter extends CursorAdapter {
 		@InjectView(R.id.grid_item_product_name) TextView name;
 		@InjectView(R.id.grid_item_product_image) ImageView image;
 		@InjectView(R.id.grid_item_product_category) View category;
+		@InjectView(R.id.grid_item_inlist) ImageView inList;
 
 		public ViewHolder(View view) {
 			Views.inject(this, view);

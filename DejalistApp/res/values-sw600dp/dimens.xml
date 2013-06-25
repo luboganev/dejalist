@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<dimen name="product_picture_big">250dp</dimen>
-    <dimen name="product_picture_small">240dp</dimen>  
+	<dimen name="product_picture_big_width">250dp</dimen>
+	<dimen name="product_picture_big_height">250dp</dimen>
+    <dimen name="product_picture_small_width">240dp</dimen>  
+    <dimen name="product_picture_small_height">240dp</dimen>  
 </resources>

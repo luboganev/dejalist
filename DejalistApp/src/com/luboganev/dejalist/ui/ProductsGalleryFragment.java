@@ -1,13 +1,17 @@
 package com.luboganev.dejalist.ui;
 
+import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 import butterknife.InjectView;
 import butterknife.Views;
 
 import com.luboganev.dejalist.R;
 import com.luboganev.dejalist.data.DejalistContract;
+import com.luboganev.dejalist.data.DejalistContract.Categories;
+import com.luboganev.dejalist.data.DejalistContract.Products;
 import com.luboganev.dejalist.data.entities.Category;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,10 +25,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.Toast;
 
-public class ProductsGalleryFragment extends Fragment implements CategoryActionTaker, LoaderCallbacks<Cursor> {
+public class ProductsGalleryFragment extends Fragment implements CategoryActionTaker, LoaderCallbacks<Cursor>, OnItemClickListener {
     public static final String ARG_CATEGORY = "category";
     
     @InjectView(R.id.v_category_colorheader) View categoryColorHeader;
@@ -192,6 +198,7 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
         mAdapter = new ProductsGalleryCursorAdapter(getActivity().getApplicationContext(), 
         		CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, mSelectedCategory == null);
         mProducts.setAdapter(mAdapter);
+        mProducts.setOnItemClickListener(this);
     	
         if(getActivity().getSupportLoaderManager().getLoader(LOADER_PRODUCTS_ID) != null) {
         	getActivity().getSupportLoaderManager().restartLoader(LOADER_PRODUCTS_ID, null, this);
@@ -235,5 +242,13 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		mAdapter.changeCursor(null);
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		ProductsGalleryCursorAdapter.ViewHolder holder = (ProductsGalleryCursorAdapter.ViewHolder)view.getTag();
+		ContentValues values = new ContentValues();
+		values.put(Products.PRODUCT_INLIST, holder.inList.getVisibility() == View.VISIBLE ? 0 : 1);
+		getActivity().getContentResolver().update(Products.buildProductUri(id), values, null, null);
 	}
 }

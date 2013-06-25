@@ -9,15 +9,18 @@ public class ProductsGalleryCursorAdapter$ViewHolder$$ViewInjector {
     View view;
     view = finder.findById(source, 2131296279);
     target.image = (android.widget.ImageView) view;
-    view = finder.findById(source, 2131296281);
-    target.category = (android.view.View) view;
+    view = finder.findById(source, 2131296282);
+    target.inList = (android.widget.ImageView) view;
     view = finder.findById(source, 2131296280);
     target.name = (android.widget.TextView) view;
+    view = finder.findById(source, 2131296281);
+    target.category = (android.view.View) view;
   }
 
   public static void reset(com.luboganev.dejalist.ui.ProductsGalleryCursorAdapter.ViewHolder target) {
     target.image = null;
-    target.category = null;
+    target.inList = null;
     target.name = null;
+    target.category = null;
   }
 }
