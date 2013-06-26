@@ -7,26 +7,26 @@ import butterknife.Views.Finder;
 public class ProductActivity$$ViewInjector {
   public static void inject(Finder finder, com.luboganev.dejalist.ui.ProductActivity target, Object source) {
     View view;
-    view = finder.findById(source, 2131296269);
-    target.mName = (android.widget.EditText) view;
-    view = finder.findById(source, 2131296271);
-    target.mNewCategory = (android.widget.ImageButton) view;
-    view = finder.findById(source, 2131296267);
-    target.mChangeImage = (android.widget.ImageButton) view;
-    view = finder.findById(source, 2131296266);
-    target.mImage = (android.widget.ImageView) view;
-    view = finder.findById(source, 2131296268);
+    view = finder.findById(source, 2131361804);
     target.mChangeCamera = (android.widget.ImageButton) view;
-    view = finder.findById(source, 2131296270);
+    view = finder.findById(source, 2131361803);
+    target.mChangeImage = (android.widget.ImageButton) view;
+    view = finder.findById(source, 2131361807);
+    target.mNewCategory = (android.widget.ImageButton) view;
+    view = finder.findById(source, 2131361806);
     target.mCategory = (android.widget.Spinner) view;
+    view = finder.findById(source, 2131361802);
+    target.mImage = (android.widget.ImageView) view;
+    view = finder.findById(source, 2131361805);
+    target.mName = (android.widget.EditText) view;
   }
 
   public static void reset(com.luboganev.dejalist.ui.ProductActivity target) {
-    target.mName = null;
-    target.mNewCategory = null;
-    target.mChangeImage = null;
-    target.mImage = null;
     target.mChangeCamera = null;
+    target.mChangeImage = null;
+    target.mNewCategory = null;
     target.mCategory = null;
+    target.mImage = null;
+    target.mName = null;
   }
 }

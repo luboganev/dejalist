@@ -15,13 +15,14 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingTop="8dp"
-        android:columnWidth="@dimen/product_picture_small_width"
-        android:stretchMode="spacingWidthUniform"
+        android:padding="8dp"
+        android:scrollbarStyle="outsideOverlay"
+        android:stretchMode="columnWidth"
         android:horizontalSpacing="8dp"
         android:verticalSpacing="8dp"
         android:drawSelectorOnTop="true"
-        android:numColumns="auto_fit" >
+        android:numColumns="@integer/grid_columns_count">
     </GridView>
+        <!-- android:columnWidth="@dimen/product_picture_small_width" -->
     
 </LinearLayout>

@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/product_picture_small_width"
+    android:background="@drawable/card_background">
 
     <ImageView
         android:id="@+id/grid_item_product_image"
-        android:layout_width="@dimen/product_picture_small_width"
-        android:layout_height="@dimen/product_picture_small_height"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:src="@drawable/product_no_pic_small"
+        android:layout_above="@+id/grid_item_product_name"
+        android:scaleType="centerCrop"
         android:layout_alignParentTop="true"/>
 
     <TextView
         android:id="@+id/grid_item_product_name"
-        android:layout_width="@dimen/product_picture_small_width"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/grid_item_product_image"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="2dp"
         android:padding="4dp"
         android:singleLine="true"
         android:ellipsize="end"
