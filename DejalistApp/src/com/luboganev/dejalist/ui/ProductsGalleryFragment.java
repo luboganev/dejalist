@@ -1,17 +1,16 @@
 package com.luboganev.dejalist.ui;
 
-import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 import butterknife.InjectView;
 import butterknife.Views;
 
 import com.luboganev.dejalist.R;
 import com.luboganev.dejalist.data.DejalistContract;
-import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.DejalistContract.Products;
 import com.luboganev.dejalist.data.entities.Category;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,18 +18,20 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.Toast;
 
-public class ProductsGalleryFragment extends Fragment implements CategoryActionTaker, LoaderCallbacks<Cursor>, OnItemClickListener {
+public class ProductsGalleryFragment extends Fragment implements CategoryActionTaker, LoaderCallbacks<Cursor>, OnItemClickListener, MultiChoiceModeListener {
     public static final String ARG_CATEGORY = "category";
     
     @InjectView(R.id.v_category_colorheader) View categoryColorHeader;
@@ -199,6 +200,8 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
         		CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, mSelectedCategory == null);
         mProducts.setAdapter(mAdapter);
         mProducts.setOnItemClickListener(this);
+        mProducts.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
+        mProducts.setMultiChoiceModeListener(this);
     	
         if(getActivity().getSupportLoaderManager().getLoader(LOADER_PRODUCTS_ID) != null) {
         	getActivity().getSupportLoaderManager().restartLoader(LOADER_PRODUCTS_ID, null, this);
@@ -250,5 +253,74 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
 		ContentValues values = new ContentValues();
 		values.put(Products.PRODUCT_INLIST, holder.inList.getVisibility() == View.VISIBLE ? 0 : 1);
 		getActivity().getContentResolver().update(Products.buildProductUri(id), values, null, null);
+	}
+
+	@Override
+	public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+		// Respond to clicks on the actions in the CAB
+        switch (item.getItemId()) {
+//            case R.id.menu_cab_products_edit:
+//                deleteSelectedItems();
+//                mode.finish(); // Action picked, so close the CAB
+//                return true;
+//            case R.id.menu_cab_products_set_category:
+//                deleteSelectedItems();
+//                mode.finish(); // Action picked, so close the CAB
+//                return true;
+//            case R.id.menu_cab_products_delete:
+//                deleteSelectedItems();
+//                mode.finish(); // Action picked, so close the CAB
+//                return true;
+            default:
+                return false;
+        }
+	}
+
+	@Override
+	public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+		// Inflate the menu for the CAB
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.menu_cab_products, menu);
+        return true;
+	}
+
+	@Override
+	public void onDestroyActionMode(ActionMode mode) {
+		 // Here you can make any necessary updates to the activity when
+        // the CAB is removed. By default, selected items are deselected/unchecked.
+	}
+
+	@Override
+	public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+		// Here you can perform updates to the CAB due to
+        // an invalidate() request
+		MenuItem editItem = mode.getMenu().findItem(R.id.menu_cab_products_edit);
+		MenuItem setCategoryItem = mode.getMenu().findItem(R.id.menu_cab_products_set_category);
+    	if(mProducts.getCheckedItemCount() == 1) {
+    		editItem.setVisible(true);
+    		editItem.setEnabled(true);
+    		setCategoryItem.setVisible(false);
+    		setCategoryItem.setEnabled(false);
+    	}
+    	else {
+    		editItem.setVisible(false);
+    		editItem.setEnabled(false);
+    		setCategoryItem.setVisible(true);
+    		setCategoryItem.setEnabled(true);
+    	}
+        return true;
+	}
+
+	@Override
+	public void onItemCheckedStateChanged(ActionMode mode, int position,
+			long id, boolean checked) {
+		// Here you can do something when items are selected/de-selected,
+        // such as update the title in the CAB
+		int count = mProducts.getCheckedItemCount();
+		if(checked && count == 2) mode.invalidate();
+		else if (count == 1) mode.invalidate();
+		Resources res = getResources();
+    	String text = String.format(res.getString(R.string.menu_cab_products_title), mProducts.getCheckedItemCount());
+    	mode.setTitle(text);
 	}
 }

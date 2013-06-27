@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="orange">#f7901e</color>
     <color name="dark_grey">#a6aca9</color>
     <color name="light_grey">#e3e9e3</color>
@@ -12,9 +13,14 @@
     <color name="white">#ffffff</color>
     <color name="white_70">#B3ffffff</color>
     <color name="transparent">#00000000</color>
-    
-    <!-- Alpha
+    <color name="grid_item_selected_frame">#ff33b5e5</color>
+    <color name="grid_item_selected_background">#7f33b5e5</color>
+
+    <!--
+Alpha
 00% — FF 95% — F2 90% — E6 85% — D9 80% — CC 75% — BF 70% — B3
 65% — A6 60% — 99 55% — 8C 50% — 80 45% — 73 40% — 66 35% — 59
-30% — 4D 25% — 40 20% — 33 15% — 26 10% — 1A 5% — 0D 0% — 00 -->
+30% — 4D 25% — 40 20% — 33 15% — 26 10% — 1A 5% — 0D 0% — 00
+    -->
+
 </resources>
