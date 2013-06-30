@@ -171,13 +171,51 @@ public class DejalistProvider extends ContentProvider {
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
         if (uri == DejalistContract.BASE_CONTENT_URI) {
             deleteDatabase();
+            ProductImageFileHelper.deleteAllProductImageFiles(getContext());
             getContext().getContentResolver().notifyChange(uri, null, false);
-            // TODO: Delete all product photos
             return 1;
         }
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         
-        final SelectionBuilder builder = buildSimpleSelection(uri);
+        
+        final SelectionBuilder builder = new SelectionBuilder();
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case PRODUCTS: {
+                builder.table(Tables.PRODUCTS);
+                
+                //delete product photos files of deleted products
+                final SelectionBuilder deletedProductsBuilder = new SelectionBuilder();
+                deletedProductsBuilder.table(Tables.PRODUCTS);
+                String[] deletedProductsProjection = new String[] { Products.PRODUCT_URI };
+                Cursor c = deletedProductsBuilder.where(selection, selectionArgs).query(db, deletedProductsProjection, null);
+                if(c.moveToFirst()) {
+                	do {
+                		ProductImageFileHelper.deleteProductImageFile(Uri.parse(c.getString(0))); ;
+					} while (c.moveToNext());
+                }
+                c.close();
+                break;
+            }
+            case CATEGORIES_ID: {
+            	final long categoryId = Categories.getCategoryId(uri);
+            	builder.table(Tables.CATEGORIES)
+            			.where(Categories._ID + "=?", String.valueOf(categoryId));
+            	
+            	// Reset products category of products from the deleted category
+            	final SelectionBuilder resetProductsCategoryBuilder = new SelectionBuilder();
+            	resetProductsCategoryBuilder.table(Tables.PRODUCTS)
+            		.where(Products.PRODUCT_CATEGORY_ID + "=?", String.valueOf(categoryId));
+            	ContentValues resetProductsCategoryValues = new ContentValues();
+            	resetProductsCategoryValues.put(Products.PRODUCT_CATEGORY_ID, -1L);
+            	resetProductsCategoryBuilder.update(db, resetProductsCategoryValues);
+            	break;
+            }
+            default: {
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+            }
+        }
+        
         int retVal = builder.where(selection, selectionArgs).delete(db);
         getContext().getContentResolver().notifyChange(uri, null);
         return retVal;

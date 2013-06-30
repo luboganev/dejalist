@@ -64,6 +64,14 @@ public class ProductImageFileHelper {
 		}
 	}
 	
+	public static void deleteAllProductImageFiles(Context context) {
+		File imagesDir = context.getDir(PRODUCT_IMAGES_DIR, Context.MODE_PRIVATE);
+		File[] allProductPhotosFiles = imagesDir.listFiles();
+		for (File file : allProductPhotosFiles) {
+			file.delete();
+		}
+	}
+	
 	private static boolean copy(File src, File dst) {
 		InputStream in = null;
 		OutputStream out = null;

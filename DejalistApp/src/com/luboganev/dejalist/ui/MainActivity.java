@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -48,6 +49,7 @@ import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.DejalistContract.Products;
 import com.luboganev.dejalist.data.entities.Category;
+import com.luboganev.dejalist.data.entities.Product;
 import com.luboganev.dejalist.ui.CategoryDialogFragment.CategoryEditorCallback;
 
 /**
@@ -78,12 +80,14 @@ import com.luboganev.dejalist.ui.CategoryDialogFragment.CategoryEditorCallback;
  * for example enabling or disabling a data overlay on top of the current content.</p>
  */
 public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cursor>, 
-	ProductsGalleryController, CategoryEditorCallback {
+	ProductsGalleryController, CategoryEditorCallback, UndoBarController.UndoListener {
 	@InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 	@InjectView(R.id.left_drawer) ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
     
     private NavigationCursorAdapter mAdapter;
+    
+    private UndoBarController mUndoBarController;
 	
 	private static final int LOADER_NAVIGATION_ID = 1;
 
@@ -152,6 +156,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mUndoBarController = new UndoBarController(findViewById(R.id.undobar), this);
     }
     
     private static final String STATE_SELECTED_NAVIGATION = "selected_navigation";
@@ -168,6 +173,13 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
     protected void onSaveInstanceState(Bundle outState) {
     	super.onSaveInstanceState(outState);
     	outState.putInt(STATE_SELECTED_NAVIGATION, mDrawerList.getCheckedItemPosition());
+    	mUndoBarController.onSaveInstanceState(outState);
+    }
+    
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mUndoBarController.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override
@@ -314,14 +326,50 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 		if(category != null) intent.putExtra(ProductActivity.EXTRA_CATEGORY_ID, category._id);
 		startActivity(intent);
 	}
+	
+	@Override
+	public void editProduct(Product product) {
+		Intent intent = new Intent(this, ProductActivity.class);
+		if(product != null) intent.putExtra(ProductActivity.EXTRA_PRODUCT, product);
+		startActivity(intent);
+	}
+
+	@Override
+	public void setProductsCategory(long[] productIds) {
+		// TODO Open change category dialog
+	}
+	
+	private static final String UNDO_EXTRA_DELETED_PRODUCTS = "deleted_products";
+	
+	@Override
+	public void deleteProducts(long[] productIds) {
+		if(mUndoBarController.isShown()) {
+			getContentResolver().delete(Products.CONTENT_URI, Products.SELECTION_DELETED, null);
+		}
+		ContentValues values = new ContentValues();
+		values.put(Products.PRODUCT_DELETED, 1);
+		getContentResolver().update(Products.CONTENT_URI, values, Products.buildSelectionIdIn(productIds), null);
+		Bundle undoExtras = new Bundle();
+		undoExtras.putLongArray(UNDO_EXTRA_DELETED_PRODUCTS, productIds);
+		mUndoBarController.showUndoBar(
+                false,
+                getString(R.string.undobar_product_deleted_message),
+                undoExtras);
+	}
+	
+	@Override
+    public void onUndo(Parcelable token) {
+		ContentValues values = new ContentValues();
+		values.put(Products.PRODUCT_DELETED, 0);
+		getContentResolver().update(Products.CONTENT_URI, values, Products.SELECTION_DELETED, null);
+    }
+	
+	@Override
+	public void onUndoExpired(Parcelable token) {
+		getContentResolver().delete(Products.CONTENT_URI, Products.SELECTION_DELETED, null);
+	}
 
 	private ProductsGalleryActionTaker mProductsGalleryActionTaker;
-	
-//	@Override
-//	public void newCategory() {
-//		CategoryDialogFragment dialog = CategoryDialogFragment.getInstance();
-//        dialog.show(getSupportFragmentManager(), "CategoryDialogFragment");
-//	}
 
 	@Override
 	public void editCategory(Category category) {
@@ -331,10 +379,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 
 	@Override
 	public void deleteCategory(Category category) {
-		cupboard().withContext(getApplicationContext()).delete(Categories.CONTENT_URI, category);
-		ContentValues values = new ContentValues();
-		values.put(Products.PRODUCT_CATEGORY_ID, -1L);
-		getContentResolver().update(Products.buildCategoryProductsUri(category._id), values, null, null);
+		getContentResolver().delete(Categories.buildCategoryUri(category._id), null, null);
 		// go back to all categories
 		selectItem(1);
 	}

@@ -1,5 +1,6 @@
 package com.luboganev.dejalist.ui;
 
+import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 import butterknife.InjectView;
 import butterknife.Views;
 
@@ -7,6 +8,7 @@ import com.luboganev.dejalist.R;
 import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Products;
 import com.luboganev.dejalist.data.entities.Category;
+import com.luboganev.dejalist.data.entities.Product;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -236,17 +238,28 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
         mProducts.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
         mProducts.setMultiChoiceModeListener(this);
     	
-        if(getActivity().getSupportLoaderManager().getLoader(LOADER_PRODUCTS_ID) != null) {
-        	getActivity().getSupportLoaderManager().restartLoader(LOADER_PRODUCTS_ID, null, this);
-        }
-        else getActivity().getSupportLoaderManager().initLoader(LOADER_PRODUCTS_ID, null, this);
+        reloadProducts();
     }
+   
+    private static final String LOADER_EXTRA_SORT = "sort";
     
     private void reloadProducts() {
+    	Bundle loaderExtras = new Bundle();
+    	switch(mSortBy) {
+		case SORT_AZ:
+			loaderExtras.putString(LOADER_EXTRA_SORT, DejalistContract.Products.ORDER_NAME_ASC);
+			break;
+		case SORT_MOST:
+			loaderExtras.putString(LOADER_EXTRA_SORT, DejalistContract.Products.ORDER_USEDCOUNT_DESC + " , " + DejalistContract.Products.ORDER_NAME_ASC);
+			break;
+		case SORT_RECENT:
+			loaderExtras.putString(LOADER_EXTRA_SORT, DejalistContract.Products.ORDER_LAST_USED_DESC + " , " + DejalistContract.Products.ORDER_NAME_ASC);
+			break;
+		}
     	if(getActivity().getSupportLoaderManager().getLoader(LOADER_PRODUCTS_ID) != null) {
-        	getActivity().getSupportLoaderManager().restartLoader(LOADER_PRODUCTS_ID, null, this);
+        	getActivity().getSupportLoaderManager().restartLoader(LOADER_PRODUCTS_ID, loaderExtras, this);
         }
-        else getActivity().getSupportLoaderManager().initLoader(LOADER_PRODUCTS_ID, null, this);
+        else getActivity().getSupportLoaderManager().initLoader(LOADER_PRODUCTS_ID, loaderExtras, this);
     }
 
 	@Override
@@ -266,29 +279,16 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		String sortOrder = null;
-		//TODO
-//		switch(mSortBy) {
-//		case SORT_AZ:
-//			sortOrder = ;
-//			break;
-//		case SORT_MOST:
-//			sortOrder = ;
-//			break;
-//		case SORT_RECENT:
-//			sortOrder = ;
-//			break;
-//		}
 		if(mSelectedCategory != null) {
 			return new CursorLoader(getActivity().getApplicationContext(), 
-					DejalistContract.Products.buildCategoryProductsUri(mSelectedCategory._id), null, null, null, sortOrder);
+					DejalistContract.Products.buildCategoryProductsUri(mSelectedCategory._id), null, Products.SELECTION_NOT_DELETED, null, args.getString(LOADER_EXTRA_SORT));
 		}
 		else {
 			return new CursorLoader(getActivity().getApplicationContext(), 
-					DejalistContract.Products.CONTENT_URI, null, null, null, sortOrder);
+					DejalistContract.Products.CONTENT_URI, null, Products.SELECTION_NOT_DELETED, null, args.getString(LOADER_EXTRA_SORT));
 		}
 	}
-
+	
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		data.setNotificationUri(getActivity().getContentResolver(), DejalistContract.Products.CONTENT_URI);
@@ -318,18 +318,34 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 	public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 		// Respond to clicks on the actions in the CAB
         switch (item.getItemId()) {
-//            case R.id.menu_cab_products_edit:
-//                deleteSelectedItems();
-//                mode.finish(); // Action picked, so close the CAB
-//                return true;
-//            case R.id.menu_cab_products_set_category:
-//                deleteSelectedItems();
-//                mode.finish(); // Action picked, so close the CAB
-//                return true;
-//            case R.id.menu_cab_products_delete:
-//                deleteSelectedItems();
-//                mode.finish(); // Action picked, so close the CAB
-//                return true;
+            case R.id.menu_cab_products_edit:
+            	if(mProductsGalleryController != null) {
+            		SparseBooleanArray checkedItems = mProducts.getCheckedItemPositions();
+            		for (int i = 0; i < checkedItems.size(); i++) {
+						if(checkedItems.valueAt(i)) {
+							Cursor c = mAdapter.getCursor();
+							c.moveToPosition(checkedItems.keyAt(i));
+							Product product = cupboard().withCursor(c).get(Product.class);
+							mProductsGalleryController.editProduct(product);
+							break;
+						}
+					}
+            	}
+                mode.finish(); // Action picked, so close the CAB
+                return true;
+            case R.id.menu_cab_products_set_category:
+            	if(mProductsGalleryController != null) {
+            		mProductsGalleryController.setProductsCategory(mProducts.getCheckedItemIds());
+            	}
+                mode.finish(); // Action picked, so close the CAB
+                return true;
+            case R.id.menu_cab_products_delete:
+            	if(mProductsGalleryController != null) {
+            		long[] deletedItemIds = mProducts.getCheckedItemIds();
+            		mProductsGalleryController.deleteProducts(deletedItemIds);
+            	}
+                mode.finish(); // Action picked, so close the CAB
+                return true;
             default:
                 return false;
         }

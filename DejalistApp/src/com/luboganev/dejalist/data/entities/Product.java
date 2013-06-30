@@ -12,6 +12,7 @@ public class Product implements Parcelable {
 	public long categoryId;
 	public int usedCount;
 	public long lastUsed;
+	public int deleted;
 	
 	// Variables for the parcable
 		transient private static final int FLAG_SET_ID = 0x01;
@@ -38,6 +39,7 @@ public class Product implements Parcelable {
 	    	out.writeLong(categoryId);
 	    	out.writeInt(usedCount);
 	    	out.writeLong(lastUsed);
+	    	out.writeInt(deleted);
 	    }
 	    
 //	    12414 in binary is:
@@ -75,6 +77,7 @@ public class Product implements Parcelable {
 	    	categoryId = in.readLong();
 	    	usedCount = in.readInt();
 	    	lastUsed = in.readLong();
+	    	deleted = in.readInt();
 	    }
 	    
 	    public Product() {
@@ -86,5 +89,6 @@ public class Product implements Parcelable {
 	    	categoryId = -1;
 	    	usedCount = 0;
 	    	lastUsed = -1;
+	    	deleted = 0;
 	    }
 }

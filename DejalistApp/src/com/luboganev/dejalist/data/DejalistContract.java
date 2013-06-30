@@ -14,6 +14,7 @@ public class DejalistContract {
     	String PRODUCT_CATEGORY_ID = "categoryId";
     	String PRODUCT_USED_COUNT = "usedCount";
     	String PRODUCT_LAST_USED = "lastUsed";
+    	String PRODUCT_DELETED = "deleted";
     }
     
     interface CategoryColumns {
@@ -65,16 +66,43 @@ public class DejalistContract {
         /** Used to fetch {@link Products} that are contained in the shopping list */
         public static final String SELECTION_IN_LIST = PRODUCT_INLIST + " == 1";
         
-        /** Used to fetch {@link Products} that are not contained in the shopping list */
+        /** Used to fetch {@link Products} that are <b>NOT</b> contained in the shopping list */
         public static final String SELECTION_NOT_IN_LIST = PRODUCT_INLIST + " == 0";
         
         /** Used to fetch {@link Products} that are checked in the shopping list */
         public static final String SELECTION_CHECKED = PRODUCT_CHECKED + " == 1";
         
-        /** Used to fetch {@link Products} that are not checked in the shopping list */
+        /** Used to fetch {@link Products} that are <b>NOT</b> checked in the shopping list */
         public static final String SELECTION_NOT_CHECKED = PRODUCT_CHECKED + " == 0";
         
+        /** Used to fetch {@link Products} that are marked as deleted */
+        public static final String SELECTION_DELETED = PRODUCT_DELETED + " == 1";
+        
+        /** Used to fetch {@link Products} that are <b>NOT</b> marked as deleted */
+        public static final String SELECTION_NOT_DELETED = PRODUCT_DELETED + " == 0";
+        
+        /**
+         * Builds a selection string of type WHERE _ID IN (...)
+         * 
+         * @param productIds
+         * 		The ids of the products
+         * @return
+         * 		The selection string
+         */
+        public static final String buildSelectionIdIn(long[] productIds) {
+        	if(productIds.length <= 0) return null;
+        	StringBuilder selection = new StringBuilder();
+        	selection.append(_ID).append(" IN (" + productIds[0]);
+        	for (int i = 1; i < productIds.length; i++) {
+        		selection.append(", ").append(productIds[1]);
+			}
+        	selection.append(")");
+        	return selection.toString();
+        }
+        
         public static final String ORDER_NAME_ASC = PRODUCT_NAME +" ASC";
+        public static final String ORDER_LAST_USED_DESC = PRODUCT_LAST_USED +" DESC";
+        public static final String ORDER_USEDCOUNT_DESC = PRODUCT_USED_COUNT +" DESC";
     }
     
     public static class Categories implements BaseColumns, CategoryColumns {

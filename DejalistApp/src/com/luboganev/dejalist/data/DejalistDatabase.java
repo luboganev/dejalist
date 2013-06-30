@@ -48,7 +48,8 @@ public class DejalistDatabase extends SQLiteOpenHelper {
 					Products.PRODUCT_CHECKED + " INTEGER, " +
 					Products.PRODUCT_CATEGORY_ID + " INTEGER, " +
 					Products.PRODUCT_USED_COUNT + " INTEGER, " +
-					Products.PRODUCT_LAST_USED + " INTEGER " +
+					Products.PRODUCT_LAST_USED + " INTEGER, " +
+					Products.PRODUCT_DELETED + " INTEGER " +
 				");");
 		 
 		 db.execSQL("CREATE TABLE " + Tables.CATEGORIES + " (" +

@@ -7,9 +7,9 @@ import butterknife.Views.Finder;
 public class ProductsGalleryFragment$$ViewInjector {
   public static void inject(Finder finder, com.luboganev.dejalist.ui.ProductsGalleryFragment target, Object source) {
     View view;
-    view = finder.findById(source, 2131361814);
+    view = finder.findById(source, 2131361817);
     target.mProducts = (android.widget.GridView) view;
-    view = finder.findById(source, 2131361813);
+    view = finder.findById(source, 2131361816);
     target.categoryColorHeader = (android.view.View) view;
   }
 
