@@ -18,6 +18,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,9 +30,8 @@ import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.Toast;
 
-public class ProductsGalleryFragment extends Fragment implements CategoryActionTaker, LoaderCallbacks<Cursor>, OnItemClickListener, MultiChoiceModeListener {
+public class ProductsGalleryFragment extends Fragment implements ProductsGalleryActionTaker, LoaderCallbacks<Cursor>, OnItemClickListener, MultiChoiceModeListener {
     public static final String ARG_CATEGORY = "category";
     
     @InjectView(R.id.v_category_colorheader) View categoryColorHeader;
@@ -44,14 +44,20 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
     private static final int LOADER_PRODUCTS_ID = 2;
     
     private static final String STATE_OPTIONMENUITEMSVISIBLE = "state_optionmenuitemsvisible"; 
+    private static final String STATE_CHECKEDPRODUCTPOS = "state_checkedproductpos"; 
+    private static final String STATE_SORTBY = "state_sortby"; 
     private boolean mOptionMenuItemsVisible; 
+    private int mSortBy;
+    private static final int SORT_AZ = 0;
+    private static final int SORT_RECENT = 1;
+    private static final int SORT_MOST = 2;
+    private int[] mCheckedItemPos;
     
     public ProductsGalleryFragment() {
         // Empty constructor required for fragment subclasses
     }
     
-    CategoryController mCategoryController;
-    ProductController mProductController;
+    ProductsGalleryController mProductsGalleryController;
     
     public static ProductsGalleryFragment getInstance() {
     	ProductsGalleryFragment fragment = new ProductsGalleryFragment();
@@ -70,7 +76,16 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	if(savedInstanceState != null) mOptionMenuItemsVisible = savedInstanceState.getBoolean(STATE_OPTIONMENUITEMSVISIBLE, true);
+    	if(savedInstanceState != null) {
+    		mOptionMenuItemsVisible = savedInstanceState.getBoolean(STATE_OPTIONMENUITEMSVISIBLE, true);
+    		mSortBy = savedInstanceState.getInt(STATE_SORTBY, SORT_AZ);
+    		mCheckedItemPos = savedInstanceState.getIntArray(STATE_CHECKEDPRODUCTPOS);
+    	}
+    	else {
+    		mOptionMenuItemsVisible = true;	
+    		mSortBy = SORT_AZ;
+    		mCheckedItemPos = null;
+    	}
     	setHasOptionsMenu(true);
     }
     
@@ -78,13 +93,26 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
     public void onSaveInstanceState(Bundle outState) {
     	super.onSaveInstanceState(outState);
     	outState.putBoolean(STATE_OPTIONMENUITEMSVISIBLE, mOptionMenuItemsVisible);
+    	outState.putInt(STATE_SORTBY, mSortBy);
+    	if(mProducts.getCheckedItemCount() > 0) {
+    		int[] checkedItemsPositions = new int[mProducts.getCheckedItemCount()];
+    		SparseBooleanArray array = mProducts.getCheckedItemPositions();
+    		int j=0;
+			for (int i = 0; i < array.size(); i++) {
+				if(array.valueAt(i)) {
+					checkedItemsPositions[j] = array.keyAt(i);
+					j++;
+				}
+			}   		
+    		outState.putIntArray(STATE_CHECKEDPRODUCTPOS, checkedItemsPositions);
+    	}
     }
     
     @Override
     public void onDestroy() {
     	super.onDestroy();
-    	if(mCategoryController != null) {
-    		mCategoryController.unregisterCategoryActionTaker();
+    	if(mProductsGalleryController != null) {
+    		mProductsGalleryController.unregisterProductsGalleryActionTaker();
     	}
     }
 
@@ -121,6 +149,21 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
 		menu.findItem(R.id.menu_products_sort).setVisible(mOptionMenuItemsVisible);
 		menu.findItem(R.id.menu_products_sort).setEnabled(mOptionMenuItemsVisible);
 		
+		if(mOptionMenuItemsVisible) {
+			switch (mSortBy) {
+			default:
+			case SORT_AZ:
+				menu.findItem(R.id.menu_products_sort_az).setChecked(true);
+				break;
+			case SORT_RECENT:
+				menu.findItem(R.id.menu_products_sort_recent).setChecked(true);
+				break;
+			case SORT_MOST:
+				menu.findItem(R.id.menu_products_sort_usage).setChecked(true);
+				break;
+			}
+		}
+		
 		menu.findItem(R.id.menu_new_product).setVisible(mOptionMenuItemsVisible);
 		menu.findItem(R.id.menu_new_product).setEnabled(mOptionMenuItemsVisible);
 		
@@ -128,41 +171,40 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
 			menu.findItem(R.id.menu_categories).setVisible(mOptionMenuItemsVisible);
 			menu.findItem(R.id.menu_categories).setEnabled(mOptionMenuItemsVisible);
 		}
-		else {
-			menu.findItem(R.id.menu_categories_new).setVisible(mOptionMenuItemsVisible);
-			menu.findItem(R.id.menu_categories_new).setEnabled(mOptionMenuItemsVisible);
-		}
     }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.menu_products_sort_az:
-        	if (item.isChecked()) item.setChecked(false);
-            else item.setChecked(true);
-            Toast.makeText(getActivity(), "Clicked: sort az", Toast.LENGTH_SHORT).show();
+        	if (!item.isChecked()) {
+        		item.setChecked(true);
+        		mSortBy = SORT_AZ;
+        		reloadProducts();
+        	}
             return true;
         case R.id.menu_products_sort_recent:
-        	if (item.isChecked()) item.setChecked(false);
-            else item.setChecked(true);
-            Toast.makeText(getActivity(), "Clicked: sort recent", Toast.LENGTH_SHORT).show();
+        	if (!item.isChecked()) {
+        		item.setChecked(true);
+        		mSortBy = SORT_RECENT;
+        		reloadProducts();
+        	}
             return true;   
         case R.id.menu_products_sort_usage:
-            if (item.isChecked()) item.setChecked(false);
-            else item.setChecked(true);
-            Toast.makeText(getActivity(), "Clicked: sort usage", Toast.LENGTH_SHORT).show();
+            if (!item.isChecked()) {
+            	item.setChecked(true);
+            	mSortBy = SORT_MOST;
+            	reloadProducts();
+            }
             return true;
         case R.id.menu_new_product:
-            if(mProductController != null) mProductController.newProduct(mSelectedCategory);
+            if(mProductsGalleryController != null) mProductsGalleryController.newProduct(mSelectedCategory);
             return true;  
-        case R.id.menu_categories_new:
-        	if(mCategoryController != null) mCategoryController.newCategory();
-            return true;
         case R.id.menu_categories_edit:
-        	if(mCategoryController != null) mCategoryController.editCategory(mSelectedCategory);
+        	if(mProductsGalleryController != null) mProductsGalleryController.editCategory(mSelectedCategory);
             return true;   
         case R.id.menu_categories_delete:
-        	if(mCategoryController != null) mCategoryController.deleteCategory(mSelectedCategory);
+        	if(mProductsGalleryController != null) mProductsGalleryController.deleteCategory(mSelectedCategory);
             return true;  
         default:
             return super.onOptionsItemSelected(item);
@@ -174,21 +216,12 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
         super.onAttach(activity);
         // Verify that the host activity implements the callback interface
         try {
-        	mCategoryController = (CategoryController) activity;
-        	mCategoryController.registerCategoryActionTaker(this);
-        	
-        	mProductController = (ProductController) activity;
+        	mProductsGalleryController = (ProductsGalleryController) activity;
+        	mProductsGalleryController.registerProductsGalleryActionTaker(this);
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
-                    + " must implement CategoriesController");
-        }
-        try {
-        	mProductController = (ProductController) activity;
-        } catch (ClassCastException e) {
-        	// The activity doesn't implement the interface, throw exception
-        	throw new ClassCastException(activity.toString()
-        			+ " must implement ProductController");
+                    + " must implement ProductsGalleryController");
         }
     }
     
@@ -204,6 +237,13 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
         mProducts.setMultiChoiceModeListener(this);
     	
         if(getActivity().getSupportLoaderManager().getLoader(LOADER_PRODUCTS_ID) != null) {
+        	getActivity().getSupportLoaderManager().restartLoader(LOADER_PRODUCTS_ID, null, this);
+        }
+        else getActivity().getSupportLoaderManager().initLoader(LOADER_PRODUCTS_ID, null, this);
+    }
+    
+    private void reloadProducts() {
+    	if(getActivity().getSupportLoaderManager().getLoader(LOADER_PRODUCTS_ID) != null) {
         	getActivity().getSupportLoaderManager().restartLoader(LOADER_PRODUCTS_ID, null, this);
         }
         else getActivity().getSupportLoaderManager().initLoader(LOADER_PRODUCTS_ID, null, this);
@@ -226,13 +266,26 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		String sortOrder = null;
+		//TODO
+//		switch(mSortBy) {
+//		case SORT_AZ:
+//			sortOrder = ;
+//			break;
+//		case SORT_MOST:
+//			sortOrder = ;
+//			break;
+//		case SORT_RECENT:
+//			sortOrder = ;
+//			break;
+//		}
 		if(mSelectedCategory != null) {
 			return new CursorLoader(getActivity().getApplicationContext(), 
-					DejalistContract.Products.buildCategoryProductsUri(mSelectedCategory._id), null, null, null, null);
+					DejalistContract.Products.buildCategoryProductsUri(mSelectedCategory._id), null, null, null, sortOrder);
 		}
 		else {
 			return new CursorLoader(getActivity().getApplicationContext(), 
-					DejalistContract.Products.CONTENT_URI, null, null, null, null);
+					DejalistContract.Products.CONTENT_URI, null, null, null, sortOrder);
 		}
 	}
 
@@ -240,6 +293,12 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		data.setNotificationUri(getActivity().getContentResolver(), DejalistContract.Products.CONTENT_URI);
 		mAdapter.changeCursor(data);
+		if(mCheckedItemPos != null) {
+			for (int itemPos : mCheckedItemPos) {
+				mProducts.setItemChecked(itemPos, true);
+			}
+			mCheckedItemPos = null;
+		}
 	}
 
 	@Override
@@ -275,9 +334,12 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
                 return false;
         }
 	}
+	
+	private ActionMode mActionMode;
 
 	@Override
 	public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+		mActionMode = mode;
 		// Inflate the menu for the CAB
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate(R.menu.menu_cab_products, menu);
@@ -286,6 +348,7 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
 
 	@Override
 	public void onDestroyActionMode(ActionMode mode) {
+		mActionMode = null;
 		 // Here you can make any necessary updates to the activity when
         // the CAB is removed. By default, selected items are deselected/unchecked.
 	}
@@ -322,5 +385,10 @@ public class ProductsGalleryFragment extends Fragment implements CategoryActionT
 		Resources res = getResources();
     	String text = String.format(res.getString(R.string.menu_cab_products_title), mProducts.getCheckedItemCount());
     	mode.setTitle(text);
+	}
+
+	@Override
+	public void closeActionMode() {
+		if(mActionMode != null) mActionMode.finish();
 	}
 }

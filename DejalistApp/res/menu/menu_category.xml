@@ -43,9 +43,6 @@
                 android:id="@+id/menu_categories_group"
                 android:checkableBehavior="none" >
                 <item
-                    android:id="@+id/menu_categories_new"
-                    android:title="@string/menu_categories_new"/>
-                <item
                     android:id="@+id/menu_categories_edit"
                     android:title="@string/menu_categories_edit"/>
                 <item

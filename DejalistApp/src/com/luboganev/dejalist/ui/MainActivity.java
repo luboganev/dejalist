@@ -22,8 +22,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -38,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import butterknife.InjectView;
@@ -79,7 +78,7 @@ import com.luboganev.dejalist.ui.CategoryDialogFragment.CategoryEditorCallback;
  * for example enabling or disabling a data overlay on top of the current content.</p>
  */
 public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cursor>, 
-	CategoryController, ProductController, CategoryEditorCallback {
+	ProductsGalleryController, CategoryEditorCallback {
 	@InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 	@InjectView(R.id.left_drawer) ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -103,7 +102,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         
-        mAdapter = new NavigationCursorAdapter(getApplicationContext(), CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        mAdapter = new NavigationCursorAdapter(getApplicationContext(), CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, onAddCategoryListener);
         mDrawerList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         mDrawerList.setAdapter(mAdapter);
         
@@ -142,13 +141,13 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
                 ) {
             public void onDrawerClosed(View view) {
                 getActionBar().setTitle(mTitle);
-                if(mCategoryActionTaker != null) mCategoryActionTaker.setOptionMenuItemsVisible(true);
+                if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.setOptionMenuItemsVisible(true);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             public void onDrawerOpened(View drawerView) {
                 getActionBar().setTitle(mDrawerTitle);
-                if(mCategoryActionTaker != null) mCategoryActionTaker.setOptionMenuItemsVisible(false);
+                if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.setOptionMenuItemsVisible(false);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
@@ -205,9 +204,18 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
+    		selectItem(position);
+    		if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.closeActionMode();
         }
     }
+    
+    private OnClickListener onAddCategoryListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			CategoryDialogFragment dialog = CategoryDialogFragment.getInstance();
+	        dialog.show(getSupportFragmentManager(), "CategoryDialogFragment");
+		}
+	};
 
     private void selectItem(int position) {
     	Utils.d("MainActivity", "select position" + position);
@@ -292,7 +300,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
     
 	@Override
 	public void onCategoryEdited(Category category) {
-		if(mCategoryActionTaker != null) mCategoryActionTaker.updateShownCategory(category);
+		if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.updateShownCategory(category);
 	}
 
 	@Override
@@ -307,13 +315,13 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 		startActivity(intent);
 	}
 
-	private CategoryActionTaker mCategoryActionTaker;
+	private ProductsGalleryActionTaker mProductsGalleryActionTaker;
 	
-	@Override
-	public void newCategory() {
-		CategoryDialogFragment dialog = CategoryDialogFragment.getInstance();
-        dialog.show(getSupportFragmentManager(), "CategoryDialogFragment");
-	}
+//	@Override
+//	public void newCategory() {
+//		CategoryDialogFragment dialog = CategoryDialogFragment.getInstance();
+//        dialog.show(getSupportFragmentManager(), "CategoryDialogFragment");
+//	}
 
 	@Override
 	public void editCategory(Category category) {
@@ -332,12 +340,12 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	}
 
 	@Override
-	public void registerCategoryActionTaker(CategoryActionTaker actionTaker) {
-		mCategoryActionTaker = actionTaker;
+	public void registerProductsGalleryActionTaker(ProductsGalleryActionTaker actionTaker) {
+		mProductsGalleryActionTaker = actionTaker;
 	}
 
 	@Override
-	public void unregisterCategoryActionTaker() {
-		mCategoryActionTaker = null;
+	public void unregisterProductsGalleryActionTaker() {
+		mProductsGalleryActionTaker = null;
 	}
 }
