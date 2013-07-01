@@ -16,6 +16,8 @@
     <string name="dialogfragment_category_cancel">Cancel</string>
     <string name="dialogfragment_category_name_hint">Category name</string>
     
+    <string name="dialogfragment_setproductcategory_title">Choose a category</string>
+    
     <string name="menu_main_settings_label">Settings</string>
     <string name="menu_main_help_label">Help</string>
     <string name="menu_main_about_label">About</string>

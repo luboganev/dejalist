@@ -40,6 +40,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 import butterknife.InjectView;
 import butterknife.Views;
 
@@ -51,6 +52,7 @@ import com.luboganev.dejalist.data.DejalistContract.Products;
 import com.luboganev.dejalist.data.entities.Category;
 import com.luboganev.dejalist.data.entities.Product;
 import com.luboganev.dejalist.ui.CategoryDialogFragment.CategoryEditorCallback;
+import com.luboganev.dejalist.ui.SetProductsCategoryDialogFragment.SetProductsCategoryCallback;
 
 /**
  * This example illustrates a common usage of the DrawerLayout widget
@@ -80,7 +82,9 @@ import com.luboganev.dejalist.ui.CategoryDialogFragment.CategoryEditorCallback;
  * for example enabling or disabling a data overlay on top of the current content.</p>
  */
 public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cursor>, 
-	ProductsGalleryController, CategoryEditorCallback, UndoBarController.UndoListener {
+	ProductsGalleryController, CategoryEditorCallback, UndoBarController.UndoListener,
+	SetProductsCategoryCallback {
+	
 	@InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 	@InjectView(R.id.left_drawer) ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -336,7 +340,16 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 
 	@Override
 	public void setProductsCategory(long[] productIds) {
-		// TODO Open change category dialog
+		SetProductsCategoryDialogFragment dialog = SetProductsCategoryDialogFragment.getInstance(productIds);
+        dialog.show(getSupportFragmentManager(), "SetProductsCategoryDialogFragment");
+	}
+	
+	@Override
+	public void onSetProductsCategory(long[] productIds, long categoryId) {
+		ContentValues values = new ContentValues();
+		values.put(DejalistContract.Products.PRODUCT_CATEGORY_ID, categoryId);
+		getContentResolver().update(DejalistContract.Products.CONTENT_URI, 
+				values, DejalistContract.Products.buildSelectionIdIn(productIds), null);
 	}
 	
 	private static final String UNDO_EXTRA_DELETED_PRODUCTS = "deleted_products";
