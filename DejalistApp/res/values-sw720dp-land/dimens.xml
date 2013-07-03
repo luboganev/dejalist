@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<dimen name="product_picture_small_width">180dp</dimen>
+	<dimen name="checklist_row_height">120dp</dimen>
 </resources>

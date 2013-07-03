@@ -13,20 +13,20 @@ public class ProductActivity$$ViewInjector {
     target.mImage = (android.widget.ImageView) view;
     view = finder.findById(source, 2131361808);
     target.mName = (android.widget.EditText) view;
-    view = finder.findById(source, 2131361809);
-    target.mCategory = (android.widget.Spinner) view;
     view = finder.findById(source, 2131361810);
     target.mNewCategory = (android.widget.ImageButton) view;
     view = finder.findById(source, 2131361806);
     target.mChangeImage = (android.widget.ImageButton) view;
+    view = finder.findById(source, 2131361809);
+    target.mCategory = (android.widget.Spinner) view;
   }
 
   public static void reset(com.luboganev.dejalist.ui.ProductActivity target) {
     target.mChangeCamera = null;
     target.mImage = null;
     target.mName = null;
-    target.mCategory = null;
     target.mNewCategory = null;
     target.mChangeImage = null;
+    target.mCategory = null;
   }
 }
