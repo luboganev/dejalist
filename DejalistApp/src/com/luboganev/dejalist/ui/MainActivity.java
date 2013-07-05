@@ -83,7 +83,7 @@ import com.luboganev.dejalist.ui.SetProductsCategoryDialogFragment.SetProductsCa
  */
 public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cursor>, 
 	ProductsGalleryController, CategoryEditorCallback, UndoBarController.UndoListener,
-	SetProductsCategoryCallback {
+	SetProductsCategoryCallback, ChecklistController {
 	
 	@InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 	@InjectView(R.id.left_drawer) ListView mDrawerList;
@@ -150,12 +150,14 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
             public void onDrawerClosed(View view) {
                 getActionBar().setTitle(mTitle);
                 if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.setOptionMenuItemsVisible(true);
+                if(mChecklistActionTaker != null) mChecklistActionTaker.setOptionMenuItemsVisible(true);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             public void onDrawerOpened(View drawerView) {
                 getActionBar().setTitle(mDrawerTitle);
                 if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.setOptionMenuItemsVisible(false);
+                if(mChecklistActionTaker != null) mChecklistActionTaker.setOptionMenuItemsVisible(false);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
@@ -222,6 +224,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
     		selectItem(position);
     		if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.closeActionMode();
+    		if(mChecklistActionTaker != null) mChecklistActionTaker.closeActionMode();
         }
     }
     
@@ -234,7 +237,6 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	};
 
     private void selectItem(int position) {
-    	Utils.d("MainActivity", "select position" + position);
     	Category selectedCategory = cupboard().withCursor((Cursor)mAdapter.getItem(position)).get(Category.class);
     	if(selectedCategory._id == NavigationCursorAdapter.NAV_CHECKLIST_ITEM_ID) {
     		selectedCategory.name = getString(R.string.nav_checklist);
@@ -405,5 +407,33 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	@Override
 	public void unregisterProductsGalleryActionTaker() {
 		mProductsGalleryActionTaker = null;
+	}
+	
+	private ChecklistActionTaker mChecklistActionTaker;
+
+	@Override
+	public void removeProducts(long[] productIds) {
+		ContentValues values = new ContentValues();
+		values.put(Products.PRODUCT_INLIST, 0);
+		values.put(Products.PRODUCT_CHECKED, 0);
+		getContentResolver().update(Products.CONTENT_URI, values, Products.buildSelectionIdIn(productIds), null);
+	}
+
+	@Override
+	public void clearCheckList() {
+		ContentValues values = new ContentValues();
+		values.put(Products.PRODUCT_INLIST, 0);
+		values.put(Products.PRODUCT_CHECKED, 0);
+		getContentResolver().update(Products.CONTENT_URI, values, null, null);
+	}
+
+	@Override
+	public void registerChecklistActionTaker(ChecklistActionTaker actionTaker) {
+		mChecklistActionTaker = actionTaker;
+	}
+
+	@Override
+	public void unregisterChecklistActionTaker() {
+		mChecklistActionTaker = null;
 	}
 }

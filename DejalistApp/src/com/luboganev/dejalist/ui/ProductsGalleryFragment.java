@@ -13,8 +13,11 @@ import com.luboganev.dejalist.data.entities.Product;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
@@ -116,6 +119,17 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
     	if(mProductsGalleryController != null) {
     		mProductsGalleryController.unregisterProductsGalleryActionTaker();
     	}
+    	getActivity().getContentResolver().unregisterContentObserver(mProductsObserver);
+    }
+    
+    @Override
+    public void onResume() {
+    	super.onResume();
+    }
+    
+    @Override
+    public void onPause() {
+    	super.onPause();
     }
 
     @Override
@@ -220,6 +234,7 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
         try {
         	mProductsGalleryController = (ProductsGalleryController) activity;
         	mProductsGalleryController.registerProductsGalleryActionTaker(this);
+        	getActivity().getContentResolver().registerContentObserver(Products.CONTENT_URI, true, mProductsObserver);
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
@@ -276,34 +291,59 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 	public void setOptionMenuItemsVisible(boolean visible) {
 		mOptionMenuItemsVisible = visible;
 	}
+	
+	class ProductsObserver extends ContentObserver {
+		public ProductsObserver(Handler handler) {
+			super(handler);
+		}
+
+		@Override
+		public void onChange(boolean selfChange) {
+			this.onChange(selfChange, null);
+		}
+
+		@Override
+		public void onChange(boolean selfChange, Uri uri) {
+			reloadProducts();
+		}
+	}
+	
+	private ProductsObserver mProductsObserver = new ProductsObserver(new Handler());
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		if(mSelectedCategory != null) {
-			return new CursorLoader(getActivity().getApplicationContext(), 
-					DejalistContract.Products.buildCategoryProductsUri(mSelectedCategory._id), null, Products.SELECTION_NOT_DELETED, null, args.getString(LOADER_EXTRA_SORT));
+		if(id == LOADER_PRODUCTS_ID) {
+			if(mSelectedCategory != null) {
+				return new CursorLoader(getActivity().getApplicationContext(), 
+						DejalistContract.Products.buildCategoryProductsUri(mSelectedCategory._id), null, Products.SELECTION_NOT_DELETED, null, args.getString(LOADER_EXTRA_SORT));
+			}
+			else {
+				return new CursorLoader(getActivity().getApplicationContext(), 
+						DejalistContract.Products.CONTENT_URI, null, Products.SELECTION_NOT_DELETED, null, args.getString(LOADER_EXTRA_SORT));
+			}
 		}
-		else {
-			return new CursorLoader(getActivity().getApplicationContext(), 
-					DejalistContract.Products.CONTENT_URI, null, Products.SELECTION_NOT_DELETED, null, args.getString(LOADER_EXTRA_SORT));
-		}
+		return null;
 	}
 	
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		data.setNotificationUri(getActivity().getContentResolver(), DejalistContract.Products.CONTENT_URI);
-		mAdapter.changeCursor(data);
-		if(mCheckedItemPos != null) {
-			for (int itemPos : mCheckedItemPos) {
-				mProducts.setItemChecked(itemPos, true);
+		if(loader.getId() == LOADER_PRODUCTS_ID) {
+			//data.setNotificationUri(getActivity().getContentResolver(), DejalistContract.Products.CONTENT_URI);
+			mAdapter.changeCursor(data);
+			if(mCheckedItemPos != null) {
+				for (int itemPos : mCheckedItemPos) {
+					mProducts.setItemChecked(itemPos, true);
+				}
+				mCheckedItemPos = null;
 			}
-			mCheckedItemPos = null;
 		}
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		mAdapter.changeCursor(null);
+		if(loader.getId() == LOADER_PRODUCTS_ID) {
+			mAdapter.changeCursor(null);
+		}
 	}
 
 	@Override
@@ -311,6 +351,7 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 		ProductsGalleryCursorAdapter.ViewHolder holder = (ProductsGalleryCursorAdapter.ViewHolder)view.getTag();
 		ContentValues values = new ContentValues();
 		values.put(Products.PRODUCT_INLIST, holder.inList.getVisibility() == View.VISIBLE ? 0 : 1);
+		values.put(Products.PRODUCT_CHECKED, 0);
 		getActivity().getContentResolver().update(Products.buildProductUri(id), values, null, null);
 	}
 

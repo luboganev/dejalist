@@ -100,9 +100,12 @@ public class DejalistContract {
         	return selection.toString();
         }
         
-        public static final String ORDER_NAME_ASC = PRODUCT_NAME +" ASC";
+        public static final String ORDER_NAME_ASC = PRODUCT_NAME;
         public static final String ORDER_LAST_USED_DESC = PRODUCT_LAST_USED +" DESC";
         public static final String ORDER_USEDCOUNT_DESC = PRODUCT_USED_COUNT +" DESC";
+        
+        public static final String ORDER_CATEGORY = PRODUCT_CATEGORY_ID;
+        public static final String ORDER_CHECKED = PRODUCT_CHECKED;
     }
     
     public static class Categories implements BaseColumns, CategoryColumns {

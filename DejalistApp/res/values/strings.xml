@@ -29,10 +29,19 @@
     <string name="menu_products_sort_usage">Most used</string>
     <string name="menu_products_sort_recent">Recently used</string>
     
+    <string name="menu_checklist_clear">Clear</string>
+    <string name="menu_checklist_sort_group">Sort by</string>
+    <string name="menu_checklist_sort_az">A-Z</string>
+    <string name="menu_checklist_sort_category">Category</string>
+    <string name="menu_checklist_sort_checked">Checked</string>
+    
     <string name="menu_cab_products_set_category">Set category</string>
     <string name="menu_cab_products_edit">Edit</string>
     <string name="menu_cab_products_delete">Delete</string>
     <string name="menu_cab_products_title">%1$d selected</string>
+    
+    <string name="menu_cab_checklist_remove">Remove</string>
+    <string name="menu_cab_checklist_title">%1$d selected</string>
     
     <string name="menu_categories_none">(No category)</string>
     <string name="menu_categories_new_only">New category</string>

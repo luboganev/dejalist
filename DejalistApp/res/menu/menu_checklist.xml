@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/menu_checklist_sort"
+        android:icon="@drawable/ic_action_sort"
+        android:menuCategory="secondary"
+        android:orderInCategory="1"
+        android:showAsAction="always"
+        android:title="@string/menu_checklist_sort_group">
+        <menu>
+            <group
+                android:id="@+id/menu_checklist_sort_group"
+                android:checkableBehavior="single" >
+                <item
+                    android:id="@+id/menu_checklist_sort_az"
+                    android:checked="true"
+                    android:title="@string/menu_products_sort_az"/>
+                <item
+                    android:id="@+id/menu_checklist_sort_category"
+                    android:title="@string/menu_checklist_sort_category"/>
+                <item
+                    android:id="@+id/menu_checklist_sort_checked"
+                    android:title="@string/menu_checklist_sort_checked"/>
+            </group>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/menu_checklist_clear"
+        android:menuCategory="secondary"
+        android:orderInCategory="2"
+        android:showAsAction="never"
+        android:title="@string/menu_checklist_clear"/>
+</menu>
