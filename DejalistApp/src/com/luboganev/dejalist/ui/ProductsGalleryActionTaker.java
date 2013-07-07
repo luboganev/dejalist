@@ -6,4 +6,5 @@ public interface ProductsGalleryActionTaker {
 	public void updateShownCategory(Category category);
 	public void setOptionMenuItemsVisible(boolean visible);
 	public void closeActionMode();
+	public void reloadProducts();
 }

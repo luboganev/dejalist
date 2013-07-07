@@ -17,8 +17,6 @@ import com.squareup.picasso.Picasso;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.graphics.ColorFilter;
-import android.graphics.Paint;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,7 +71,9 @@ public class ChecklistCursorAdapter extends CursorAdapter {
 		
 		holder.name.setText(product.name);
 		
-		Picasso.with(context).load(product.uri).into(holder.image);
+		holder.image.setImageResource(R.drawable.product_no_pic_small);
+		
+		Picasso.with(context).load(product.uri).resizeDimen(R.dimen.checklist_row_height, R.dimen.checklist_row_height).into(holder.image);
 		if(product.checked == 1) {
 			holder.isChecked.setVisibility(View.VISIBLE);
 			holder.name.getPaint().setStrikeThruText(true);

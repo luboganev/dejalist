@@ -18,9 +18,7 @@
             android:layout_height="200dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="5dp"
-            android:maxHeight="180dp"
-            android:maxWidth="180dp"
-            android:scaleType="centerInside"
+            android:scaleType="centerCrop"
             android:src="@drawable/product_no_pic_big" />
 
         <LinearLayout

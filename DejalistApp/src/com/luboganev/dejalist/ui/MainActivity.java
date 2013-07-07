@@ -17,6 +17,7 @@
 package com.luboganev.dejalist.ui;
 
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -40,12 +41,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 import butterknife.InjectView;
 import butterknife.Views;
 
 import com.luboganev.dejalist.R;
-import com.luboganev.dejalist.Utils;
 import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.DejalistContract.Products;
@@ -325,19 +324,33 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	public void onCategoryCreated(Category category) {
 		//FIXME: cannot switch to it because of the loaders. See if you can do sth.
 	}
+	
+	public static final int REQUEST_CODE_NEW_PRODUCT = 1;
+	public static final int REQUEST_CODE_EDIT_PRODUCT = 2;
 
 	@Override
 	public void newProduct(Category category) {
 		Intent intent = new Intent(this, ProductActivity.class);
 		if(category != null) intent.putExtra(ProductActivity.EXTRA_CATEGORY_ID, category._id);
-		startActivity(intent);
+		startActivityForResult(intent, REQUEST_CODE_NEW_PRODUCT);
 	}
 	
 	@Override
 	public void editProduct(Product product) {
 		Intent intent = new Intent(this, ProductActivity.class);
 		if(product != null) intent.putExtra(ProductActivity.EXTRA_PRODUCT, product);
-		startActivity(intent);
+		startActivityForResult(intent, REQUEST_CODE_EDIT_PRODUCT);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode == REQUEST_CODE_NEW_PRODUCT || requestCode == REQUEST_CODE_EDIT_PRODUCT) {
+			if(resultCode == Activity.RESULT_OK) {
+				if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.reloadProducts();
+				if(mChecklistActionTaker != null) mChecklistActionTaker.reloadProducts();
+			}
+		}
 	}
 
 	@Override
@@ -352,6 +365,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 		values.put(DejalistContract.Products.PRODUCT_CATEGORY_ID, categoryId);
 		getContentResolver().update(DejalistContract.Products.CONTENT_URI, 
 				values, DejalistContract.Products.buildSelectionIdIn(productIds), null);
+		if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.reloadProducts();
 	}
 	
 	private static final String UNDO_EXTRA_DELETED_PRODUCTS = "deleted_products";
@@ -364,6 +378,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 		ContentValues values = new ContentValues();
 		values.put(Products.PRODUCT_DELETED, 1);
 		getContentResolver().update(Products.CONTENT_URI, values, Products.buildSelectionIdIn(productIds), null);
+		if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.reloadProducts();
 		Bundle undoExtras = new Bundle();
 		undoExtras.putLongArray(UNDO_EXTRA_DELETED_PRODUCTS, productIds);
 		mUndoBarController.showUndoBar(
@@ -377,6 +392,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 		ContentValues values = new ContentValues();
 		values.put(Products.PRODUCT_DELETED, 0);
 		getContentResolver().update(Products.CONTENT_URI, values, Products.SELECTION_DELETED, null);
+		if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.reloadProducts();
     }
 	
 	@Override
@@ -417,6 +433,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 		values.put(Products.PRODUCT_INLIST, 0);
 		values.put(Products.PRODUCT_CHECKED, 0);
 		getContentResolver().update(Products.CONTENT_URI, values, Products.buildSelectionIdIn(productIds), null);
+		if(mChecklistActionTaker != null) mChecklistActionTaker.reloadProducts();
 	}
 
 	@Override
@@ -425,6 +442,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 		values.put(Products.PRODUCT_INLIST, 0);
 		values.put(Products.PRODUCT_CHECKED, 0);
 		getContentResolver().update(Products.CONTENT_URI, values, null, null);
+		if(mChecklistActionTaker != null) mChecklistActionTaker.reloadProducts();
 	}
 
 	@Override

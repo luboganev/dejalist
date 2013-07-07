@@ -203,10 +203,10 @@ public class ProductActivity extends FragmentActivity implements CategoryEditorC
 	private void loadPicture() {
 		if(mNewPictureUri != null) 
 			Picasso.with(getApplicationContext()).load(mNewPictureUri)
-				.resizeDimen(R.dimen.product_picture_big_width, R.dimen.product_picture_big_height)
+				.resizeDimen(R.dimen.product_picture_cropped_max, R.dimen.product_picture_cropped_max)
 				.error(R.drawable.product_no_pic_big).into(mImage);
 		else if(mOriginalProduct != null) Picasso.with(getApplicationContext()).load(mOriginalProduct.uri)
-				.resizeDimen(R.dimen.product_picture_big_width, R.dimen.product_picture_big_height)
+				.resizeDimen(R.dimen.product_picture_cropped_max, R.dimen.product_picture_cropped_max)
 				.error(R.drawable.product_no_pic_big).into(mImage);
 	}
 	

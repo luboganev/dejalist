@@ -9,15 +9,15 @@ public class CategoryDialogFragment$$ViewInjector {
     View view;
     view = finder.findById(source, 2131361816);
     target.name = (android.widget.EditText) view;
-    view = finder.findById(source, 2131361818);
-    target.svBar = (com.larswerkman.colorpicker.SVBar) view;
     view = finder.findById(source, 2131361817);
     target.picker = (com.larswerkman.colorpicker.ColorPicker) view;
+    view = finder.findById(source, 2131361818);
+    target.svBar = (com.larswerkman.colorpicker.SVBar) view;
   }
 
   public static void reset(com.luboganev.dejalist.ui.CategoryDialogFragment target) {
     target.name = null;
-    target.svBar = null;
     target.picker = null;
+    target.svBar = null;
   }
 }

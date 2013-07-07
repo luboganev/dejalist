@@ -27,6 +27,7 @@
     <string name="menu_products_sort_group">Sort by</string>
     <string name="menu_products_sort_az">A-Z</string>
     <string name="menu_products_sort_usage">Most used</string>
+    <string name="menu_products_sort_category">Category</string>
     <string name="menu_products_sort_recent">Recently used</string>
     
     <string name="menu_checklist_clear">Clear</string>

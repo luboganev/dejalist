@@ -13,11 +13,8 @@ import com.luboganev.dejalist.data.entities.Product;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.res.Resources;
-import android.database.ContentObserver;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
@@ -56,6 +53,7 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
     private static final int SORT_AZ = 0;
     private static final int SORT_RECENT = 1;
     private static final int SORT_MOST = 2;
+    private static final int SORT_CATEGORY = 3;
     private int[] mCheckedItemPos;
     
     public ProductsGalleryFragment() {
@@ -119,17 +117,6 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
     	if(mProductsGalleryController != null) {
     		mProductsGalleryController.unregisterProductsGalleryActionTaker();
     	}
-    	getActivity().getContentResolver().unregisterContentObserver(mProductsObserver);
-    }
-    
-    @Override
-    public void onResume() {
-    	super.onResume();
-    }
-    
-    @Override
-    public void onPause() {
-    	super.onPause();
     }
 
     @Override
@@ -177,6 +164,9 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 			case SORT_MOST:
 				menu.findItem(R.id.menu_products_sort_usage).setChecked(true);
 				break;
+			case SORT_CATEGORY:
+				menu.findItem(R.id.menu_products_sort_category).setChecked(true);
+				break;
 			}
 		}
 		
@@ -213,6 +203,13 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
             	reloadProducts();
             }
             return true;
+        case R.id.menu_products_sort_category:
+        	if (!item.isChecked()) {
+        		item.setChecked(true);
+        		mSortBy = SORT_CATEGORY;
+        		reloadProducts();
+        	}
+        	return true;
         case R.id.menu_new_product:
             if(mProductsGalleryController != null) mProductsGalleryController.newProduct(mSelectedCategory);
             return true;  
@@ -234,7 +231,6 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
         try {
         	mProductsGalleryController = (ProductsGalleryController) activity;
         	mProductsGalleryController.registerProductsGalleryActionTaker(this);
-        	getActivity().getContentResolver().registerContentObserver(Products.CONTENT_URI, true, mProductsObserver);
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
@@ -258,7 +254,7 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
    
     private static final String LOADER_EXTRA_SORT = "sort";
     
-    private void reloadProducts() {
+    public void reloadProducts() {
     	Bundle loaderExtras = new Bundle();
     	switch(mSortBy) {
 		case SORT_AZ:
@@ -269,6 +265,9 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 			break;
 		case SORT_RECENT:
 			loaderExtras.putString(LOADER_EXTRA_SORT, DejalistContract.Products.ORDER_LAST_USED_DESC + " , " + DejalistContract.Products.ORDER_NAME_ASC);
+			break;
+		case SORT_CATEGORY:
+			loaderExtras.putString(LOADER_EXTRA_SORT, DejalistContract.Products.ORDER_CATEGORY + " , " + DejalistContract.Products.ORDER_NAME_ASC);
 			break;
 		}
     	if(getActivity().getSupportLoaderManager().getLoader(LOADER_PRODUCTS_ID) != null) {
@@ -292,24 +291,6 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 		mOptionMenuItemsVisible = visible;
 	}
 	
-	class ProductsObserver extends ContentObserver {
-		public ProductsObserver(Handler handler) {
-			super(handler);
-		}
-
-		@Override
-		public void onChange(boolean selfChange) {
-			this.onChange(selfChange, null);
-		}
-
-		@Override
-		public void onChange(boolean selfChange, Uri uri) {
-			reloadProducts();
-		}
-	}
-	
-	private ProductsObserver mProductsObserver = new ProductsObserver(new Handler());
-
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		if(id == LOADER_PRODUCTS_ID) {
@@ -350,9 +331,17 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		ProductsGalleryCursorAdapter.ViewHolder holder = (ProductsGalleryCursorAdapter.ViewHolder)view.getTag();
 		ContentValues values = new ContentValues();
-		values.put(Products.PRODUCT_INLIST, holder.inList.getVisibility() == View.VISIBLE ? 0 : 1);
-		values.put(Products.PRODUCT_CHECKED, 0);
+		if(holder.inList.getVisibility() == View.VISIBLE) {
+			values.put(Products.PRODUCT_INLIST, 0);
+			values.put(Products.PRODUCT_CHECKED, 0);
+			holder.inList.setVisibility(View.INVISIBLE);
+		}
+		else {
+			values.put(Products.PRODUCT_INLIST, 1);
+			holder.inList.setVisibility(View.VISIBLE);
+		}
 		getActivity().getContentResolver().update(Products.buildProductUri(id), values, null, null);
+		reloadProducts();
 	}
 
 	@Override

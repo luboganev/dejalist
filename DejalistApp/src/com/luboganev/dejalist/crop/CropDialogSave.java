@@ -7,9 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.luboganev.dejalist.R;
-
-
 import junit.framework.Assert;
 import android.app.Activity;
 import android.app.Dialog;
@@ -25,6 +22,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
+
+import com.luboganev.dejalist.R;
 
 public class CropDialogSave extends DialogFragment {
 	private final static String KEY_CROP_LEFT = "crop_left";
@@ -223,6 +222,8 @@ public class CropDialogSave extends DialogFragment {
 		}
 
 		public void run() {
+			
+			
 			if (input.equals(output) && rotation == 0 && crop == null) return;
 			BitmapFactory.Options o2 = null;
 			try {
@@ -252,7 +253,12 @@ public class CropDialogSave extends DialogFragment {
 					bitmap.recycle();
 					return;
 				}
-
+				
+				int maxDimen = ((int)getActivity().getResources().getDimension(R.dimen.product_picture_cropped_max));
+				if(bitmap.getWidth() > maxDimen || bitmap.getHeight() > maxDimen) {
+					bitmap = CropUtils.resize(bitmap, maxDimen, maxDimen);
+				}
+				
 				OutputStream out = openOutput();
 		        try {
 		            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);

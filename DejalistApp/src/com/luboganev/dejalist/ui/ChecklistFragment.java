@@ -11,11 +11,8 @@ import com.luboganev.dejalist.data.DejalistContract.Products;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.res.Resources;
-import android.database.ContentObserver;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
@@ -103,7 +100,6 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
     	if(mChecklistController != null) {
     		mChecklistController.unregisterChecklistActionTaker();
     	}
-    	getActivity().getContentResolver().unregisterContentObserver(mProductsObserver);
     }
     
     @Override
@@ -184,7 +180,6 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
         try {
         	mChecklistController = (ChecklistController) activity;
         	mChecklistController.registerChecklistActionTaker(this);
-        	getActivity().getContentResolver().registerContentObserver(Products.CONTENT_URI, true, mProductsObserver);
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
@@ -208,7 +203,7 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
     
     private static final String LOADER_EXTRA_SORT = "sort";
     
-    private void reloadProducts() {
+    public void reloadProducts() {
     	Bundle loaderExtras = new Bundle();
     	switch(mSortBy) {
 		case SORT_AZ:
@@ -231,24 +226,6 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 	public void setOptionMenuItemsVisible(boolean visible) {
 		mOptionMenuItemsVisible = visible;
 	}
-	
-	class ProductsObserver extends ContentObserver {
-		public ProductsObserver(Handler handler) {
-			super(handler);
-		}
-
-		@Override
-		public void onChange(boolean selfChange) {
-			this.onChange(selfChange, null);
-		}
-
-		@Override
-		public void onChange(boolean selfChange, Uri uri) {
-			reloadProducts();
-		}
-	}
-	
-	private ProductsObserver mProductsObserver = new ProductsObserver(new Handler());	
 	
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -286,12 +263,22 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		ChecklistCursorAdapter.ViewHolder holder = (ChecklistCursorAdapter.ViewHolder)view.getTag();
 		ContentValues values = new ContentValues();
-		values.put(Products.PRODUCT_CHECKED, holder.isChecked.getVisibility() == View.VISIBLE ? 0 : 1);
-		if(holder.isChecked.getVisibility() != View.VISIBLE) {
+		if(holder.isChecked.getVisibility() == View.VISIBLE) {
+			values.put(Products.PRODUCT_CHECKED, 0);
+			holder.isChecked.setVisibility(View.INVISIBLE);
+			holder.name.getPaint().setStrikeThruText(false);
+			holder.name.invalidate();
+		}
+		else {
+			values.put(Products.PRODUCT_CHECKED, 1);
 			values.put(Products.PRODUCT_LAST_USED, Utils.currentTimestampInSeconds());
 			values.put(Products.PRODUCT_USED_COUNT, holder.usedCount + 1);
+			holder.isChecked.setVisibility(View.VISIBLE);
+			holder.name.getPaint().setStrikeThruText(true);
+			holder.name.invalidate();
 		}
 		getActivity().getContentResolver().update(Products.buildProductUri(id), values, null, null);
+		reloadProducts();
 	}
 	
 	@Override

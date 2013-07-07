@@ -1,11 +1,13 @@
 package com.luboganev.dejalist;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Point;
 import android.util.Log;
+import android.util.TypedValue;
 
 public class Utils {
 	public static final String TAG = "Dejalist";
@@ -29,6 +31,18 @@ public class Utils {
 	 */
 	public static long currentTimestampInSeconds() {
 		return System.currentTimeMillis() / 1000;
+	}
+	
+	/**
+	 * Returns the physical pixels that 
+	 * corresponds to the input DIPs
+	 * 
+	 * @param context
+	 * 		Use application context and not some activity's context to prevent memory leaks
+	 */
+	public static int getPixelsFromDips(Context context, int dips) {
+		float result = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, context.getResources().getDisplayMetrics());
+		return (int)result;
 	}
 	
 	/**

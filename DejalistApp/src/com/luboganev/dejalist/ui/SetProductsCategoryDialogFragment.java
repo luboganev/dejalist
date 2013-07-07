@@ -3,23 +3,13 @@ package com.luboganev.dejalist.ui;
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.CursorAdapter;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.EditText;
-import butterknife.InjectView;
-import butterknife.Views;
-
-import com.larswerkman.colorpicker.ColorPicker;
-import com.larswerkman.colorpicker.SVBar;
 import com.luboganev.dejalist.R;
-import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.entities.Category;
 

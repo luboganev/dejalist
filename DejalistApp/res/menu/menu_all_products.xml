@@ -17,6 +17,9 @@
                     android:checked="true"
                     android:title="@string/menu_products_sort_az"/>
                 <item
+                    android:id="@+id/menu_products_sort_category"
+                    android:title="@string/menu_products_sort_category"/>
+                <item
                     android:id="@+id/menu_products_sort_recent"
                     android:title="@string/menu_products_sort_recent"/>
                 <item

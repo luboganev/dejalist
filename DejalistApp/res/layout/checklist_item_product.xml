@@ -49,7 +49,7 @@
         android:layout_alignTop="@+id/checklist_item_product_image"
         android:background="@color/white_70"
         android:scaleType="center"
-        android:src="@drawable/ic_action_done"
+        android:src="@drawable/ic_checked"
         android:visibility="invisible" />
 
 </com.luboganev.dejalist.ui.CheckableRelativeLayout>

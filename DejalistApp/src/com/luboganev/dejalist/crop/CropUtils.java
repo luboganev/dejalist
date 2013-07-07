@@ -181,4 +181,26 @@ public class CropUtils {
     public static Bitmap rotate(Bitmap b, int degrees) {
         return rotateAndCrop(b, degrees, null);
     }
+    
+	public static Bitmap resize(Bitmap b, int width, int height) {
+		if (b == null)
+			return b;
+		if(b.getWidth() == width && b.getHeight() == height) return b;
+		
+		Bitmap b2 = null;
+		try {
+			b2 = Bitmap.createScaledBitmap(b, width, height, false);
+		} catch (OutOfMemoryError ex) {
+			// We have no memory to rotate. Return the original bitmap.
+			b2 = b;
+		}
+		Assert.assertNotNull(b2);
+        if (b == b2) {
+                return b;
+        } else {
+                Log.d("CropUtils", "b != b2, recycling b");
+            b.recycle();
+            return b2;
+        }
+	}
 }

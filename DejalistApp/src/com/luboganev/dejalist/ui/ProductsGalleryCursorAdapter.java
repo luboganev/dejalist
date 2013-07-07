@@ -8,7 +8,6 @@ import butterknife.InjectView;
 import butterknife.Views;
 
 import com.luboganev.dejalist.R;
-import com.luboganev.dejalist.Utils;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.DejalistContract.Products;
 import com.luboganev.dejalist.data.entities.Category;
@@ -73,7 +72,9 @@ public class ProductsGalleryCursorAdapter extends CursorAdapter {
 		
 		holder.name.setText(product.name);
 		
-		Picasso.with(context).load(product.uri).into(holder.image);
+		holder.image.setImageResource(R.drawable.product_no_pic_small);
+		
+		Picasso.with(context).load(product.uri).resizeDimen(R.dimen.product_picture_small_width, R.dimen.product_picture_small_width).into(holder.image);
 		if(product.inlist == 1) {
 			holder.inList.setVisibility(View.VISIBLE);
 		}
