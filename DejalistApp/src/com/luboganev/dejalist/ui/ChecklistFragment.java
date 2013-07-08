@@ -28,12 +28,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView;
 
 public class ChecklistFragment extends Fragment implements ChecklistActionTaker, LoaderCallbacks<Cursor>, OnItemClickListener, MultiChoiceModeListener {
 	@InjectView(R.id.lv_checklist) ListView mProducts;	
+	@InjectView(R.id.iv_empty_list) ImageView mEmptyImage;	
+	@InjectView(R.id.tv_empty_list) TextView mEmptyText;	
+	
 	
 	private ChecklistCursorAdapter mAdapter;
 	
@@ -107,6 +112,9 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
         View rootView = inflater.inflate(R.layout.fragment_checklist, container, false);
         Views.inject(this, rootView);
     	getActivity().setTitle(R.string.nav_checklist);
+		mProducts.setVisibility(View.INVISIBLE);
+		mEmptyImage.setVisibility(View.INVISIBLE);
+		mEmptyText.setVisibility(View.INVISIBLE);
         return rootView;
     }
     
@@ -249,6 +257,16 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 				}
 				mCheckedItemPos = null;
 			}
+			if(data.getCount() == 0) {
+				mProducts.setVisibility(View.INVISIBLE);
+				mEmptyImage.setVisibility(View.VISIBLE);
+				mEmptyText.setVisibility(View.VISIBLE);
+			}
+			else {
+				mProducts.setVisibility(View.VISIBLE);
+				mEmptyImage.setVisibility(View.INVISIBLE);
+				mEmptyText.setVisibility(View.INVISIBLE);
+			}
 		}
 	}
 
@@ -256,6 +274,9 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 	public void onLoaderReset(Loader<Cursor> loader) {
 		if(loader.getId() == LOADER_CHECKLIST_ID) {
 			mAdapter.changeCursor(null);
+			mProducts.setVisibility(View.INVISIBLE);
+			mEmptyImage.setVisibility(View.VISIBLE);
+			mEmptyText.setVisibility(View.VISIBLE);
 		}
 	}
 	

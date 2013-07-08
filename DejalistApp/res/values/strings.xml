@@ -76,4 +76,6 @@
     
     <string name="undobar_product_deleted_message">Products deleted.</string>
     <string name="undo">Undo</string>
+    <string name="tv_checklist_empty">Shopping time!\nAdd some products from the gallery.</string>
+    <string name="tv_gallery_empty">No products here yet!\nAdd some by tapping the plus icon above.</string>
 </resources>

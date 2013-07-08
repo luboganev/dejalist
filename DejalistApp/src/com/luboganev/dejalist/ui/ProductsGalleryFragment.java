@@ -30,14 +30,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.TextView;
 
 public class ProductsGalleryFragment extends Fragment implements ProductsGalleryActionTaker, LoaderCallbacks<Cursor>, OnItemClickListener, MultiChoiceModeListener {
     public static final String ARG_CATEGORY = "category";
     
     @InjectView(R.id.v_category_colorheader) View categoryColorHeader;
     @InjectView(R.id.grdv_products) GridView mProducts;
+	@InjectView(R.id.iv_gallery_empty) ImageView mEmptyImage;	
+	@InjectView(R.id.tv_gallery_empty) TextView mEmptyText;	
     
     private Category mSelectedCategory;
     
@@ -133,6 +137,10 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
         	categoryColorHeader.setVisibility(View.GONE);
         	getActivity().setTitle(R.string.nav_my_products);
         }
+        
+        mProducts.setVisibility(View.INVISIBLE);
+		mEmptyImage.setVisibility(View.INVISIBLE);
+		mEmptyText.setVisibility(View.INVISIBLE);
         
         return rootView;
     }
@@ -317,6 +325,16 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 				}
 				mCheckedItemPos = null;
 			}
+			if(data.getCount() == 0) {
+				mProducts.setVisibility(View.INVISIBLE);
+				mEmptyImage.setVisibility(View.VISIBLE);
+				mEmptyText.setVisibility(View.VISIBLE);
+			}
+			else {
+				mProducts.setVisibility(View.VISIBLE);
+				mEmptyImage.setVisibility(View.INVISIBLE);
+				mEmptyText.setVisibility(View.INVISIBLE);
+			}
 		}
 	}
 
@@ -324,6 +342,9 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 	public void onLoaderReset(Loader<Cursor> loader) {
 		if(loader.getId() == LOADER_PRODUCTS_ID) {
 			mAdapter.changeCursor(null);
+			mProducts.setVisibility(View.INVISIBLE);
+			mEmptyImage.setVisibility(View.VISIBLE);
+			mEmptyText.setVisibility(View.VISIBLE);
 		}
 	}
 
