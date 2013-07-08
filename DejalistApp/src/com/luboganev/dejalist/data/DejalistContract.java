@@ -94,7 +94,7 @@ public class DejalistContract {
         	StringBuilder selection = new StringBuilder();
         	selection.append(_ID).append(" IN (" + productIds[0]);
         	for (int i = 1; i < productIds.length; i++) {
-        		selection.append(", ").append(productIds[1]);
+        		selection.append(", ").append(productIds[i]);
 			}
         	selection.append(")");
         	return selection.toString();

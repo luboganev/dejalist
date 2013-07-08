@@ -8,7 +8,7 @@
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
     
     <string name="nav_checklist">Checklist</string>
-    <string name="nav_my_products">My products</string>
+    <string name="nav_my_products">All products</string>
     <string name="nav_categories">CATEGORIES</string>
     
     <string name="dialogfragment_category_utitled">Untitled</string>

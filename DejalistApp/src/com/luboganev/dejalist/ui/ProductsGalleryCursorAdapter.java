@@ -67,7 +67,7 @@ public class ProductsGalleryCursorAdapter extends CursorAdapter {
 			holder.category.setVisibility(View.VISIBLE);
 		}
 		else {
-			holder.category.setVisibility(View.GONE);
+			holder.category.setVisibility(View.INVISIBLE);
 		}
 		
 		holder.name.setText(product.name);
