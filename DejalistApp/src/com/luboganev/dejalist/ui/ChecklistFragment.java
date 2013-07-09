@@ -38,6 +38,7 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 	@InjectView(R.id.lv_checklist) ListView mProducts;	
 	@InjectView(R.id.iv_empty_list) ImageView mEmptyImage;	
 	@InjectView(R.id.tv_empty_list) TextView mEmptyText;	
+	@InjectView(R.id.iv_navigation_hint) ImageView mNavigationHint;	
 	
 	
 	private ChecklistCursorAdapter mAdapter;
@@ -114,6 +115,7 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
     	getActivity().setTitle(R.string.nav_checklist);
 		mProducts.setVisibility(View.INVISIBLE);
 		mEmptyImage.setVisibility(View.INVISIBLE);
+		mNavigationHint.setVisibility(View.INVISIBLE);
 		mEmptyText.setVisibility(View.INVISIBLE);
         return rootView;
     }
@@ -260,11 +262,13 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 			if(data.getCount() == 0) {
 				mProducts.setVisibility(View.INVISIBLE);
 				mEmptyImage.setVisibility(View.VISIBLE);
+				mNavigationHint.setVisibility(View.VISIBLE);
 				mEmptyText.setVisibility(View.VISIBLE);
 			}
 			else {
 				mProducts.setVisibility(View.VISIBLE);
 				mEmptyImage.setVisibility(View.INVISIBLE);
+				mNavigationHint.setVisibility(View.INVISIBLE);
 				mEmptyText.setVisibility(View.INVISIBLE);
 			}
 		}
@@ -276,6 +280,7 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 			mAdapter.changeCursor(null);
 			mProducts.setVisibility(View.INVISIBLE);
 			mEmptyImage.setVisibility(View.VISIBLE);
+			mNavigationHint.setVisibility(View.VISIBLE);
 			mEmptyText.setVisibility(View.VISIBLE);
 		}
 	}
