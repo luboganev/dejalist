@@ -7,6 +7,7 @@ import butterknife.Views;
 import com.luboganev.dejalist.R;
 import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Products;
+import com.luboganev.dejalist.data.SelectionBuilder;
 import com.luboganev.dejalist.data.entities.Category;
 import com.luboganev.dejalist.data.entities.Product;
 
@@ -37,6 +38,8 @@ import android.widget.TextView;
 
 public class ProductsGalleryFragment extends Fragment implements ProductsGalleryActionTaker, LoaderCallbacks<Cursor>, OnItemClickListener, MultiChoiceModeListener {
     public static final String ARG_CATEGORY = "category";
+    public static final String ARG_ALL_PRODUCTS = "all_products";
+    public static final String ARG_NO_CATEGORY = "no_category";
     
     @InjectView(R.id.v_category_colorheader) View categoryColorHeader;
     @InjectView(R.id.grdv_products) GridView mProducts;
@@ -66,16 +69,26 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
     
     ProductsGalleryController mProductsGalleryController;
     
-    public static ProductsGalleryFragment getInstance() {
+    public static ProductsGalleryFragment getInstanceAllProducts() {
     	ProductsGalleryFragment fragment = new ProductsGalleryFragment();
-    	fragment.setArguments(new Bundle());
+    	Bundle bundle = new Bundle();
+    	bundle.putBoolean(ARG_ALL_PRODUCTS, true);
+    	fragment.setArguments(bundle);
     	return fragment;
     }
     
-    public static ProductsGalleryFragment getInstance(Category category) {
+    public static ProductsGalleryFragment getInstanceCategoryProducts(Category category) {
     	ProductsGalleryFragment fragment = new ProductsGalleryFragment();
     	Bundle bundle = new Bundle();
     	bundle.putParcelable(ARG_CATEGORY, category);
+    	fragment.setArguments(bundle);
+    	return fragment;
+    }
+    
+    public static ProductsGalleryFragment getInstanceNoCategoryProducts() {
+    	ProductsGalleryFragment fragment = new ProductsGalleryFragment();
+    	Bundle bundle = new Bundle();
+    	bundle.putBoolean(ARG_NO_CATEGORY, true);
     	fragment.setArguments(bundle);
     	return fragment;
     }
@@ -132,10 +145,14 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
         	mSelectedCategory = getArguments().getParcelable(ARG_CATEGORY);
         	categoryColorHeader.setBackgroundColor(mSelectedCategory.color);
         	getActivity().setTitle(mSelectedCategory.name);
+        } else if(getArguments().containsKey(ARG_ALL_PRODUCTS)) {
+        	mSelectedCategory = null;
+        	categoryColorHeader.setVisibility(View.GONE);
+        	getActivity().setTitle(R.string.nav_all_products);
         } else {
         	mSelectedCategory = null;
         	categoryColorHeader.setVisibility(View.GONE);
-        	getActivity().setTitle(R.string.nav_my_products);
+        	getActivity().setTitle(R.string.nav_products_no_category);
         }
         
         mProducts.setVisibility(View.INVISIBLE);
@@ -182,8 +199,10 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 		menu.findItem(R.id.menu_new_product).setEnabled(mOptionMenuItemsVisible);
 		
 		if(getArguments().containsKey(ARG_CATEGORY)) {
-			menu.findItem(R.id.menu_categories).setVisible(mOptionMenuItemsVisible);
-			menu.findItem(R.id.menu_categories).setEnabled(mOptionMenuItemsVisible);
+			menu.findItem(R.id.menu_categories_edit).setVisible(mOptionMenuItemsVisible);
+			menu.findItem(R.id.menu_categories_edit).setEnabled(mOptionMenuItemsVisible);
+			menu.findItem(R.id.menu_categories_delete).setVisible(mOptionMenuItemsVisible);
+			menu.findItem(R.id.menu_categories_delete).setEnabled(mOptionMenuItemsVisible);
 		}
     }
     
@@ -305,6 +324,13 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 			if(mSelectedCategory != null) {
 				return new CursorLoader(getActivity().getApplicationContext(), 
 						DejalistContract.Products.buildCategoryProductsUri(mSelectedCategory._id), null, Products.SELECTION_NOT_DELETED, null, args.getString(LOADER_EXTRA_SORT));
+			}
+			else if(getArguments().containsKey(ARG_NO_CATEGORY)) {
+				return new CursorLoader(getActivity().getApplicationContext(), 
+						DejalistContract.Products.CONTENT_URI, null, 
+						new SelectionBuilder().where(Products.SELECTION_NO_CATEGORY, (String[])null)
+						.where(Products.SELECTION_NOT_DELETED, (String[])null).getSelection()
+						, null, args.getString(LOADER_EXTRA_SORT));
 			}
 			else {
 				return new CursorLoader(getActivity().getApplicationContext(), 

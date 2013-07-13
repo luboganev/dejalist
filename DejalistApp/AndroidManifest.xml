@@ -25,7 +25,8 @@
         </activity>
         <activity
             android:name=".ui.ProductActivity"
-            android:label="@string/product_activity_title" >
+            android:label="@string/product_activity_title" 
+            android:windowSoftInputMode="stateUnchanged">
         </activity>
         <activity
             android:name="com.luboganev.dejalist.crop.CropActivity"

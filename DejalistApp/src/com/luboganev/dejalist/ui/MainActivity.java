@@ -48,6 +48,7 @@ import com.luboganev.dejalist.R;
 import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.DejalistContract.Products;
+import com.luboganev.dejalist.data.SelectionBuilder;
 import com.luboganev.dejalist.data.entities.Category;
 import com.luboganev.dejalist.data.entities.Product;
 import com.luboganev.dejalist.ui.CategoryDialogFragment.CategoryEditorCallback;
@@ -208,8 +209,6 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 //                Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
 //            }
             return true;
-        case R.id.menu_main_help:
-        	return true;
         case R.id.menu_main_about:
         	return true;
         default:
@@ -245,20 +244,28 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
     	}
-    	else if(selectedCategory._id == NavigationCursorAdapter.NAV_MY_ITEMS_ITEM_ID) {
-    		selectedCategory.name = getString(R.string.nav_my_products);
+    	else if(selectedCategory._id == NavigationCursorAdapter.NAV_ALL_PRODUCTS_ITEM_ID) {
+    		selectedCategory.name = getString(R.string.nav_all_products);
     		
             // update the main content by replacing fragments
             getSupportFragmentManager().beginTransaction().replace(
             		R.id.content_frame, 
-            		ProductsGalleryFragment.getInstance()).commit();
+            		ProductsGalleryFragment.getInstanceAllProducts()).commit();
+    	}
+    	else if(selectedCategory._id == NavigationCursorAdapter.NAV_NO_CATEGORY_ITEM_ID) {
+    		selectedCategory.name = getString(R.string.nav_products_no_category);
+    		
+    		// update the main content by replacing fragments
+    		getSupportFragmentManager().beginTransaction().replace(
+    				R.id.content_frame, 
+    				ProductsGalleryFragment.getInstanceNoCategoryProducts()).commit();
     	}
     	else {
     		
             // update the main content by replacing fragments
             getSupportFragmentManager().beginTransaction().replace(
             		R.id.content_frame, 
-            		ProductsGalleryFragment.getInstance(selectedCategory)).commit();
+            		ProductsGalleryFragment.getInstanceCategoryProducts(selectedCategory)).commit();
     	}
 
         // update selected item and title, then close the drawer
@@ -412,7 +419,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	public void deleteCategory(Category category) {
 		getContentResolver().delete(Categories.buildCategoryUri(category._id), null, null);
 		// go back to all categories
-		selectItem(1);
+		selectItem(2);
 	}
 
 	@Override
@@ -437,12 +444,25 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	}
 
 	@Override
-	public void clearCheckList() {
+	public void clearCheckList(boolean onlyChecked) {
 		ContentValues values = new ContentValues();
 		values.put(Products.PRODUCT_INLIST, 0);
 		values.put(Products.PRODUCT_CHECKED, 0);
-		getContentResolver().update(Products.CONTENT_URI, values, null, null);
+		if(onlyChecked) {
+			getContentResolver().update(Products.CONTENT_URI, values, new SelectionBuilder()
+			.where(Products.SELECTION_IN_LIST, (String[]) null)
+			.where(Products.SELECTION_CHECKED, (String[]) null)
+			.getSelection(), null);
+		}
+		else getContentResolver().update(Products.CONTENT_URI, values, null, null);
 		if(mChecklistActionTaker != null) mChecklistActionTaker.reloadProducts();
+	}
+	
+	@Override
+	public void addCheckListProductsClicked() {
+		if(!mDrawerLayout.isDrawerOpen(mDrawerList)) {
+			mDrawerLayout.openDrawer(mDrawerList);
+		}
 	}
 
 	@Override

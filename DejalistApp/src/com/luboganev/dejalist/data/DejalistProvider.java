@@ -191,7 +191,8 @@ public class DejalistProvider extends ContentProvider {
                 Cursor c = deletedProductsBuilder.where(selection, selectionArgs).query(db, deletedProductsProjection, null);
                 if(c.moveToFirst()) {
                 	do {
-                		ProductImageFileHelper.deleteProductImageFile(Uri.parse(c.getString(0))); ;
+                		String pictureUri = c.getString(0);
+                		if(pictureUri != null) ProductImageFileHelper.deleteProductImageFile(Uri.parse(c.getString(0)));
 					} while (c.moveToNext());
                 }
                 c.close();

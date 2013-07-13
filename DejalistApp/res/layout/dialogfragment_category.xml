@@ -18,11 +18,10 @@
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
             android:ems="10"
+            android:inputType="textCapSentences"
             android:hint="@string/dialogfragment_category_name_hint"
             android:scrollHorizontally="true"
             android:singleLine="true" >
-
-            <requestFocus />
         </EditText>
 
         <com.larswerkman.colorpicker.ColorPicker

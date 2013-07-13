@@ -50,7 +50,7 @@ public class CategoriesListCursorAdapter extends CursorAdapter {
 		
 		if(category._id == CATEGORY_NONE_ITEM_ID) {
 			holder.catColor.setVisibility(View.INVISIBLE);
-			holder.name.setText(R.string.menu_categories_none);
+			holder.name.setText(R.string.category_none_name);
 		}
 		else {
 			holder.catColor.setVisibility(View.VISIBLE);
@@ -68,8 +68,8 @@ public class CategoriesListCursorAdapter extends CursorAdapter {
 	}
 	
 	static class ViewHolder {
-		@InjectView(R.id.tv_category_name) TextView name;
-		@InjectView(R.id.v_category_color) View catColor;
+		@InjectView(R.id.tv_list_category_name) TextView name;
+		@InjectView(R.id.v_list_category_color) View catColor;
 
 		public ViewHolder(View view) {
 			Views.inject(this, view);

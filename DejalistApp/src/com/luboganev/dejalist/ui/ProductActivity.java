@@ -205,9 +205,14 @@ public class ProductActivity extends FragmentActivity implements CategoryEditorC
 			Picasso.with(getApplicationContext()).load(mNewPictureUri)
 				.resizeDimen(R.dimen.product_picture_cropped_max, R.dimen.product_picture_cropped_max)
 				.error(R.drawable.product_no_pic_big).into(mImage);
-		else if(mOriginalProduct != null) Picasso.with(getApplicationContext()).load(mOriginalProduct.uri)
+		else if(mOriginalProduct != null) {
+			if(mOriginalProduct.uri != null) {
+				Picasso.with(getApplicationContext()).load(mOriginalProduct.uri)
 				.resizeDimen(R.dimen.product_picture_cropped_max, R.dimen.product_picture_cropped_max)
 				.error(R.drawable.product_no_pic_big).into(mImage);
+			}
+		}
+				
 	}
 	
 	@Override
@@ -255,8 +260,10 @@ public class ProductActivity extends FragmentActivity implements CategoryEditorC
 				// image was changed
 				Uri productFileUri = ProductImageFileHelper.copyToANewProductImageFile(getApplicationContext(), mNewPictureUri);
 				if(productFileUri != null) {
-					// delete old image
-					ProductImageFileHelper.deleteProductImageFile(Uri.parse(mOriginalProduct.uri));
+					if(mOriginalProduct.uri != null) {
+						// delete old image if any
+						ProductImageFileHelper.deleteProductImageFile(Uri.parse(mOriginalProduct.uri));
+					}
 					// update image
 					mOriginalProduct.uri = productFileUri.toString();
 				}
@@ -290,20 +297,18 @@ public class ProductActivity extends FragmentActivity implements CategoryEditorC
 			product.categoryId = mNewCategoryId;
 			
 			//validate image
-			if(mNewPictureUri == null) {
-				Toast.makeText(getApplicationContext(), R.string.toast_product_no_image, Toast.LENGTH_SHORT).show();
-				return false;
+			if(mNewPictureUri != null) {
+				// try to store the image file in the folder
+				Uri productFileUri = ProductImageFileHelper.copyToANewProductImageFile(getApplicationContext(), mNewPictureUri);
+				if(productFileUri != null) {
+					product.uri = productFileUri.toString();
+				}
+				else {
+					Toast.makeText(getApplicationContext(), R.string.toast_product_failed_save, Toast.LENGTH_SHORT).show();
+					return false;
+				}
 			}
-			
-			// try to store the image file in the folder
-			Uri productFileUri = ProductImageFileHelper.copyToANewProductImageFile(getApplicationContext(), mNewPictureUri);
-			if(productFileUri != null) {
-				product.uri = productFileUri.toString();
-			}
-			else {
-				Toast.makeText(getApplicationContext(), R.string.toast_product_failed_save, Toast.LENGTH_SHORT).show();
-				return false;
-			}
+			else product.uri = null;
 			
 			Uri insertedProductUri = cupboard().withContext(getApplicationContext()).put(DejalistContract.Products.CONTENT_URI, product);
 			// check if it was successfully inserted

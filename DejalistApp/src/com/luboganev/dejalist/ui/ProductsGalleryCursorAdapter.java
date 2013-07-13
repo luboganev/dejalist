@@ -74,7 +74,9 @@ public class ProductsGalleryCursorAdapter extends CursorAdapter {
 		
 		holder.image.setImageResource(R.drawable.product_no_pic_small);
 		
-		Picasso.with(context).load(product.uri).resizeDimen(R.dimen.product_picture_small_width, R.dimen.product_picture_small_width).into(holder.image);
+		if(product.uri != null) {
+			Picasso.with(context).load(product.uri).resizeDimen(R.dimen.product_picture_small_width, R.dimen.product_picture_small_width).into(holder.image);
+		}
 		if(product.inlist == 1) {
 			holder.inList.setVisibility(View.VISIBLE);
 		}

@@ -8,7 +8,7 @@
     android:background="?android:attr/activatedBackgroundIndicator">
     
 	<View
-	    android:id="@+id/v_category_color"
+	    android:id="@+id/v_list_category_color"
 	    android:layout_width="8dp"
 	    android:layout_gravity="center_vertical"
 	    android:layout_marginLeft="8dp"
@@ -17,7 +17,7 @@
 	    android:background="#C3C3C3" />
 
     <TextView
-        android:id="@+id/tv_category_name"
+        android:id="@+id/tv_list_category_name"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="left|center_vertical"

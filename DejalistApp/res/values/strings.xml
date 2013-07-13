@@ -4,12 +4,10 @@
     
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
-    <string name="action_websearch">Web search</string>
-    <string name="app_not_available">Sorry, there\'s no web browser available</string>
     
-    <string name="nav_checklist">Checklist</string>
-    <string name="nav_my_products">All products</string>
-    <string name="nav_categories">CATEGORIES</string>
+    <string name="nav_checklist">My shopping list</string>
+    <string name="nav_all_products">My products</string>
+    <string name="nav_products_no_category">No category</string>
     
     <string name="dialogfragment_category_utitled">Untitled</string>
     <string name="dialogfragment_category_save">Save</string>
@@ -19,18 +17,18 @@
     <string name="dialogfragment_setproductcategory_title">Choose a category</string>
     
     <string name="menu_main_settings_label">Settings</string>
-    <string name="menu_main_help_label">Help</string>
     <string name="menu_main_about_label">About</string>
     
     <string name="menu_products_new_product">New product</string>
 
     <string name="menu_products_sort_group">Sort by</string>
     <string name="menu_products_sort_az">A-Z</string>
-    <string name="menu_products_sort_usage">Most used</string>
+    <string name="menu_products_sort_usage">Often bought</string>
     <string name="menu_products_sort_category">Category</string>
-    <string name="menu_products_sort_recent">Recently used</string>
+    <string name="menu_products_sort_recent">Recently bought</string>
     
-    <string name="menu_checklist_clear">Clear</string>
+    <string name="menu_checklist_clear">Clear all</string>
+    <string name="menu_checklist_clear_checked">Clear checked</string>
     <string name="menu_checklist_sort_group">Sort by</string>
     <string name="menu_checklist_sort_az">A-Z</string>
     <string name="menu_checklist_sort_category">Category</string>
@@ -44,18 +42,15 @@
     <string name="menu_cab_checklist_remove">Remove</string>
     <string name="menu_cab_checklist_title">%1$d selected</string>
     
-    <string name="menu_categories_none">(No category)</string>
-    <string name="menu_categories_new_only">New category</string>
-    <string name="menu_categories_group">Category</string>
-    <string name="menu_categories_new">New</string>
-    <string name="menu_categories_edit">Edit</string>
-    <string name="menu_categories_delete">Delete</string>
+    <string name="category_none_name">(No category)</string>
+    <string name="category_new">New category</string>
+    <string name="menu_categories_edit">Edit category</string>
+    <string name="menu_categories_delete">Delete category</string>
     
     <string name="product_activity_title">Product</string>
     <string name="menu_product_done">Done</string>
     <string name="menu_product_discard">Discard</string>
     <string name="toast_product_no_name">Please enter product name</string>
-    <string name="toast_product_no_image">Please add product image</string>
     <string name="toast_product_failed_save">Sorry, I could not save the product :( Please try again later.</string>
     
     <string name="crop_activity_title">Edit picture</string>
@@ -76,6 +71,6 @@
     
     <string name="undobar_product_deleted_message">Products deleted.</string>
     <string name="undo">Undo</string>
-    <string name="tv_checklist_empty">Shopping time!\nAdd some products from the gallery.</string>
-    <string name="tv_gallery_empty">No products here yet!\nAdd some by tapping the plus icon above.</string>
+    <string name="tv_checklist_empty">Shopping time?\nAdd some products to the list first.</string>
+    <string name="tv_gallery_empty">No products here yet!\nTap the plus above to add some.</string>
 </resources>

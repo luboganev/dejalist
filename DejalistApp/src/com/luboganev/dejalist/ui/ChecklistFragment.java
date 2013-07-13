@@ -25,9 +25,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
@@ -38,7 +40,7 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 	@InjectView(R.id.lv_checklist) ListView mProducts;	
 	@InjectView(R.id.iv_empty_list) ImageView mEmptyImage;	
 	@InjectView(R.id.tv_empty_list) TextView mEmptyText;	
-	@InjectView(R.id.iv_navigation_hint) ImageView mNavigationHint;	
+	@InjectView(R.id.ib_checklist_add_products) ImageButton mAddProducts;	
 	
 	
 	private ChecklistCursorAdapter mAdapter;
@@ -115,10 +117,21 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
     	getActivity().setTitle(R.string.nav_checklist);
 		mProducts.setVisibility(View.INVISIBLE);
 		mEmptyImage.setVisibility(View.INVISIBLE);
-		mNavigationHint.setVisibility(View.INVISIBLE);
+		mAddProducts.setVisibility(View.INVISIBLE);
 		mEmptyText.setVisibility(View.INVISIBLE);
+		
+		mAddProducts.setOnClickListener(onAddProductClicked);
         return rootView;
     }
+    
+    public OnClickListener onAddProductClicked = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			if(mChecklistController != null) {
+				mChecklistController.addCheckListProductsClicked();
+			}
+		}
+	};
     
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -176,8 +189,11 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
             }
             return true;
         case R.id.menu_checklist_clear:
-            if(mChecklistController != null) mChecklistController.clearCheckList();
+            if(mChecklistController != null) mChecklistController.clearCheckList(false);
             return true;  
+        case R.id.menu_checklist_clear_checked:
+        	if(mChecklistController != null) mChecklistController.clearCheckList(true);
+        	return true;  
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -262,13 +278,13 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 			if(data.getCount() == 0) {
 				mProducts.setVisibility(View.INVISIBLE);
 				mEmptyImage.setVisibility(View.VISIBLE);
-				mNavigationHint.setVisibility(View.VISIBLE);
+				mAddProducts.setVisibility(View.VISIBLE);
 				mEmptyText.setVisibility(View.VISIBLE);
 			}
 			else {
 				mProducts.setVisibility(View.VISIBLE);
 				mEmptyImage.setVisibility(View.INVISIBLE);
-				mNavigationHint.setVisibility(View.INVISIBLE);
+				mAddProducts.setVisibility(View.INVISIBLE);
 				mEmptyText.setVisibility(View.INVISIBLE);
 			}
 		}
@@ -280,7 +296,7 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 			mAdapter.changeCursor(null);
 			mProducts.setVisibility(View.INVISIBLE);
 			mEmptyImage.setVisibility(View.VISIBLE);
-			mNavigationHint.setVisibility(View.VISIBLE);
+			mAddProducts.setVisibility(View.VISIBLE);
 			mEmptyText.setVisibility(View.VISIBLE);
 		}
 	}
@@ -289,9 +305,9 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		ChecklistCursorAdapter.ViewHolder holder = (ChecklistCursorAdapter.ViewHolder)view.getTag();
 		ContentValues values = new ContentValues();
-		if(holder.isChecked.getVisibility() == View.VISIBLE) {
+		if(holder.bought) {
 			values.put(Products.PRODUCT_CHECKED, 0);
-			holder.isChecked.setVisibility(View.INVISIBLE);
+			holder.isChecked.setImageResource(R.drawable.btn_check_off_holo_light);
 			holder.name.getPaint().setStrikeThruText(false);
 			holder.name.invalidate();
 		}
@@ -299,7 +315,7 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 			values.put(Products.PRODUCT_CHECKED, 1);
 			values.put(Products.PRODUCT_LAST_USED, Utils.currentTimestampInSeconds());
 			values.put(Products.PRODUCT_USED_COUNT, holder.usedCount + 1);
-			holder.isChecked.setVisibility(View.VISIBLE);
+			holder.isChecked.setImageResource(R.drawable.btn_check_on_holo_light);
 			holder.name.getPaint().setStrikeThruText(true);
 			holder.name.invalidate();
 		}

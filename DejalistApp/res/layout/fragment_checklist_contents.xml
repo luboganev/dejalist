@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <ImageView
+        android:id="@+id/iv_empty_list"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/empty_list" />
+
+    <TextView
+        android:id="@+id/tv_empty_list"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/tv_checklist_empty"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="?android:attr/textColorHint" />
+
+    <ListView
+        android:id="@+id/lv_checklist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="4dp"
+        android:drawSelectorOnTop="true"
+        android:padding="8dp"
+        android:scrollbarStyle="outsideOverlay" >
+    </ListView>
+
+    <ImageButton
+        android:id="@+id/ib_checklist_add_products"
+        style="?android:borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_empty_list"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/menu_crop_camera"
+        android:padding="8dp"
+        android:src="@drawable/ic_action_plus" />
+
+</merge>

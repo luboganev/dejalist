@@ -30,7 +30,7 @@
     </item>
     <item
         android:id="@+id/menu_new_product"
-        android:icon="@drawable/ic_action_new_product"
+        android:icon="@drawable/ic_action_plus"
         android:menuCategory="secondary"
         android:orderInCategory="2"
         android:showAsAction="always"

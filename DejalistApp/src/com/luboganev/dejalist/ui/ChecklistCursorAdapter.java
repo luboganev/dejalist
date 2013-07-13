@@ -21,6 +21,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -73,14 +74,18 @@ public class ChecklistCursorAdapter extends CursorAdapter {
 		
 		holder.image.setImageResource(R.drawable.product_no_pic_small);
 		
-		Picasso.with(context).load(product.uri).resizeDimen(R.dimen.checklist_row_height, R.dimen.checklist_row_height).into(holder.image);
+		if(product.uri != null) {
+			Picasso.with(context).load(product.uri).resizeDimen(R.dimen.checklist_row_height, R.dimen.checklist_row_height).into(holder.image);
+		}
 		if(product.checked == 1) {
-			holder.isChecked.setVisibility(View.VISIBLE);
+			holder.isChecked.setImageResource(R.drawable.btn_check_on_holo_light);
 			holder.name.getPaint().setStrikeThruText(true);
+			holder.bought = true;
 		}
 		else {
-			holder.isChecked.setVisibility(View.INVISIBLE);
+			holder.isChecked.setImageResource(R.drawable.btn_check_off_holo_light);
 			holder.name.getPaint().setStrikeThruText(false);
+			holder.bought = false;
 		}
 	}
 
@@ -98,6 +103,7 @@ public class ChecklistCursorAdapter extends CursorAdapter {
 		@InjectView(R.id.checklist_item_product_category) View category;
 		@InjectView(R.id.checklist_item_checked) ImageView isChecked;
 		int usedCount = 0;
+		boolean bought = false;
 
 		public ViewHolder(View view) {
 			Views.inject(this, view);

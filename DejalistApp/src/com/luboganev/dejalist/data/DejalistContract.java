@@ -64,6 +64,9 @@ public class DejalistContract {
         }
         
         /** Used to fetch {@link Products} that are contained in the shopping list */
+        public static final String SELECTION_NO_CATEGORY = PRODUCT_CATEGORY_ID + " == -1";
+        
+        /** Used to fetch {@link Products} that are contained in the shopping list */
         public static final String SELECTION_IN_LIST = PRODUCT_INLIST + " == 1";
         
         /** Used to fetch {@link Products} that are <b>NOT</b> contained in the shopping list */

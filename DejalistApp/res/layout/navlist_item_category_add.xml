@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeightSmall">
+
+    <TextView
+        android:id="@+id/tv_add_category"
+        style="?android:borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:drawableLeft="@drawable/ic_action_plus"
+        android:drawablePadding="8dp"
+        android:ellipsize="end"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="32dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:singleLine="true"
+        android:text="@string/category_new"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="?android:attr/textColorHint" />
+
+</FrameLayout>

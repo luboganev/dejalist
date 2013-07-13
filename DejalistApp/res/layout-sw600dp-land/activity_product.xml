@@ -2,89 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="600dp"
     android:layout_height="320dp"
+    android:layout_gravity="center"
     android:padding="8dp"
-    tools:context=".ProductActivity" 
-    android:layout_gravity="center">
+    tools:context=".ProductActivity" >
 
-    <ImageView
-        android:id="@+id/iv_product_picture"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_centerVertical="true"
-        android:scaleType="centerCrop"
-        android:src="@drawable/product_no_pic_big" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/ll_product_image_buttons"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/ll_product_image_buttons"
-        android:divider="?android:attr/dividerVertical"
-        android:dividerPadding="8dp"
-        android:showDividers="middle" >
-
-        <Spinner
-            android:id="@+id/sp_product_category"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/ib_new_category"
-            style="?android:borderlessButtonStyle"
-            android:layout_width="64dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_action_plus" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_product_image_buttons"
+    <include
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="16dp"
-        android:layout_toRightOf="@+id/iv_product_picture"
-        android:divider="?android:attr/dividerHorizontal"
-        android:dividerPadding="8dp"
-        android:orientation="vertical"
-        android:showDividers="middle" >
-
-        <ImageButton
-            android:id="@+id/ib_product_change_image"
-            style="?android:borderlessButtonStyle"
-            android:layout_width="48dp"
-            android:layout_height="64dp"
-            android:contentDescription="@string/menu_crop_image"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp"
-            android:src="@drawable/ic_action_image" />
-
-        <ImageButton
-            android:id="@+id/ib_product_change_camera"
-            style="?android:borderlessButtonStyle"
-            android:layout_width="48dp"
-            android:layout_height="64dp"
-            android:contentDescription="@string/menu_crop_camera"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp"
-            android:src="@drawable/ic_action_camera" />
-    </LinearLayout>
-
-    <EditText
-        android:id="@+id/et_product_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/ll_product_image_buttons"
-        android:layout_toRightOf="@+id/ll_product_image_buttons"
-        android:ems="10"
-        android:hint="@string/et_product_name_hint"
-        android:scrollHorizontally="true"
-        android:singleLine="true" >
-
-        <requestFocus />
-    </EditText>
+        layout="@layout/activity_product_contents_land" />
 
 </RelativeLayout>

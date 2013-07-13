@@ -19,12 +19,14 @@ import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.entities.Category;
 
 public class NavigationCursorAdapter extends CursorAdapter {
-	public static final int VIEW_TYPE_NAVIGATION = 0; 
-	public static final int VIEW_TYPE_HEADER = 1; 
-	public static final int VIEW_TYPE_ADD_CATEGORY = 2; 
+	public static final int VIEW_TYPE_CHECKLIST = 0; 
+	public static final int VIEW_TYPE_ALL_PRODUCTS = 1; 
+	public static final int VIEW_TYPE_CATEGORY = 2; 
+	public static final int VIEW_TYPE_ADD_CATEGORY = 3; 
 	
 	public static final long NAV_CHECKLIST_ITEM_ID = -101;
-	public static final long NAV_MY_ITEMS_ITEM_ID = -102;
+	public static final long NAV_ALL_PRODUCTS_ITEM_ID = -102;
+	public static final long NAV_NO_CATEGORY_ITEM_ID = -103;
 	
     private LayoutInflater mInflater;
     private OnClickListener mAddCategoryClickListener;
@@ -32,53 +34,47 @@ public class NavigationCursorAdapter extends CursorAdapter {
 	private static Cursor addMainNavigationItems(Cursor categories) {
 		MatrixCursor mainNavigation = new MatrixCursor(new String[] {Categories._ID, Categories.CATEGORY_NAME, Categories.CATEGORY_COLOR});
 		mainNavigation.addRow(new Object[]{NAV_CHECKLIST_ITEM_ID, "", 0});
-		mainNavigation.addRow(new Object[]{NAV_MY_ITEMS_ITEM_ID, "", 0});
+		mainNavigation.addRow(new Object[]{NAV_ALL_PRODUCTS_ITEM_ID, "", 0});
+		mainNavigation.addRow(new Object[]{NAV_NO_CATEGORY_ITEM_ID, "", 0});
 		if(categories != null) return new MergeCursor(new Cursor[]{mainNavigation, categories});
 		else return mainNavigation;
 	}
 	
 	@Override
 	public int getCount() {
-		return super.getCount() + 2;
+		return super.getCount() + 1;
 	}
 	
 	@Override
 	public int getItemViewType(int position) {
-		if(position == 2) return VIEW_TYPE_HEADER;
+		if(position == 0) return VIEW_TYPE_CHECKLIST;
+		else if(position == 1) return VIEW_TYPE_ALL_PRODUCTS;
 		else if(position == getCount() - 1) return VIEW_TYPE_ADD_CATEGORY;
-		else return VIEW_TYPE_NAVIGATION;
+		else return VIEW_TYPE_CATEGORY;
 	}
 	
 	@Override
 	public int getViewTypeCount() {
-		return 3;
+		return 4;
 	}
 	
 	@Override
 	public Object getItem(int position) {
-		if(getItemViewType(position) == VIEW_TYPE_HEADER) {
-			return null;
-		}
-		else if(getItemViewType(position) == VIEW_TYPE_ADD_CATEGORY) {
+		if(getItemViewType(position) == VIEW_TYPE_ADD_CATEGORY) {
 			return null;
 		}
 		else {
-			if(position > 2) return super.getItem(position - 1);
-			else return super.getItem(position);
+			return super.getItem(position);
 		}
 	}
 	
 	@Override
 	public long getItemId(int position) {
-		if(getItemViewType(position) == VIEW_TYPE_HEADER) {
-			return -1;
-		}
-		else if(getItemViewType(position) == VIEW_TYPE_ADD_CATEGORY) {
+		if(getItemViewType(position) == VIEW_TYPE_ADD_CATEGORY) {
 			return -1;
 		}
 		else {
-			if(position > 2) return super.getItemId(position - 1);
-			else return super.getItemId(position);
+			return super.getItemId(position);
 		}
 	}
 	
@@ -89,8 +85,7 @@ public class NavigationCursorAdapter extends CursorAdapter {
 	
 	@Override
 	public boolean isEnabled(int position) {
-		return (getItemViewType(position) != VIEW_TYPE_HEADER) &&
-				(getItemViewType(position) != VIEW_TYPE_ADD_CATEGORY);
+		return getItemViewType(position) != VIEW_TYPE_ADD_CATEGORY;
 	}
 
 	public NavigationCursorAdapter(Context context, int flags, OnClickListener addCategoryClickListener) {
@@ -111,25 +106,32 @@ public class NavigationCursorAdapter extends CursorAdapter {
 	 */
 	public View getView(int position, View convertView, ViewGroup parent) {
 		int viewType = getItemViewType(position);
-		if(viewType == VIEW_TYPE_HEADER) {
+		if(viewType == VIEW_TYPE_CHECKLIST) {
 			if (convertView == null) {
-				convertView = mInflater.inflate(R.layout.list_item_categories_header,
+				convertView = mInflater.inflate(R.layout.navlist_item_checklist,
 								parent, false);
 			}
 			convertView.setEnabled(isEnabled(position));
 			return convertView;
 		}
-		else if(viewType == VIEW_TYPE_NAVIGATION) {
-			if (position > 2) position--;
+		else if(viewType == VIEW_TYPE_ALL_PRODUCTS) {
+			if (convertView == null) {
+				convertView = mInflater.inflate(R.layout.navlist_item_all_products,
+						parent, false);
+			}
+			convertView.setEnabled(isEnabled(position));
+			return convertView;
+		}
+		else if(viewType == VIEW_TYPE_CATEGORY) {
 			return super.getView(position, convertView, parent);
 		}
 		else if(viewType == VIEW_TYPE_ADD_CATEGORY) {
 			if (convertView == null) {
-				convertView = mInflater.inflate(R.layout.list_item_categories_add,
+				convertView = mInflater.inflate(R.layout.navlist_item_category_add,
 								parent, false);
 			}
 			convertView.setEnabled(isEnabled(position));
-			convertView.findViewById(R.id.ib_add_category).setOnClickListener(mAddCategoryClickListener);
+			convertView.findViewById(R.id.tv_add_category).setOnClickListener(mAddCategoryClickListener);
 			return convertView;
 		}
 		else return null;
@@ -145,18 +147,11 @@ public class NavigationCursorAdapter extends CursorAdapter {
 		ViewHolder holder = (ViewHolder) view.getTag();
 		Category category = cupboard().withCursor(cursor).get(Category.class);
 		
-		if(category._id == NAV_CHECKLIST_ITEM_ID) {
-			holder.name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_nav_list, 0, 0, 0);
-			holder.catColor.setVisibility(View.GONE);
-			holder.name.setText(R.string.nav_checklist);
-		}
-		else if(category._id == NAV_MY_ITEMS_ITEM_ID){
-			holder.name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_nav_items, 0, 0, 0);
-			holder.catColor.setVisibility(View.GONE);
-			holder.name.setText(R.string.nav_my_products);
+		if(category._id == NAV_NO_CATEGORY_ITEM_ID) {
+			holder.catColor.setBackgroundResource(R.drawable.nav_no_category_color);
+			holder.name.setText(R.string.nav_products_no_category);
 		}
 		else {
-			holder.name.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
 			holder.catColor.setVisibility(View.VISIBLE);
 			holder.catColor.setBackgroundColor(category.color);
 			holder.name.setText(category.name);
@@ -165,7 +160,7 @@ public class NavigationCursorAdapter extends CursorAdapter {
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-	    View view = LayoutInflater.from(context).inflate(R.layout.list_item_navigation, parent, false);
+	    View view = LayoutInflater.from(context).inflate(R.layout.navlist_item_category, parent, false);
 	    ViewHolder holder = new ViewHolder(view);
 	    view.setTag(holder);
 	    return view;
@@ -177,7 +172,6 @@ public class NavigationCursorAdapter extends CursorAdapter {
 
 		public ViewHolder(View view) {
 			Views.inject(this, view);
-			name.setCompoundDrawablePadding(8);
 		}
 	}
 }

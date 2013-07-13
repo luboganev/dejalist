@@ -27,29 +27,15 @@
     </item>
     <item
         android:id="@+id/menu_new_product"
-        android:icon="@drawable/ic_action_new_product"
+        android:icon="@drawable/ic_action_plus"
         android:menuCategory="secondary"
         android:orderInCategory="2"
         android:showAsAction="always"
         android:title="@string/menu_products_new_product"/>
     <item
-        android:id="@+id/menu_categories"
-        android:menuCategory="secondary"
-        android:orderInCategory="3"
-        android:showAsAction="never"
-        android:title="@string/menu_categories_group">
-        <menu>
-            <group
-                android:id="@+id/menu_categories_group"
-                android:checkableBehavior="none" >
-                <item
-                    android:id="@+id/menu_categories_edit"
-                    android:title="@string/menu_categories_edit"/>
-                <item
-                    android:id="@+id/menu_categories_delete"
-                    android:title="@string/menu_categories_delete"/>
-            </group>
-        </menu>
-    </item>
-
+        android:id="@+id/menu_categories_edit"
+        android:title="@string/menu_categories_edit"/>
+    <item
+        android:id="@+id/menu_categories_delete"
+        android:title="@string/menu_categories_delete"/>
 </menu>
