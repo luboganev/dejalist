@@ -115,7 +115,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
         mDrawerList.setAdapter(mAdapter);
         
         if (savedInstanceState == null) {
-        	selectItem(0);
+        	selectItem(NavigationCursorAdapter.POSITION_CHECKLIST);
         }
         else {
         	mStateSelectedNavigationPosition = savedInstanceState.getInt(STATE_SELECTED_NAVIGATION, -1);
@@ -419,7 +419,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	public void deleteCategory(Category category) {
 		getContentResolver().delete(Categories.buildCategoryUri(category._id), null, null);
 		// go back to all categories
-		selectItem(2);
+		selectItem(NavigationCursorAdapter.POSITION_ALL_PRODUCTS);
 	}
 
 	@Override

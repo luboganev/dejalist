@@ -2,39 +2,97 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
 
+    <TextView
+        android:id="@+id/tv_product_picture_hint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/iv_product_picture"
+        android:layout_alignLeft="@+id/iv_product_picture"
+        android:layout_alignRight="@+id/iv_product_picture"
+        android:gravity="center_horizontal"
+        android:text="@string/tv_product_picture_hint"
+        android:textColor="?android:attr/textColorHint" />
+
     <ImageView
         android:id="@+id/iv_product_picture"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_centerVertical="true"
-        android:maxHeight="180dp"
-        android:maxWidth="180dp"
+        android:layout_marginRight="4dp"
         android:scaleType="centerInside"
         android:src="@drawable/product_no_pic_big" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/ll_product_image_buttons"
         android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="12dp"
         android:layout_toRightOf="@+id/ll_product_image_buttons"
-        android:divider="?android:attr/dividerVertical"
-        android:dividerPadding="8dp"
-        android:showDividers="middle" >
+        android:orientation="vertical" >
 
-        <Spinner
-            android:id="@+id/sp_product_category"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_weight="1" />
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="4dp"
+            android:text="@string/tv_product_name_header"
+            android:textColor="?android:attr/textColorHint" />
 
-        <ImageButton
-            android:id="@+id/ib_new_category"
-            style="?android:borderlessButtonStyle"
-            android:layout_width="64dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_action_plus" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="4dp"
+            android:background="?android:attr/dividerHorizontal" />
+
+        <EditText
+            android:id="@+id/et_product_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/et_product_name_hint"
+            android:inputType="textCapSentences"
+            android:scrollHorizontally="true"
+            android:singleLine="true" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="4dp"
+            android:text="@string/tv_product_category_header"
+            android:textColor="?android:attr/textColorHint" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="4dp"
+            android:background="?android:attr/dividerHorizontal" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="?android:attr/dividerVertical"
+            android:dividerPadding="8dp"
+            android:showDividers="middle" >
+
+            <Spinner
+                android:id="@+id/sp_product_category"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/ib_new_category"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="64dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_action_plus" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
@@ -42,7 +100,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginRight="16dp"
         android:layout_toRightOf="@+id/iv_product_picture"
         android:divider="?android:attr/dividerHorizontal"
         android:dividerPadding="8dp"
@@ -69,18 +126,5 @@
             android:paddingTop="8dp"
             android:src="@drawable/ic_action_camera" />
     </LinearLayout>
-
-    <EditText
-        android:id="@+id/et_product_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/ll_product_image_buttons"
-        android:layout_toRightOf="@+id/ll_product_image_buttons"
-        android:inputType="textCapSentences"
-        android:ems="10"
-        android:hint="@string/et_product_name_hint"
-        android:scrollHorizontally="true"
-        android:singleLine="true" />
 
 </merge>

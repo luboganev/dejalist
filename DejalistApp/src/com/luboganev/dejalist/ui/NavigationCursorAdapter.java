@@ -28,6 +28,10 @@ public class NavigationCursorAdapter extends CursorAdapter {
 	public static final long NAV_ALL_PRODUCTS_ITEM_ID = -102;
 	public static final long NAV_NO_CATEGORY_ITEM_ID = -103;
 	
+	public static final int POSITION_CHECKLIST = 0;
+	public static final int POSITION_ALL_PRODUCTS = 1;
+	public static final int POSITION_NO_CATEGORY = 2;
+	
     private LayoutInflater mInflater;
     private OnClickListener mAddCategoryClickListener;
 	
@@ -47,8 +51,8 @@ public class NavigationCursorAdapter extends CursorAdapter {
 	
 	@Override
 	public int getItemViewType(int position) {
-		if(position == 0) return VIEW_TYPE_CHECKLIST;
-		else if(position == 1) return VIEW_TYPE_ALL_PRODUCTS;
+		if(position == POSITION_CHECKLIST) return VIEW_TYPE_CHECKLIST;
+		else if(position == POSITION_ALL_PRODUCTS) return VIEW_TYPE_ALL_PRODUCTS;
 		else if(position == getCount() - 1) return VIEW_TYPE_ADD_CATEGORY;
 		else return VIEW_TYPE_CATEGORY;
 	}
@@ -148,11 +152,10 @@ public class NavigationCursorAdapter extends CursorAdapter {
 		Category category = cupboard().withCursor(cursor).get(Category.class);
 		
 		if(category._id == NAV_NO_CATEGORY_ITEM_ID) {
-			holder.catColor.setBackgroundResource(R.drawable.nav_no_category_color);
+			holder.catColor.setBackgroundResource(R.drawable.no_category_color);
 			holder.name.setText(R.string.nav_products_no_category);
 		}
 		else {
-			holder.catColor.setVisibility(View.VISIBLE);
 			holder.catColor.setBackgroundColor(category.color);
 			holder.name.setText(category.name);
 		}

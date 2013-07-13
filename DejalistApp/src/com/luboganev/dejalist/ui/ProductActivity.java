@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.InjectView;
 import butterknife.Views;
@@ -52,6 +53,8 @@ public class ProductActivity extends FragmentActivity implements CategoryEditorC
 	ImageButton mChangeImage;
 	@InjectView(R.id.ib_new_category)
 	ImageButton mNewCategory;
+	@InjectView(R.id.tv_product_picture_hint)
+	TextView mProductImageHint;
 	
 	private static final String STATE_NEW_PICTURE_URI = "state_new_picture_uri";
 	private Uri mNewPictureUri = null;
@@ -201,16 +204,23 @@ public class ProductActivity extends FragmentActivity implements CategoryEditorC
 	}
 	
 	private void loadPicture() {
-		if(mNewPictureUri != null) 
+		if(mNewPictureUri != null) {
 			Picasso.with(getApplicationContext()).load(mNewPictureUri)
-				.resizeDimen(R.dimen.product_picture_cropped_max, R.dimen.product_picture_cropped_max)
-				.error(R.drawable.product_no_pic_big).into(mImage);
+			.resizeDimen(R.dimen.product_picture_cropped_max, R.dimen.product_picture_cropped_max)
+			.error(R.drawable.product_no_pic_big).into(mImage);
+			mProductImageHint.setVisibility(View.INVISIBLE);
+		}
 		else if(mOriginalProduct != null) {
 			if(mOriginalProduct.uri != null) {
 				Picasso.with(getApplicationContext()).load(mOriginalProduct.uri)
 				.resizeDimen(R.dimen.product_picture_cropped_max, R.dimen.product_picture_cropped_max)
 				.error(R.drawable.product_no_pic_big).into(mImage);
+				mProductImageHint.setVisibility(View.INVISIBLE);
 			}
+			else mProductImageHint.setVisibility(View.VISIBLE);
+		}
+		else {
+			mProductImageHint.setVisibility(View.VISIBLE);
 		}
 				
 	}

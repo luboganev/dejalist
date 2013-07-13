@@ -49,11 +49,10 @@ public class CategoriesListCursorAdapter extends CursorAdapter {
 		Category category = cupboard().withCursor(cursor).get(Category.class);
 		
 		if(category._id == CATEGORY_NONE_ITEM_ID) {
-			holder.catColor.setVisibility(View.INVISIBLE);
+			holder.catColor.setBackgroundResource(R.drawable.no_category_color);
 			holder.name.setText(R.string.category_none_name);
 		}
 		else {
-			holder.catColor.setVisibility(View.VISIBLE);
 			holder.catColor.setBackgroundColor(category.color);
 			holder.name.setText(category.name);
 		}

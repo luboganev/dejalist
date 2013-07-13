@@ -204,6 +204,14 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 			menu.findItem(R.id.menu_categories_delete).setVisible(mOptionMenuItemsVisible);
 			menu.findItem(R.id.menu_categories_delete).setEnabled(mOptionMenuItemsVisible);
 		}
+		else if(getArguments().containsKey(ARG_NO_CATEGORY)) {
+			menu.findItem(R.id.menu_products_sort_category).setVisible(false);
+			menu.findItem(R.id.menu_products_sort_category).setEnabled(false);
+		}
+		else {
+			menu.findItem(R.id.menu_products_sort_category).setVisible(mOptionMenuItemsVisible);
+			menu.findItem(R.id.menu_products_sort_category).setEnabled(mOptionMenuItemsVisible);
+		}
     }
     
     @Override

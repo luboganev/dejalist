@@ -5,9 +5,9 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     
-    <string name="nav_checklist">My shopping list</string>
-    <string name="nav_all_products">My products</string>
-    <string name="nav_products_no_category">No category</string>
+    <string name="nav_checklist">Shopping list</string>
+    <string name="nav_all_products">All products</string>
+    <string name="nav_products_no_category">Default</string>
     
     <string name="dialogfragment_category_utitled">Untitled</string>
     <string name="dialogfragment_category_save">Save</string>
@@ -42,7 +42,7 @@
     <string name="menu_cab_checklist_remove">Remove</string>
     <string name="menu_cab_checklist_title">%1$d selected</string>
     
-    <string name="category_none_name">(No category)</string>
+    <string name="category_none_name">Default</string>
     <string name="category_new">New category</string>
     <string name="menu_categories_edit">Edit category</string>
     <string name="menu_categories_delete">Delete category</string>
@@ -68,9 +68,13 @@
     <string name="dialog_crop_message">Compressing and saving image</string>
     <string name="dialog_crop_cancel">Cancelled saving image!</string>
     <string name="et_product_name_hint">Product name</string>
+    <string name="tv_product_header_category_spinner">Category</string>
     
     <string name="undobar_product_deleted_message">Products deleted.</string>
     <string name="undo">Undo</string>
     <string name="tv_checklist_empty">Shopping time?\nAdd some products to the list first.</string>
     <string name="tv_gallery_empty">No products here yet!\nTap the plus above to add some.</string>
+    <string name="tv_product_category_header">CATEGORY</string>
+    <string name="tv_product_name_header">NAME</string>
+    <string name="tv_product_picture_hint">Take new or pick an existing picture</string>
 </resources>
