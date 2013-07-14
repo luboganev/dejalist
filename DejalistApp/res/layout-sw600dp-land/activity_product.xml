@@ -6,7 +6,7 @@
     android:dividerPadding="12dp"
     android:showDividers="middle"
     android:layout_gravity="center"
-    tools:context=".ProductActivity" >
+    tools:context=".ui.ProductActivity" >
 
     <include
         android:layout_width="wrap_content"

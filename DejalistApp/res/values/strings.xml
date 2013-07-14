@@ -77,4 +77,14 @@
     <string name="tv_product_category_header">PRODUCT CATEGORY</string>
     <string name="tv_product_name_header">PRODUCT NAME</string>
     <string name="tv_product_picture_hint">Take new or pick an existing picture</string>
+    
+    <string name="about_activity_title">About</string>
+    
+    <string-array name="sample_categories">
+        <item>Fruits</item>
+        <item>Vegetables</item>
+        <item>Sweets</item>
+        <item>Drinks</item>
+    </string-array>
+    
 </resources>

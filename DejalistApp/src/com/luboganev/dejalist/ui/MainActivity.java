@@ -197,19 +197,10 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
         }
         // Handle action buttons
         switch(item.getItemId()) {
-        case R.id.menu_main_settings:
-        	// TODO: implement the settings, help and about
-//            // create intent to perform web search for this planet
-//            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-//            intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
-//            // catch event that there's no activity to handle intent
-//            if (intent.resolveActivity(getPackageManager()) != null) {
-//                startActivity(intent);
-//            } else {
-//                Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
-//            }
-            return true;
+        //case R.id.menu_main_settings:
+            //return true;
         case R.id.menu_main_about:
+        	startActivity(new Intent(getApplicationContext(), AboutActivity.class));
         	return true;
         default:
             return super.onOptionsItemSelected(item);

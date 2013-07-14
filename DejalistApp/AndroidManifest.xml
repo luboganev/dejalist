@@ -32,6 +32,10 @@
             android:name="com.luboganev.dejalist.crop.CropActivity"
             android:label="@string/crop_activity_title" >
         </activity>
+        <activity
+            android:name=".ui.AboutActivity"
+            android:label="@string/about_activity_title" >
+        </activity>
 
         <provider
             android:name="com.luboganev.dejalist.data.DejalistProvider"
