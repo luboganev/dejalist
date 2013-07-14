@@ -38,6 +38,9 @@ public class DejalistContract {
         public static final Uri CATEGORY_CONTENT_URI =
         		BASE_CONTENT_URI.buildUpon().appendPath(PATH_PRODUCTS).appendPath(PATH_CATEGORY).build();
         
+    	// default value for no category
+    	public static final long PRODUCT_CATEGORY_NONE_ID = -1L;
+        
         public static final String CONTENT_TYPE =
                 "vnd.android.cursor.dir/vnd.dejalist.product";
         public static final String CONTENT_ITEM_TYPE =
@@ -64,7 +67,7 @@ public class DejalistContract {
         }
         
         /** Used to fetch {@link Products} that are contained in the shopping list */
-        public static final String SELECTION_NO_CATEGORY = PRODUCT_CATEGORY_ID + " == -1";
+        public static final String SELECTION_NO_CATEGORY = PRODUCT_CATEGORY_ID + " == " + PRODUCT_CATEGORY_NONE_ID;
         
         /** Used to fetch {@link Products} that are contained in the shopping list */
         public static final String SELECTION_IN_LIST = PRODUCT_INLIST + " == 1";

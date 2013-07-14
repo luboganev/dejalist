@@ -74,7 +74,7 @@
     <string name="undo">Undo</string>
     <string name="tv_checklist_empty">Shopping time?\nAdd some products to the list first.</string>
     <string name="tv_gallery_empty">No products here yet!\nTap the plus above to add some.</string>
-    <string name="tv_product_category_header">CATEGORY</string>
-    <string name="tv_product_name_header">NAME</string>
+    <string name="tv_product_category_header">PRODUCT CATEGORY</string>
+    <string name="tv_product_name_header">PRODUCT NAME</string>
     <string name="tv_product_picture_hint">Take new or pick an existing picture</string>
 </resources>

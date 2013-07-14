@@ -252,7 +252,7 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
             		R.id.content_frame, 
             		ProductsGalleryFragment.getInstanceAllProducts()).commit();
     	}
-    	else if(selectedCategory._id == NavigationCursorAdapter.NAV_NO_CATEGORY_ITEM_ID) {
+    	else if(selectedCategory._id == Products.PRODUCT_CATEGORY_NONE_ID) {
     		selectedCategory.name = getString(R.string.nav_products_no_category);
     		
     		// update the main content by replacing fragments
@@ -329,7 +329,8 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 
 	@Override
 	public void onCategoryCreated(Category category) {
-		//FIXME: cannot switch to it because of the loaders. See if you can do sth.
+		// Unfortunately cannot switch to it because of the loaders. A solution needs to
+		// be found in a future release.
 	}
 	
 	public static final int REQUEST_CODE_NEW_PRODUCT = 1;
@@ -354,8 +355,29 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 		super.onActivityResult(requestCode, resultCode, data);
 		if(requestCode == REQUEST_CODE_NEW_PRODUCT || requestCode == REQUEST_CODE_EDIT_PRODUCT) {
 			if(resultCode == Activity.RESULT_OK) {
-				if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.reloadProducts();
-				if(mChecklistActionTaker != null) mChecklistActionTaker.reloadProducts();
+				long productCategoryId = data.getLongExtra(ProductActivity.RESULT_EXTRA_PRODUCT_CATEGORY_ID, Products.PRODUCT_CATEGORY_NONE_ID);
+				int checkedPosition = mDrawerList.getCheckedItemPosition();
+				if(checkedPosition != NavigationCursorAdapter.POSITION_ALL_PRODUCTS && 
+						mAdapter.getItemId(checkedPosition) != productCategoryId) {
+					final int count = mAdapter.getCount() - 1; // we do not want the add categories button, only the categories
+					// we start from 2 because position 0 is Checklist and position 1 is All products,
+					// which are both not related to categories at all
+					int pos = 0;
+				    while(pos < count) { 
+				        if (productCategoryId == mAdapter.getItemId(pos)) {
+				            selectItem(pos);
+				        	break;
+				        }
+				        pos++;
+				    }
+					// Unfortunately cannot switch to a newly inserted category 
+				    // because of the loaders. A solution needs to
+					// be found in a future release.
+				    if(pos == count) selectItem(NavigationCursorAdapter.POSITION_ALL_PRODUCTS);
+				}
+				else {
+					if(mProductsGalleryActionTaker != null) mProductsGalleryActionTaker.reloadProducts();
+				}
 			}
 		}
 	}

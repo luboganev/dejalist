@@ -6,6 +6,7 @@ import butterknife.Views;
 
 import com.luboganev.dejalist.R;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
+import com.luboganev.dejalist.data.DejalistContract.Products;
 import com.luboganev.dejalist.data.entities.Category;
 
 import android.content.Context;
@@ -19,13 +20,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class CategoriesListCursorAdapter extends CursorAdapter {
-	public static final long CATEGORY_NONE_ITEM_ID = -1L;
-	
     private LayoutInflater mInflater;
 	
 	private static Cursor addCategoryNone(Cursor categories) {
 		MatrixCursor mainNavigation = new MatrixCursor(new String[] {Categories._ID, Categories.CATEGORY_NAME, Categories.CATEGORY_COLOR});
-		mainNavigation.addRow(new Object[]{CATEGORY_NONE_ITEM_ID, "", -1});
+		mainNavigation.addRow(new Object[]{Products.PRODUCT_CATEGORY_NONE_ID, "", -1});
 		if(categories != null) return new MergeCursor(new Cursor[]{mainNavigation, categories});
 		else return mainNavigation;
 	}
@@ -48,7 +47,7 @@ public class CategoriesListCursorAdapter extends CursorAdapter {
 		ViewHolder holder = (ViewHolder) view.getTag();
 		Category category = cupboard().withCursor(cursor).get(Category.class);
 		
-		if(category._id == CATEGORY_NONE_ITEM_ID) {
+		if(category._id == Products.PRODUCT_CATEGORY_NONE_ID) {
 			holder.catColor.setBackgroundResource(R.drawable.no_category_color);
 			holder.name.setText(R.string.category_none_name);
 		}

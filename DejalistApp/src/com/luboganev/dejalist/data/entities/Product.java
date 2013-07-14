@@ -1,5 +1,7 @@
 package com.luboganev.dejalist.data.entities;
 
+import com.luboganev.dejalist.data.DejalistContract.Products;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -86,7 +88,7 @@ public class Product implements Parcelable {
 	    	uri = null;
 	    	inlist = 0;
 	    	checked = 0;
-	    	categoryId = -1;
+	    	categoryId = Products.PRODUCT_CATEGORY_NONE_ID;
 	    	usedCount = 0;
 	    	lastUsed = -1;
 	    	deleted = 0;

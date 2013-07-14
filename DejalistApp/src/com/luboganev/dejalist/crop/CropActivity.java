@@ -84,7 +84,7 @@ public class CropActivity extends FragmentActivity {
 		}
 		
 		// load the custom actionbar
-        getActionBar().setCustomView(R.layout.actionbar_custom_view_done_discard);
+        getActionBar().setCustomView(R.layout.actionbar_crop_done_discard);
         getActionBar().setDisplayShowCustomEnabled(true);
         final View customActionBarView = getActionBar().getCustomView();
         customActionBarView.findViewById(R.id.actionbar_crop_done).setOnClickListener(

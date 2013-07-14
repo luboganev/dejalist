@@ -16,6 +16,7 @@ import butterknife.Views;
 
 import com.luboganev.dejalist.R;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
+import com.luboganev.dejalist.data.DejalistContract.Products;
 import com.luboganev.dejalist.data.entities.Category;
 
 public class NavigationCursorAdapter extends CursorAdapter {
@@ -26,7 +27,8 @@ public class NavigationCursorAdapter extends CursorAdapter {
 	
 	public static final long NAV_CHECKLIST_ITEM_ID = -101;
 	public static final long NAV_ALL_PRODUCTS_ITEM_ID = -102;
-	public static final long NAV_NO_CATEGORY_ITEM_ID = -103;
+	
+	public static final long NAV_ADD_CATEGORY_ITEM_ID = -999;
 	
 	public static final int POSITION_CHECKLIST = 0;
 	public static final int POSITION_ALL_PRODUCTS = 1;
@@ -39,7 +41,7 @@ public class NavigationCursorAdapter extends CursorAdapter {
 		MatrixCursor mainNavigation = new MatrixCursor(new String[] {Categories._ID, Categories.CATEGORY_NAME, Categories.CATEGORY_COLOR});
 		mainNavigation.addRow(new Object[]{NAV_CHECKLIST_ITEM_ID, "", 0});
 		mainNavigation.addRow(new Object[]{NAV_ALL_PRODUCTS_ITEM_ID, "", 0});
-		mainNavigation.addRow(new Object[]{NAV_NO_CATEGORY_ITEM_ID, "", 0});
+		mainNavigation.addRow(new Object[]{Products.PRODUCT_CATEGORY_NONE_ID, "", 0});
 		if(categories != null) return new MergeCursor(new Cursor[]{mainNavigation, categories});
 		else return mainNavigation;
 	}
@@ -75,7 +77,7 @@ public class NavigationCursorAdapter extends CursorAdapter {
 	@Override
 	public long getItemId(int position) {
 		if(getItemViewType(position) == VIEW_TYPE_ADD_CATEGORY) {
-			return -1;
+			return NAV_ADD_CATEGORY_ITEM_ID;
 		}
 		else {
 			return super.getItemId(position);
@@ -151,7 +153,7 @@ public class NavigationCursorAdapter extends CursorAdapter {
 		ViewHolder holder = (ViewHolder) view.getTag();
 		Category category = cupboard().withCursor(cursor).get(Category.class);
 		
-		if(category._id == NAV_NO_CATEGORY_ITEM_ID) {
+		if(category._id == Products.PRODUCT_CATEGORY_NONE_ID) {
 			holder.catColor.setBackgroundResource(R.drawable.no_category_color);
 			holder.name.setText(R.string.nav_products_no_category);
 		}

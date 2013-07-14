@@ -1,9 +1,11 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="600dp"
     android:layout_height="320dp"
+    android:divider="?android:attr/dividerVertical"
+    android:dividerPadding="12dp"
+    android:showDividers="middle"
     android:layout_gravity="center"
-    android:padding="8dp"
     tools:context=".ProductActivity" >
 
     <include
@@ -11,4 +13,4 @@
         android:layout_height="wrap_content"
         layout="@layout/activity_product_contents_land" />
 
-</RelativeLayout>
+</LinearLayout>

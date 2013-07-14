@@ -2,38 +2,79 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" >
 
-    <TextView
-        android:id="@+id/tv_product_picture_hint"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/iv_product_picture"
-        android:layout_alignLeft="@+id/iv_product_picture"
-        android:layout_alignRight="@+id/iv_product_picture"
-        android:gravity="center_horizontal"
-        android:text="@string/tv_product_picture_hint"
-        android:textColor="?android:attr/textColorHint" />
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="8dp" >
 
-    <ImageView
-        android:id="@+id/iv_product_picture"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="4dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/product_no_pic_big" />
+        <FrameLayout
+            android:layout_width="190dp"
+            android:layout_height="190dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="4dp" >
+
+            <TextView
+                android:id="@+id/tv_product_picture_hint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:gravity="center_horizontal"
+                android:text="@string/tv_product_picture_hint"
+                android:textColor="?android:attr/textColorHint" />
+
+            <ImageView
+                android:id="@+id/iv_product_picture"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/product_no_pic_big" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:divider="?android:attr/dividerVertical"
+            android:dividerPadding="8dp"
+            android:orientation="horizontal"
+            android:showDividers="middle" >
+
+            <ImageButton
+                android:id="@+id/ib_product_change_image"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="64dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/menu_crop_image"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:src="@drawable/ic_action_image" />
+
+            <ImageButton
+                android:id="@+id/ib_product_change_camera"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="64dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/menu_crop_camera"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:src="@drawable/ic_action_camera" />
+        </LinearLayout>
+    </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="12dp"
-        android:layout_toRightOf="@+id/ll_product_image_buttons"
-        android:orientation="vertical" >
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="8dp" >
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:paddingTop="4dp"
@@ -93,38 +134,6 @@
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_action_plus" />
         </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_product_image_buttons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/iv_product_picture"
-        android:divider="?android:attr/dividerHorizontal"
-        android:dividerPadding="8dp"
-        android:orientation="vertical"
-        android:showDividers="middle" >
-
-        <ImageButton
-            android:id="@+id/ib_product_change_image"
-            style="?android:borderlessButtonStyle"
-            android:layout_width="48dp"
-            android:layout_height="64dp"
-            android:contentDescription="@string/menu_crop_image"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp"
-            android:src="@drawable/ic_action_image" />
-
-        <ImageButton
-            android:id="@+id/ib_product_change_camera"
-            style="?android:borderlessButtonStyle"
-            android:layout_width="48dp"
-            android:layout_height="64dp"
-            android:contentDescription="@string/menu_crop_camera"
-            android:paddingBottom="8dp"
-            android:paddingTop="8dp"
-            android:src="@drawable/ic_action_camera" />
     </LinearLayout>
 
 </merge>

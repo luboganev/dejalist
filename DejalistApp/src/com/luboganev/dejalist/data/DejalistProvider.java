@@ -208,7 +208,7 @@ public class DejalistProvider extends ContentProvider {
             	resetProductsCategoryBuilder.table(Tables.PRODUCTS)
             		.where(Products.PRODUCT_CATEGORY_ID + "=?", String.valueOf(categoryId));
             	ContentValues resetProductsCategoryValues = new ContentValues();
-            	resetProductsCategoryValues.put(Products.PRODUCT_CATEGORY_ID, -1L);
+            	resetProductsCategoryValues.put(Products.PRODUCT_CATEGORY_ID, Products.PRODUCT_CATEGORY_NONE_ID);
             	resetProductsCategoryBuilder.update(db, resetProductsCategoryValues);
             	break;
             }

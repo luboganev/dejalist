@@ -4,6 +4,7 @@ import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 
 import java.io.File;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -12,11 +13,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.CursorAdapter;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.EditText;
@@ -32,6 +32,7 @@ import com.luboganev.dejalist.R;
 import com.luboganev.dejalist.crop.CropActivity;
 import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
+import com.luboganev.dejalist.data.DejalistContract.Products;
 import com.luboganev.dejalist.data.ProductImageFileHelper;
 import com.luboganev.dejalist.data.entities.Category;
 import com.luboganev.dejalist.data.entities.Product;
@@ -40,6 +41,8 @@ import com.squareup.picasso.Picasso;
 
 public class ProductActivity extends FragmentActivity implements CategoryEditorCallback, OnItemSelectedListener {
 	private static final int REQUEST_CODE = 1;
+	
+	public static final String RESULT_EXTRA_PRODUCT_CATEGORY_ID = "product_category_id";
 
 	@InjectView(R.id.iv_product_picture)
 	ImageView mImage;
@@ -74,10 +77,46 @@ public class ProductActivity extends FragmentActivity implements CategoryEditorC
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_product);
 		Views.inject(this);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		
+		// Inflate a "Done/Discard" custom action bar view.
+        LayoutInflater inflater = (LayoutInflater) getActionBar().getThemedContext()
+                .getSystemService(LAYOUT_INFLATER_SERVICE);
+        final View customActionBarView = inflater.inflate(
+                R.layout.actionbar_product_done_discard, null);
+        customActionBarView.findViewById(R.id.product_done).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                    	if(saveProduct()) {
+                    		Intent data = new Intent();
+                    		data.putExtra(RESULT_EXTRA_PRODUCT_CATEGORY_ID, mNewCategoryId);
+            				setResult(Activity.RESULT_OK, data);
+            				finish();
+            			}
+                    }
+                });
+        customActionBarView.findViewById(R.id.product_discard).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                    	setResult(Activity.RESULT_CANCELED);
+            			finish();
+                    }
+                });
+
+        // Show the custom action bar view and hide the normal Home icon and title.
+        final ActionBar actionBar = getActionBar();
+        actionBar.setDisplayOptions(
+                ActionBar.DISPLAY_SHOW_CUSTOM,
+                ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME
+                        | ActionBar.DISPLAY_SHOW_TITLE);
+        actionBar.setCustomView(customActionBarView, new ActionBar.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+		
 		
 		// Load just category sent to this activity
-		mNewCategoryId = getIntent().getLongExtra(EXTRA_CATEGORY_ID, CategoriesListCursorAdapter.CATEGORY_NONE_ITEM_ID);
+		mNewCategoryId = getIntent().getLongExtra(EXTRA_CATEGORY_ID, Products.PRODUCT_CATEGORY_NONE_ID);
 		
 		// Load the original Product sent to this activity
 		if(getIntent().hasExtra(EXTRA_PRODUCT)) {
@@ -136,31 +175,6 @@ public class ProductActivity extends FragmentActivity implements CategoryEditorC
 		        dialog.show(getSupportFragmentManager(), "CategoryDialogFragment");
 			}
 		});
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_product, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.menu_product_done:
-			if(saveProduct()) {
-				setResult(Activity.RESULT_OK);
-				finish();
-			}
-			return true;
-		case android.R.id.home:
-		case R.id.menu_product_discard:
-			setResult(Activity.RESULT_CANCELED);
-			finish();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 	
 	@Override
