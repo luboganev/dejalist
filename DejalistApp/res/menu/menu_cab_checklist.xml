@@ -3,7 +3,7 @@
     <item
         android:id="@+id/menu_cab_checklist_remove"
         android:showAsAction="always"
-        android:icon="@drawable/ic_action_remove"
+        android:icon="@drawable/ic_action_discard"
         android:title="@string/menu_cab_checklist_remove"
         android:orderInCategory="1" />
 </menu>

@@ -9,9 +9,9 @@
         android:id="@+id/checklist_item_product_category"
         android:layout_width="8dp"
         android:layout_height="0dp"
-        android:layout_alignParentBottom="true"
+        android:layout_alignTop="@+id/checklist_item_product_image"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/checklist_item_product_image"
         android:background="@color/red" />
 
     <TextView
@@ -31,9 +31,9 @@
 
     <ImageView
         android:id="@+id/checklist_item_product_image"
-        android:layout_width="@dimen/checklist_row_height"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
+        android:layout_width="@dimen/checklist_picture_size"
+        android:layout_height="@dimen/checklist_picture_size"
+        android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/checklist_item_product_category"
         android:scaleType="centerCrop"
         android:src="@drawable/product_no_pic_small" />

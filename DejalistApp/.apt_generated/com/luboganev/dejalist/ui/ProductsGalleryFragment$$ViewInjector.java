@@ -9,18 +9,18 @@ public class ProductsGalleryFragment$$ViewInjector {
     View view;
     view = finder.findById(source, 2131427365);
     target.mProducts = (android.widget.GridView) view;
-    view = finder.findById(source, 2131427363);
-    target.mEmptyImage = (android.widget.ImageView) view;
     view = finder.findById(source, 2131427364);
     target.mEmptyText = (android.widget.TextView) view;
+    view = finder.findById(source, 2131427363);
+    target.mEmptyImage = (android.widget.ImageView) view;
     view = finder.findById(source, 2131427362);
     target.categoryColorHeader = (android.view.View) view;
   }
 
   public static void reset(com.luboganev.dejalist.ui.ProductsGalleryFragment target) {
     target.mProducts = null;
-    target.mEmptyImage = null;
     target.mEmptyText = null;
+    target.mEmptyImage = null;
     target.categoryColorHeader = null;
   }
 }

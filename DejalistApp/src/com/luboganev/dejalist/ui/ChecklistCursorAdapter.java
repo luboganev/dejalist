@@ -74,7 +74,7 @@ public class ChecklistCursorAdapter extends CursorAdapter {
 		holder.image.setImageResource(R.drawable.product_no_pic_small);
 		
 		if(product.uri != null) {
-			Picasso.with(context).load(product.uri).resizeDimen(R.dimen.checklist_row_height, R.dimen.checklist_row_height).into(holder.image);
+			Picasso.with(context).load(product.uri).resizeDimen(R.dimen.checklist_picture_size, R.dimen.checklist_picture_size).into(holder.image);
 		}
 		if(product.checked == 1) {
 			holder.isChecked.setImageResource(R.drawable.btn_check_on_holo_light);

@@ -4,4 +4,5 @@
 
     <dimen name="product_picture_small_width">160dp</dimen>
     <dimen name="checklist_row_height">100dp</dimen>
+    <dimen name="checklist_picture_size">90dp</dimen>
 </resources>
