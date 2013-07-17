@@ -4,6 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.luboganev.dejalist.Utils;
+
 import junit.framework.Assert;
 import android.app.ActivityManager;
 import android.content.ContentResolver;
@@ -25,7 +27,7 @@ public class CropUtils {
 	
 	public static int recalculateMaxImagesize(Context context) {
 		final ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-		Log.d("CropUtils", "Memory class:"+am.getMemoryClass()+"MB");
+		Utils.d("CropUtils", "Memory class:"+am.getMemoryClass()+"MB");
 		// 1/16 of the total memory in bytes for a whole quadratic image ( Image size = X * X * 4 Bytes per pixel)
 		mMaxImageDimenstionRes = (int)Math.sqrt(am.getMemoryClass() * 1024 * 16);
 		return mMaxImageDimenstionRes;
@@ -139,7 +141,7 @@ public class CropUtils {
 
 //                              r_rot.set(0,0,b.getWidth(),b.getHeight());
 //                              m.mapRect(r_rot);
-//                              Log.d(TAG, "rotated bitmap = "+r_rot.toString());
+//                              Utils.d(TAG, "rotated bitmap = "+r_rot.toString());
 
                                 if (crop == null)
                                 b2 = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), m, true);
@@ -150,19 +152,19 @@ public class CropUtils {
                                 RectF r = new RectF();
                                 r.set(crop);
                                 minv.mapRect(r);
-                                Log.d("CropUtils", "crop = "+crop.toString());
+                                Utils.d("CropUtils", "crop = "+crop.toString());
                                 r.round(crop);
-                                Log.d("CropUtils", "bitmap "+b.getDensity() + " " + b.getWidth() + " x "+b.getHeight());
-                                Log.d("CropUtils", "inv rotated crop = "+crop.toString());
+                                Utils.d("CropUtils", "bitmap "+b.getDensity() + " " + b.getWidth() + " x "+b.getHeight());
+                                Utils.d("CropUtils", "inv rotated crop = "+crop.toString());
                                 b2 = Bitmap.createBitmap(b, crop.left, crop.top, crop.width(), crop.height(), m, true);
                         }
                 } else {
                         if (crop != null) {
-                                Log.d("CropUtils", "crop = "+crop.toString());
-                                Log.d("CropUtils", "bitmap "+b.getDensity() + " " + b.getWidth() + " x "+b.getHeight());
-                                b2 = Bitmap.createBitmap(b, crop.left, crop.top, crop.width(), crop.height());
+                        	Utils.d("CropUtils", "crop = "+crop.toString());
+                        	Utils.d("CropUtils", "bitmap "+b.getDensity() + " " + b.getWidth() + " x "+b.getHeight());
+                            b2 = Bitmap.createBitmap(b, crop.left, crop.top, crop.width(), crop.height());
                         } else
-                                b2 = b;
+                            b2 = b;
                 }
         } catch (OutOfMemoryError ex) {
                 // We have no memory to rotate. Return the original bitmap.
@@ -172,7 +174,7 @@ public class CropUtils {
         if (b == b2) {
                 return b;
         } else {
-                Log.d("CropUtils", "b != b2, recycling b");
+        	Utils.d("CropUtils", "b != b2, recycling b");
             b.recycle();
             return b2;
         }
@@ -198,7 +200,7 @@ public class CropUtils {
         if (b == b2) {
                 return b;
         } else {
-                Log.d("CropUtils", "b != b2, recycling b");
+        	Utils.d("CropUtils", "b != b2, recycling b");
             b.recycle();
             return b2;
         }

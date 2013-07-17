@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import com.luboganev.dejalist.R;
+import com.luboganev.dejalist.Utils;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -340,7 +341,7 @@ public class CropActivity extends FragmentActivity {
 		bitmap = CropUtils.getBitmap(bitmapOptions, getContentResolver(), uri);
 		bitmap = CropUtils.rotate(bitmap, rotation);
 		preview.setImageBitmapResetBase(bitmap, true);
-		Log.d("CropActivity", "SampleSize " + bitmapOptions.inSampleSize + " -> ("+bitmapOptions.outWidth+":"+bitmapOptions.outHeight+")");
+		Utils.d("CropActivity", "SampleSize " + bitmapOptions.inSampleSize + " -> ("+bitmapOptions.outWidth+":"+bitmapOptions.outHeight+")");
 		makeHighlight();
 	}
 	
