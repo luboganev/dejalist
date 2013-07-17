@@ -124,6 +124,12 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
         return rootView;
     }
     
+    @Override
+    public void onDestroyView() {
+    	super.onDestroyView();
+    	Views.reset(this);
+    }
+    
     public OnClickListener onAddProductClicked = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -294,10 +300,10 @@ public class ChecklistFragment extends Fragment implements ChecklistActionTaker,
 	public void onLoaderReset(Loader<Cursor> loader) {
 		if(loader.getId() == LOADER_CHECKLIST_ID) {
 			mAdapter.changeCursor(null);
-			mProducts.setVisibility(View.INVISIBLE);
-			mEmptyImage.setVisibility(View.VISIBLE);
-			mAddProducts.setVisibility(View.VISIBLE);
-			mEmptyText.setVisibility(View.VISIBLE);
+			if(mProducts != null) mProducts.setVisibility(View.INVISIBLE);
+			if(mEmptyImage != null) mEmptyImage.setVisibility(View.VISIBLE);
+			if(mAddProducts != null) mAddProducts.setVisibility(View.VISIBLE);
+			if(mEmptyText != null) mEmptyText.setVisibility(View.VISIBLE);
 		}
 	}
 	

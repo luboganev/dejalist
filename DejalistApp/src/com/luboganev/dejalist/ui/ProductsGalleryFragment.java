@@ -163,6 +163,12 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
     }
     
     @Override
+    public void onDestroyView() {
+    	super.onDestroyView();
+    	Views.reset(this);
+    }
+    
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     	inflater.inflate( 
     			(getArguments().containsKey(ARG_CATEGORY) ? 
@@ -376,9 +382,9 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 	public void onLoaderReset(Loader<Cursor> loader) {
 		if(loader.getId() == LOADER_PRODUCTS_ID) {
 			mAdapter.changeCursor(null);
-			mProducts.setVisibility(View.INVISIBLE);
-			mEmptyImage.setVisibility(View.VISIBLE);
-			mEmptyText.setVisibility(View.VISIBLE);
+			if(mProducts != null) mProducts.setVisibility(View.INVISIBLE);
+			if(mEmptyImage != null) mEmptyImage.setVisibility(View.VISIBLE);
+			if(mEmptyText != null) mEmptyText.setVisibility(View.VISIBLE);
 		}
 	}
 

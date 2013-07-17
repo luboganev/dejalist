@@ -104,6 +104,12 @@ public class CategoryDialogFragment extends DialogFragment {
 	    return builder.create();
 	}
 	
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		Views.reset(this);
+	}
+	
 	private void saveChanges() {
 		Category category = new Category();
 		category.name = name.getText().length() <= 0 ? 
