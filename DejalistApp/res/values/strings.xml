@@ -17,6 +17,8 @@
     <string name="dialogfragment_setproductcategory_title">Choose a category</string>
     
     <string name="menu_main_settings_label">Settings</string>
+    <string name="menu_main_about_backup">Backup</string>
+    <string name="menu_main_about_restore">Restore</string>
     <string name="menu_main_about_label">About</string>
     
     <string name="menu_products_new_product">New product</string>
@@ -87,4 +89,14 @@
         <item>Drinks</item>
     </string-array>
     
+    <string name="toast_backup_started">Backing up...</string>
+    <string name="backup_notif_title">Dejalist backup</string>
+    <string name="backup_notif_text">Exporting products in progress</string>
+    <string name="backup_notif_title_failed">Dejalist backup failed</string>
+    <string name="backup_notif_text_finished">Backup complete</string>
+    <string name="toast_restore_started">Restoring...</string>
+    <string name="restore_notif_title">Dejalist restore</string>
+    <string name="restore_notif_text">Importing products in progress</string>
+    <string name="restore_notif_title_failed">Dejalist restore failed</string>
+    <string name="restore_notif_text_finished">Restore complete</string>
 </resources>

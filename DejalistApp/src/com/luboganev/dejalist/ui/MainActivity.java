@@ -41,10 +41,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 import butterknife.InjectView;
 import butterknife.Views;
 
 import com.luboganev.dejalist.R;
+import com.luboganev.dejalist.data.BackupIntentService;
 import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.DejalistContract.Products;
@@ -195,10 +197,23 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        Intent intent;
         // Handle action buttons
         switch(item.getItemId()) {
         //case R.id.menu_main_settings:
             //return true;
+        case R.id.menu_main_backup:
+        	Toast.makeText(getApplicationContext(), R.string.toast_backup_started, Toast.LENGTH_SHORT).show();
+        	intent = new Intent(getApplicationContext(), BackupIntentService.class);
+        	intent.putExtra(BackupIntentService.INTENT_EXTRA_ACTION, BackupIntentService.Action.BACKUP);
+        	startService(intent);
+        	return true;
+        case R.id.menu_main_restore:
+        	Toast.makeText(getApplicationContext(), R.string.toast_restore_started, Toast.LENGTH_SHORT).show();
+        	intent = new Intent(getApplicationContext(), BackupIntentService.class);
+        	intent.putExtra(BackupIntentService.INTENT_EXTRA_ACTION, BackupIntentService.Action.RESTORE);
+        	startService(intent);
+        	return true;
         case R.id.menu_main_about:
         	startActivity(new Intent(getApplicationContext(), AboutActivity.class));
         	return true;

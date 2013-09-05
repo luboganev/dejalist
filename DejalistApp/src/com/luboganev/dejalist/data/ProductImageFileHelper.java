@@ -24,6 +24,11 @@ public class ProductImageFileHelper {
 		return new File(imagesDir, PRODUCT_FILE_PREFIX+Utils.currentTimestampInMillis()+PRODUCT_FILE_SUFFIX);
 	}
 	
+	public static final File getFile(Context context, String filename) {
+		File imagesDir = context.getDir(PRODUCT_IMAGES_DIR, Context.MODE_PRIVATE);
+		return new File(imagesDir, filename);
+	}
+	
 	public static Uri copyToANewProductImageFile(Context context, Uri uri) {
 		File inputFile = new File(uri.getPath());
 		if(inputFile.exists()) {
@@ -72,7 +77,7 @@ public class ProductImageFileHelper {
 		}
 	}
 	
-	private static boolean copy(File src, File dst) {
+	public static boolean copy(File src, File dst) {
 		InputStream in = null;
 		OutputStream out = null;
 		boolean success = false;
