@@ -54,6 +54,7 @@ import com.luboganev.dejalist.data.SelectionBuilder;
 import com.luboganev.dejalist.data.entities.Category;
 import com.luboganev.dejalist.data.entities.Product;
 import com.luboganev.dejalist.ui.CategoryDialogFragment.CategoryEditorCallback;
+import com.luboganev.dejalist.ui.ConfirmBackResDialogFragment.ConfirmBackResCallback;
 import com.luboganev.dejalist.ui.SetProductsCategoryDialogFragment.SetProductsCategoryCallback;
 
 /**
@@ -85,7 +86,7 @@ import com.luboganev.dejalist.ui.SetProductsCategoryDialogFragment.SetProductsCa
  */
 public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cursor>, 
 	ProductsGalleryController, CategoryEditorCallback, UndoBarController.UndoListener,
-	SetProductsCategoryCallback, ChecklistController {
+	SetProductsCategoryCallback, ChecklistController, ConfirmBackResCallback {
 	
 	@InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
 	@InjectView(R.id.left_drawer) ListView mDrawerList;
@@ -197,22 +198,15 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        Intent intent;
         // Handle action buttons
         switch(item.getItemId()) {
         //case R.id.menu_main_settings:
             //return true;
         case R.id.menu_main_backup:
-        	Toast.makeText(getApplicationContext(), R.string.toast_backup_started, Toast.LENGTH_SHORT).show();
-        	intent = new Intent(getApplicationContext(), BackupIntentService.class);
-        	intent.putExtra(BackupIntentService.INTENT_EXTRA_ACTION, BackupIntentService.Action.BACKUP);
-        	startService(intent);
+        	ConfirmBackResDialogFragment.getBackupInstance().show(getSupportFragmentManager(), "backup");
         	return true;
         case R.id.menu_main_restore:
-        	Toast.makeText(getApplicationContext(), R.string.toast_restore_started, Toast.LENGTH_SHORT).show();
-        	intent = new Intent(getApplicationContext(), BackupIntentService.class);
-        	intent.putExtra(BackupIntentService.INTENT_EXTRA_ACTION, BackupIntentService.Action.RESTORE);
-        	startService(intent);
+        	ConfirmBackResDialogFragment.getRestoreInstance().show(getSupportFragmentManager(), "restore");
         	return true;
         case R.id.menu_main_about:
         	startActivity(new Intent(getApplicationContext(), AboutActivity.class));
@@ -501,5 +495,21 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	@Override
 	public void unregisterChecklistActionTaker() {
 		mChecklistActionTaker = null;
+	}
+
+	@Override
+	public void onConfirmBackup() {
+    	Toast.makeText(getApplicationContext(), R.string.toast_backup_started, Toast.LENGTH_SHORT).show();
+    	Intent intent = new Intent(getApplicationContext(), BackupIntentService.class);
+    	intent.putExtra(BackupIntentService.INTENT_EXTRA_ACTION, BackupIntentService.Action.BACKUP);
+    	startService(intent);
+	}
+
+	@Override
+	public void onConfirmRestore() {
+		Toast.makeText(getApplicationContext(), R.string.toast_restore_started, Toast.LENGTH_SHORT).show();
+		Intent intent = new Intent(getApplicationContext(), BackupIntentService.class);
+    	intent.putExtra(BackupIntentService.INTENT_EXTRA_ACTION, BackupIntentService.Action.RESTORE);
+    	startService(intent);
 	}
 }

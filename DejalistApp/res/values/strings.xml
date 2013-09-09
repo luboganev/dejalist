@@ -99,4 +99,25 @@
     <string name="restore_notif_text">Importing products in progress</string>
     <string name="restore_notif_title_failed">Dejalist restore failed</string>
     <string name="restore_notif_text_finished">Restore complete</string>
+    
+    <string name="backup_confirm_title">Dejalist backup</string>
+    <string name="backup_confirm_message">This will export all your products and categories into a folder on your external memory. Any backup that is already there will be overwitten. Would you like to proceed?</string>
+    <string name="backup_confirm_button_positive">Backup</string>
+    <string name="backup_confirm_button_negative">Cancel</string>
+    <string name="restore_confirm_title">Dejalist restore</string>
+    <string name="restore_confirm_message">This will import all products and categories from the backup folder on your external memory. Existing categories and products will remain unchanged. Would you like to proceed?</string>
+    <string name="restore_confirm_button_positive">Restore</string>
+    <string name="restore_confirm_button_negative">Cancel</string>
+    
+    <string name="br_error_backup_folder_cannot_create">Could not create the backup folder with name <i>DejalistBackup</i>.</string>
+    <string name="br_error_backup_folder_nomedia_create">Could not prepare the backup folder with name <i>DejalistBackup</i>.</string>
+    <string name="br_error_backup_json_category">Error backing up a category.</string>
+    <string name="br_error_backup_json_product">Error backing up a product.</string>
+    <string name="br_error_saving_backup">Error saving backup to storage.</string>
+    <string name="br_error_saving_images">Error saving product image to storage.</string>
+    <string name="br_error_restore_file_data">Error reading backup from storage.</string>
+    <string name="br_error_restore_json_data">Error reading backup.</string>
+    <string name="br_error_import_images">Error reading image from storage.</string>
+    <string name="br_error_restore_json_product">Error importing product.</string>
+    <string name="br_error_restore_json_category">Error importing category.</string>
 </resources>

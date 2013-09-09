@@ -46,10 +46,10 @@ public class BackupIntentService extends IntentService {
 	private List<File> mProductImageFiles;
 	private NotificationManager mNotifManager;
 	private NotificationCompat.Builder mNotifBuilder;
-
+	private String mErrorString = "";
+	
 	public BackupIntentService() {
 		super(SERVICE_NAME);
-		
 	}
 	
 	@Override
@@ -71,7 +71,7 @@ public class BackupIntentService extends IntentService {
 			mNotifManager.notify(NOTIFICATION_ID, mNotifBuilder.build());
 			if(backup()) mNotifBuilder.setContentText(getString(R.string.backup_notif_text_finished));
 			else mNotifBuilder.setContentTitle(getString(R.string.backup_notif_title_failed))
-					.setContentText("Errorstring");
+					.setContentText(mErrorString);
 			mNotifBuilder.setProgress(0,0,false);
             mNotifManager.notify(NOTIFICATION_ID, mNotifBuilder.build());
 			break;
@@ -82,7 +82,7 @@ public class BackupIntentService extends IntentService {
 			mNotifManager.notify(NOTIFICATION_ID, mNotifBuilder.build());
 			if(restore()) mNotifBuilder.setContentText(getString(R.string.restore_notif_text_finished));
 			else mNotifBuilder.setContentTitle(getString(R.string.restore_notif_title_failed))
-					.setContentText("Errorstring");
+					.setContentText(mErrorString);
 			mNotifBuilder.setProgress(0,0,false);
             mNotifManager.notify(NOTIFICATION_ID, mNotifBuilder.build());
 			break;
@@ -103,7 +103,7 @@ public class BackupIntentService extends IntentService {
 	private boolean clearBackupFolder() {
 		File backupDir = getBackupDir();
 		if(!backupDir.exists() || !backupDir.isDirectory()) {
-			//TODO: show error
+			mErrorString = getString(R.string.br_error_backup_folder_cannot_create);
 			return false;
 		}
 		for(File file: backupDir.listFiles()) file.delete();
@@ -111,7 +111,7 @@ public class BackupIntentService extends IntentService {
 		try {
 			nomedia.createNewFile();
 		} catch (IOException e) {
-			//TODO: show error
+			mErrorString = getString(R.string.br_error_backup_folder_nomedia_create);
 			return false;
 		}
 		return true;
@@ -125,7 +125,7 @@ public class BackupIntentService extends IntentService {
 		return cat;
 	}
 	
-	private static boolean backupCategoryWithProducts(Context context, Category category, JSONArray container, List<File> imageFilesContainer) {
+	private boolean backupCategoryWithProducts(Context context, Category category, JSONArray container, List<File> imageFilesContainer) {
 		// backup the category
 		JSONArray productsContainer = backupCategory(category, container);
 		if(productsContainer == null) {
@@ -148,7 +148,7 @@ public class BackupIntentService extends IntentService {
 		return true;
 	}
 	
-	private static JSONArray backupCategory(Category category, JSONArray container) {
+	private JSONArray backupCategory(Category category, JSONArray container) {
 		JSONObject obj = new JSONObject();
 		JSONArray productsContainer = new JSONArray();
 		try {
@@ -162,13 +162,13 @@ public class BackupIntentService extends IntentService {
 			// add to the json array with categories
 			container.put(obj);
 		} catch (JSONException e) {
-			//TODO: show error
+			mErrorString = getString(R.string.br_error_backup_json_category);
 			return null;
 		}
 		return productsContainer;
 	}
 	
-	private static boolean backupProduct(Product product, JSONArray container, List<File> imageFilesContainer) {
+	private boolean backupProduct(Product product, JSONArray container, List<File> imageFilesContainer) {
 		JSONObject obj = new JSONObject();
 		try {
 			obj.put(DejalistContract.Products.PRODUCT_NAME, product.name);
@@ -182,16 +182,16 @@ public class BackupIntentService extends IntentService {
 			// add to the json array with products
 			container.put(obj);
 		} catch (JSONException e) {
-			//TODO: show error
+			mErrorString = getString(R.string.br_error_backup_json_product);
 			return false;
 		}
 		return true;
 	}
 	
-	public boolean writeBackup(File backupDir) {
+	private boolean writeBackup(File backupDir) {
 		// validate backup dir
 		if(!backupDir.exists() || !backupDir.isDirectory()) {
-			//TODO: show error
+			mErrorString = getString(R.string.br_error_backup_folder_cannot_create);
 			return false;
 		}
 		
@@ -204,7 +204,7 @@ public class BackupIntentService extends IntentService {
 			fos.write(mData.toString().getBytes());
 			fos.close();
 		} catch (IOException e) {
-			//TODO: show error
+			mErrorString = getString(R.string.br_error_saving_backup);
 			if(fos != null) {
 				try { fos.close(); } catch (IOException e1) {}
 			}
@@ -218,11 +218,11 @@ public class BackupIntentService extends IntentService {
 			try {
 				backupProductFile.createNewFile();
 			} catch (IOException e) {
-				//TODO: show error
+				mErrorString = getString(R.string.br_error_saving_images);
 				return false;
 			}
 			if(!ProductImageFileHelper.copy(productImage, backupProductFile)) {
-				//TODO: show error
+				mErrorString = getString(R.string.br_error_saving_images);
 				return false;
 			}
 		}
@@ -230,12 +230,6 @@ public class BackupIntentService extends IntentService {
 	}
 	
 	private boolean backup() {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		// clear up and init
 		clearBackupFolder();
 		mData = new JSONArray();
@@ -259,12 +253,6 @@ public class BackupIntentService extends IntentService {
 	/* ------------------------------------- RESTORE ----------------------------------------- */
 	
 	private boolean restore() {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		JSONArray backupData = readJsonArrayFile(new File(getBackupDir(), BACKUP_METADATA_FILE_NAME));
 		if(backupData == null) return false;
 		
@@ -272,7 +260,7 @@ public class BackupIntentService extends IntentService {
 		for (int i = 0; i < backupData.length(); i++) {
 			try { categoryJson = backupData.getJSONObject(i); } 
 			catch (JSONException e) { 
-				//TODO: show error
+				mErrorString = getString(R.string.br_error_restore_json_data);
 				return false;
 			}
 			if(!restoreCategoryWithProducts(getApplicationContext(), categoryJson)) return false;
@@ -281,7 +269,7 @@ public class BackupIntentService extends IntentService {
 		return true;
 	}
 	
-	private static boolean restoreProducts(Context context, JSONArray productsContainer, long categoryId) {
+	private boolean restoreProducts(Context context, JSONArray productsContainer, long categoryId) {
 		for (int i = 0; i < productsContainer.length(); i++) {
 			try { 
 				JSONObject productJson = productsContainer.getJSONObject(i); 
@@ -305,7 +293,7 @@ public class BackupIntentService extends IntentService {
 							}
 							internalFile.createNewFile();
 						} catch (IOException e) {
-							//TODO: show error
+							mErrorString = getString(R.string.br_error_import_images);
 							return false;
 						}
 						ProductImageFileHelper.copy(backupImageFile, internalFile);
@@ -315,14 +303,14 @@ public class BackupIntentService extends IntentService {
 				cupboard().withContext(context).put(Products.CONTENT_URI, p);
 			} 
 			catch (JSONException e) { 
-				//TODO: show error
+				mErrorString = getString(R.string.br_error_restore_json_product);
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	private static boolean restoreCategoryWithProducts(Context context, JSONObject categoryJson) {
+	private boolean restoreCategoryWithProducts(Context context, JSONObject categoryJson) {
 		// get category data
 		try {
 			Category category = new Category();
@@ -336,7 +324,7 @@ public class BackupIntentService extends IntentService {
 			else category._id = Products.PRODUCT_CATEGORY_NONE_ID;
 			restoreProducts(context, categoryJson.getJSONArray(CATEGORY_BACKUP_PRODUCTS_JSON), category._id);
 		} catch (JSONException e) {
-			//TODO: show error
+			mErrorString = getString(R.string.br_error_restore_json_category);
 			return false;
 		}
 		return true;
@@ -357,11 +345,11 @@ public class BackupIntentService extends IntentService {
 	        return new JSONArray(sb.toString());
 	    }
 	    catch(JSONException e) {
-	    	//TODO: show error
+	    	mErrorString = getString(R.string.br_error_restore_json_data);
 	        return null;
 	    }
 	    catch(IOException e) {
-	    	//TODO: show error
+	    	mErrorString = getString(R.string.br_error_restore_file_data);
 	        return null;
 	    }
 	}
