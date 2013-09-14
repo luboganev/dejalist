@@ -37,9 +37,15 @@
     <string name="menu_checklist_sort_checked">Checked</string>
     
     <string name="menu_cab_products_set_category">Set category</string>
+    <string name="menu_cab_products_share">Share</string>
     <string name="menu_cab_products_edit">Edit</string>
     <string name="menu_cab_products_delete">Delete</string>
     <string name="menu_cab_products_title">%1$d selected</string>
+    
+    <string name="toast_no_image_to_share">There is no image to share</string>
+    <string name="share_image_data_display_name">Dejalist product image</string>
+    
+    <string name="dialog_share_product">Share product image to</string>
     
     <string name="menu_cab_checklist_remove">Remove</string>
     <string name="menu_cab_checklist_title">%1$d selected</string>

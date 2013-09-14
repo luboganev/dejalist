@@ -16,7 +16,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Color;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -144,22 +143,22 @@ public class DejalistDatabase extends SQLiteOpenHelper {
 		EntityCompartment<Category> ec = cupboard().withEntity(Category.class);
 		
 		Category category = new Category();
-		category.color = Color.YELLOW;
+		category.color = 0xFFE5E539;
 		category.name = mSampleCategoriesNames[0];
 		db.insert(Tables.CATEGORIES, null, ec.toContentValues(category));
 		
 		category = new Category();
-		category.color = Color.GREEN;
+		category.color = 0xFF5ADD45;
 		category.name = mSampleCategoriesNames[1];
 		db.insert(Tables.CATEGORIES, null, ec.toContentValues(category));
 		
 		category = new Category();
-		category.color = Color.MAGENTA;
+		category.color = 0xFFE55CE5;
 		category.name = mSampleCategoriesNames[2];
 		db.insert(Tables.CATEGORIES, null, ec.toContentValues(category));
 		
 		category = new Category();
-		category.color = Color.BLUE;
+		category.color = 0xFF4040FF;
 		category.name = mSampleCategoriesNames[3];
 		db.insert(Tables.CATEGORIES, null, ec.toContentValues(category));
 	}

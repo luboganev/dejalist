@@ -241,7 +241,7 @@ public class DejalistProvider extends ContentProvider {
             case PRODUCTS_CATEGORY_ID: {
             	final long categoryId = Products.getCategoryProductsId(uri);
             	return builder.table(Tables.PRODUCTS)
-            			.where(Products.PRODUCT_CATEGORY_ID + "=?", String.valueOf(categoryId));
+            			.where(Products.SELECTION_CATEGORY_ID, Products.buildCategoryIdSelectionArgs(categoryId));
             }
             case CATEGORIES: {
             	return builder.table(Tables.CATEGORIES);

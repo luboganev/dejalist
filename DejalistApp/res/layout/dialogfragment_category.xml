@@ -32,8 +32,15 @@
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp" />
 
-        <com.larswerkman.colorpicker.SVBar
-            android:id="@+id/category_svbar"
+        <com.larswerkman.colorpicker.ValueBar
+            android:id="@+id/category_value_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"/>
+        
+		<com.larswerkman.colorpicker.SaturationBar
+            android:id="@+id/category_saturation_bar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeightSmall"
             android:layout_marginBottom="8dp"

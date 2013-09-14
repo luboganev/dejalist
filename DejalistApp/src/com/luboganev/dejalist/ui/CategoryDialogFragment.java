@@ -15,14 +15,16 @@ import butterknife.InjectView;
 import butterknife.Views;
 
 import com.larswerkman.colorpicker.ColorPicker;
-import com.larswerkman.colorpicker.SVBar;
+import com.larswerkman.colorpicker.SaturationBar;
+import com.larswerkman.colorpicker.ValueBar;
 import com.luboganev.dejalist.R;
 import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.entities.Category;
 
 public class CategoryDialogFragment extends DialogFragment {
 	@InjectView(R.id.category_picker) ColorPicker picker;
-	@InjectView(R.id.category_svbar) SVBar svBar;
+	@InjectView(R.id.category_value_bar) ValueBar valueBar;
+	@InjectView(R.id.category_saturation_bar) SaturationBar saturationBar;
 	@InjectView(R.id.et_category_name) EditText name;
 	
 	public static final String ARG_CATEGORY = "category";
@@ -75,7 +77,8 @@ public class CategoryDialogFragment extends DialogFragment {
 	    LayoutInflater inflater = getActivity().getLayoutInflater();
 	    View v = inflater.inflate(R.layout.dialogfragment_category, null);
 	    Views.inject(this, v);
-	    picker.addSVBar(svBar);
+	    picker.addValueBar(valueBar);
+	    picker.addSaturationBar(saturationBar);
 	    
     	if(getArguments().containsKey(ARG_CATEGORY)) {
     		Category category = getArguments().getParcelable(ARG_CATEGORY);

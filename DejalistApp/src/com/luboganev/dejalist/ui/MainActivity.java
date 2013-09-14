@@ -17,11 +17,15 @@
 package com.luboganev.dejalist.ui;
 
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
+
+import java.io.File;
+
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -50,6 +54,7 @@ import com.luboganev.dejalist.data.BackupIntentService;
 import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.DejalistContract.Products;
+import com.luboganev.dejalist.data.PublicProvider;
 import com.luboganev.dejalist.data.SelectionBuilder;
 import com.luboganev.dejalist.data.entities.Category;
 import com.luboganev.dejalist.data.entities.Product;
@@ -348,6 +353,24 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 		Intent intent = new Intent(this, ProductActivity.class);
 		if(product != null) intent.putExtra(ProductActivity.EXTRA_PRODUCT, product);
 		startActivityForResult(intent, REQUEST_CODE_EDIT_PRODUCT);
+	}
+	
+	@Override
+	public void shareProduct(Product product) {
+		if(product.uri != null) {
+			Intent shareIntent = new Intent();
+			shareIntent.setAction(Intent.ACTION_SEND);
+			Uri uri = PublicProvider.BASE_CONTENT_URI.buildUpon()
+					.appendPath(PublicProvider.PATH_IMAGES)
+					.appendPath(new File(Uri.parse(product.uri).getPath()).getName())
+					.build();
+			shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+			shareIntent.setType("image/jpeg");
+			startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.dialog_share_product)));
+		}
+		else {
+			Toast.makeText(getApplicationContext(), R.string.toast_no_image_to_share, Toast.LENGTH_SHORT).show();
+		}
 	}
 	
 	@Override

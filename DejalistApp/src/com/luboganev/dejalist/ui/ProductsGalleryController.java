@@ -8,6 +8,7 @@ public interface ProductsGalleryController {
 	public void deleteCategory(Category category);
 	
 	public void newProduct(Category category);
+	public void shareProduct(Product product);
 	public void editProduct(Product product);
 	public void setProductsCategory(long[] productIds);
 	public void deleteProducts(long[] productIds);

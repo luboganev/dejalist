@@ -409,6 +409,21 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
 	public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 		// Respond to clicks on the actions in the CAB
         switch (item.getItemId()) {
+        	case R.id.menu_cab_products_share:
+        	if(mProductsGalleryController != null) {
+        		SparseBooleanArray checkedItems = mProducts.getCheckedItemPositions();
+        		for (int i = 0; i < checkedItems.size(); i++) {
+					if(checkedItems.valueAt(i)) {
+						Cursor c = mAdapter.getCursor();
+						c.moveToPosition(checkedItems.keyAt(i));
+						Product product = cupboard().withCursor(c).get(Product.class);
+						mProductsGalleryController.shareProduct(product);
+						break;
+					}
+				}
+        	}
+            mode.finish(); // Action picked, so close the CAB
+            return true;
             case R.id.menu_cab_products_edit:
             	if(mProductsGalleryController != null) {
             		SparseBooleanArray checkedItems = mProducts.getCheckedItemPositions();
@@ -466,13 +481,18 @@ public class ProductsGalleryFragment extends Fragment implements ProductsGallery
         // an invalidate() request
 		MenuItem editItem = mode.getMenu().findItem(R.id.menu_cab_products_edit);
 		MenuItem setCategoryItem = mode.getMenu().findItem(R.id.menu_cab_products_set_category);
+		MenuItem shareItem = mode.getMenu().findItem(R.id.menu_cab_products_share);
     	if(mProducts.getCheckedItemCount() == 1) {
+    		shareItem.setEnabled(true);
+    		shareItem.setVisible(true);
     		editItem.setVisible(true);
     		editItem.setEnabled(true);
     		setCategoryItem.setVisible(false);
     		setCategoryItem.setEnabled(false);
     	}
     	else {
+    		shareItem.setEnabled(false);
+    		shareItem.setVisible(false);
     		editItem.setVisible(false);
     		editItem.setEnabled(false);
     		setCategoryItem.setVisible(true);

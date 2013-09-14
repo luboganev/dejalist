@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item
+        android:id="@+id/menu_cab_products_share"
+        android:showAsAction="always"
+        android:icon="@drawable/ic_action_share"
+        android:title="@string/menu_cab_products_share"
+        android:orderInCategory="1" />
+    <item
         android:id="@+id/menu_cab_products_set_category"
         android:showAsAction="always"
         android:icon="@drawable/ic_action_set_category"
         android:title="@string/menu_cab_products_set_category"
-        android:orderInCategory="1" />
+        android:orderInCategory="2" />
     <item
         android:id="@+id/menu_cab_products_edit"
         android:showAsAction="always"
         android:title="@string/menu_cab_products_edit"
         android:icon="@drawable/ic_action_edit"
-        android:orderInCategory="2" />
+        android:orderInCategory="3" />
     <item
         android:id="@+id/menu_cab_products_delete"
         android:showAsAction="always"
         android:title="@string/menu_cab_products_delete"
         android:icon="@drawable/ic_action_delete"
-        android:orderInCategory="3" />
+        android:orderInCategory="4" />
 </menu>

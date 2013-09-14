@@ -87,6 +87,22 @@ public class DejalistContract {
         /** Used to fetch {@link Products} that are <b>NOT</b> marked as deleted */
         public static final String SELECTION_NOT_DELETED = PRODUCT_DELETED + " == 0";
         
+    	/** Used to fetch {@link Products} with a particular name */
+        public static final String SELECTION_NAME = PRODUCT_NAME + " = ?";
+        
+        /** Builds a selection arguments for {@link #SELECTION_NAME} */
+        public static final String[] buildNameSelectionArgs(String name) {
+        	return new String[]{name};
+        }
+        
+        /** Used to fetch {@link Products} with a particular category id */
+        public static final String SELECTION_CATEGORY_ID = PRODUCT_CATEGORY_ID + " = ?";
+        
+        /** Builds a selection arguments for {@link #SELECTION_CATEGORY_ID} */
+        public static final String[] buildCategoryIdSelectionArgs(long categoryId) {
+        	return new String[]{String.valueOf(categoryId)};
+        }
+        
         /**
          * Builds a selection string of type WHERE _ID IN (...)
          * 
@@ -132,6 +148,22 @@ public class DejalistContract {
     	public static long getCategoryId(Uri uri) {
     		return Long.parseLong(uri.getPathSegments().get(1));
     	}
+    	
+    	/** Used to fetch {@link Categories} with a particular name */
+        public static final String SELECTION_NAME = CATEGORY_NAME + " = ?";
+        
+        /** Builds a selection arguments for {@link #SELECTION_NAME} */
+        public static final String[] buildNameSelectionArgs(String name) {
+        	return new String[]{name};
+        }
+        
+        /** Used to fetch {@link Categories} with a particular color */
+        public static final String SELECTION_COLOR = CATEGORY_COLOR + " = ?";
+        
+        /** Builds a selection arguments for {@link #SELECTION_COLOR} */
+        public static final String[] buildColorSelectionArgs(int color) {
+        	return new String[]{String.valueOf(color)};
+        }
     }
     
 //    private static final String DO_NOT_SYNC = "do_not_sync";

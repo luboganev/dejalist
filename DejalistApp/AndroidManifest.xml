@@ -1,13 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.luboganev.dejalist"
-    android:versionCode="6"
-    android:versionName="2.1" >
+    android:versionCode="7"
+    android:versionName="2.2" >
 
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
 
     <application
         android:allowBackup="true"
@@ -25,8 +26,8 @@
         </activity>
         <activity
             android:name=".ui.ProductActivity"
-            android:label="@string/product_activity_title" 
-            android:windowSoftInputMode="stateUnchanged">
+            android:label="@string/product_activity_title"
+            android:windowSoftInputMode="stateUnchanged" >
         </activity>
         <activity
             android:name="com.luboganev.dejalist.crop.CropActivity"
@@ -44,7 +45,13 @@
             android:label="@string/app_name"
             android:syncable="false" >
         </provider>
-        <service android:name="com.luboganev.dejalist.data.BackupIntentService"></service>
+        <provider
+            android:name="com.luboganev.dejalist.data.PublicProvider"
+            android:authorities="com.luboganev.dejalist.public"
+            android:exported="true">
+        </provider>
+        <service android:name="com.luboganev.dejalist.data.BackupIntentService" >
+        </service>
     </application>
 
 </manifest>

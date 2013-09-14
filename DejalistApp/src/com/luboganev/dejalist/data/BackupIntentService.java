@@ -23,6 +23,7 @@ import com.luboganev.dejalist.data.entities.Product;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -274,33 +275,45 @@ public class BackupIntentService extends IntentService {
 			try { 
 				JSONObject productJson = productsContainer.getJSONObject(i); 
 				
-				Product p = new Product();
-				p.categoryId = categoryId;
-				p.name = productJson.getString(DejalistContract.Products.PRODUCT_NAME);
-				p.usedCount = productJson.getInt(DejalistContract.Products.PRODUCT_USED_COUNT);
-				p.lastUsed = productJson.getLong(DejalistContract.Products.PRODUCT_LAST_USED);
+				// Check if the same product already exists
+				// In case the existing product has no image, we import the one from the backup (if it exists)
+				SelectionBuilder productSelection = new SelectionBuilder();
+				productSelection.where(Products.SELECTION_NAME, Products.buildNameSelectionArgs(productJson.getString(DejalistContract.Products.PRODUCT_NAME)))
+				.where(Products.SELECTION_CATEGORY_ID, Products.buildCategoryIdSelectionArgs(categoryId));
 				
-				if(productJson.has(PRODUCT_IMAGE_FILENAME)) {
-					String filename = productJson.getString(PRODUCT_IMAGE_FILENAME);
-					File backupImageFile = new File(getBackupDir(), filename);
-					if(backupImageFile.exists()) {
-						File internalFile = ProductImageFileHelper.getFile(context, filename);
-						try {
-							int uniqueFileSuffix = 0;
-							while(internalFile.exists()) {
-								uniqueFileSuffix++;
-								internalFile = ProductImageFileHelper.getFile(context, filename + "_" + uniqueFileSuffix);
-							}
-							internalFile.createNewFile();
-						} catch (IOException e) {
-							mErrorString = getString(R.string.br_error_import_images);
-							return false;
+				Product existingProduct = cupboard().withContext(context).query(Products.CONTENT_URI, Product.class)
+						.withSelection(productSelection.getSelection(), productSelection.getSelectionArgs())
+						.query().get();
+				
+				if(existingProduct != null) {
+					// We have same product, see if it needs an image
+					if(existingProduct.uri == null && productJson.has(PRODUCT_IMAGE_FILENAME)) {
+						// existing product has no image but imported one does, 
+						// then we just update the existing product with the image
+						String importedFile = importImageFile(context, productJson.getString(PRODUCT_IMAGE_FILENAME));
+						if(importedFile == null) return false; //error occurred
+						else if(importedFile.length() > 0) { // something was wrong and the backup image was not found
+							// if the new image file was imported
+							ContentValues values = new ContentValues(1);
+							values.put(Products.PRODUCT_URI, importedFile);
+							getContentResolver().update(Products.buildProductUri(existingProduct._id), values, null, null);
 						}
-						ProductImageFileHelper.copy(backupImageFile, internalFile);
-						p.uri = Uri.fromFile(internalFile).toString();
 					}
 				}
-				cupboard().withContext(context).put(Products.CONTENT_URI, p);
+				else {
+					Product p = new Product();
+					p.categoryId = categoryId;
+					p.name = productJson.getString(DejalistContract.Products.PRODUCT_NAME);
+					p.usedCount = productJson.getInt(DejalistContract.Products.PRODUCT_USED_COUNT);
+					p.lastUsed = productJson.getLong(DejalistContract.Products.PRODUCT_LAST_USED);
+					
+					if(productJson.has(PRODUCT_IMAGE_FILENAME)) {
+						String importedFile = importImageFile(context, productJson.getString(PRODUCT_IMAGE_FILENAME));
+						if(importedFile == null) return false;
+						else if(importedFile.length() > 0) p.uri = importedFile;
+					}
+					cupboard().withContext(context).put(Products.CONTENT_URI, p);
+				}
 			} 
 			catch (JSONException e) { 
 				mErrorString = getString(R.string.br_error_restore_json_product);
@@ -310,6 +323,39 @@ public class BackupIntentService extends IntentService {
 		return true;
 	}
 	
+	/**
+	 * Imports an image from backup to internal storage
+	 * and renames it if a file with its name already exists  
+	 * 
+	 * @param context
+	 * 		Needs context to be able to reach the needed folders		
+	 * @param filename
+	 * 		The file name of the imported image
+	 * @return
+	 * 		The String of the Uri of the imported image file. Null if there was error. 
+	 * 		Empty string if there was no file with the input filename found 
+	 */
+	private String importImageFile(Context context, String filename) {
+		File backupImageFile = new File(getBackupDir(), filename);
+		if(backupImageFile.exists()) {
+			File internalFile = ProductImageFileHelper.getFile(context, filename);
+			try {
+				int uniqueFileSuffix = 0;
+				while(internalFile.exists()) {
+					uniqueFileSuffix++;
+					internalFile = ProductImageFileHelper.getFile(context, filename + "_" + uniqueFileSuffix);
+				}
+				internalFile.createNewFile();
+			} catch (IOException e) {
+				mErrorString = getString(R.string.br_error_import_images);
+				return null;
+			}
+			ProductImageFileHelper.copy(backupImageFile, internalFile);
+			return Uri.fromFile(internalFile).toString();
+		}
+		return "";
+	}
+	
 	private boolean restoreCategoryWithProducts(Context context, JSONObject categoryJson) {
 		// get category data
 		try {
@@ -317,9 +363,25 @@ public class BackupIntentService extends IntentService {
 			category.name = categoryJson.getString(DejalistContract.Categories.CATEGORY_NAME);
 			category.color = categoryJson.getInt(DejalistContract.Categories.CATEGORY_COLOR);
 			if(categoryJson.getLong(DejalistContract.Categories._ID) != Products.PRODUCT_CATEGORY_NONE_ID) {
-				// insert the category and get its id
-				Uri insertUri = cupboard().withContext(context).put(Categories.CONTENT_URI, category);
-				category._id = Categories.getCategoryId(insertUri);
+				// Check if exactly the same category already exists
+				SelectionBuilder categorySelection = new SelectionBuilder();
+				categorySelection.where(Categories.SELECTION_NAME, Categories.buildNameSelectionArgs(category.name))
+				.where(Categories.SELECTION_COLOR, Categories.buildColorSelectionArgs(category.color));
+				
+				Category foundCategory = cupboard().withContext(context).query(Categories.CONTENT_URI, Category.class)
+						.withSelection(categorySelection.getSelection(), categorySelection.getSelectionArgs())
+						.query().get();
+				
+				if(foundCategory != null) {
+					// If there is the same category found, do not re-insert it and import products under it
+					category._id = foundCategory._id;
+				}
+				else
+				{
+					// insert the category and get its id
+					Uri insertUri = cupboard().withContext(context).put(Categories.CONTENT_URI, category);
+					category._id = Categories.getCategoryId(insertUri);
+				}
 			}
 			else category._id = Products.PRODUCT_CATEGORY_NONE_ID;
 			restoreProducts(context, categoryJson.getJSONArray(CATEGORY_BACKUP_PRODUCTS_JSON), category._id);
