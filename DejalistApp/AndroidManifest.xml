@@ -8,7 +8,6 @@
         android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    
 
     <application
         android:allowBackup="true"
@@ -28,6 +27,11 @@
             android:name=".ui.ProductActivity"
             android:label="@string/product_activity_title"
             android:windowSoftInputMode="stateUnchanged" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.luboganev.dejalist.crop.CropActivity"
@@ -48,8 +52,9 @@
         <provider
             android:name="com.luboganev.dejalist.data.PublicProvider"
             android:authorities="com.luboganev.dejalist.public"
-            android:exported="true">
+            android:exported="true" >
         </provider>
+
         <service android:name="com.luboganev.dejalist.data.BackupIntentService" >
         </service>
     </application>

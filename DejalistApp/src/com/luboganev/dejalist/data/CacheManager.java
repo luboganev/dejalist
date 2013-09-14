@@ -2,6 +2,7 @@ package com.luboganev.dejalist.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import android.content.Context;
 
@@ -24,10 +25,29 @@ public class CacheManager {
         }
 
         File file = new File(cacheDir, source.getName());
-        if(file.exists()) file.delete();
-        file.createNewFile();
-        ProductImageFileHelper.copy(source, file);
-        return file;
+        if(file.getPath().equals(source.getPath())) {
+        	return file;
+        }
+        else {
+        	if(file.exists()) file.delete();
+        	file.createNewFile();
+        	if(ProductImageFileHelper.copy(source, file)) return file;
+        	else return null;
+        }
+    }
+    
+    public static File cacheData(Context context, InputStream is, String cachedFileName) throws IOException {
+    	File cacheDir = context.getExternalCacheDir();
+    	if (getDirSize(cacheDir) > MAX_SIZE) {
+    		cleanDir(cacheDir, MAX_SIZE);
+    	}
+    	
+    	File file = new File(cacheDir, cachedFileName);
+		if(file.exists()) file.delete();
+   		file.createNewFile();
+   		
+		if(ProductImageFileHelper.copy(is, file)) return file;
+		else return null;
     }
 
     public static File retrieveData(Context context, String name) throws IOException {

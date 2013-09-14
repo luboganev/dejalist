@@ -2,6 +2,7 @@ package com.luboganev.dejalist.data;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,11 +79,20 @@ public class ProductImageFileHelper {
 	}
 	
 	public static boolean copy(File src, File dst) {
+		try {
+			InputStream in = new FileInputStream(src);
+			return copy(in, dst);
+		} catch (FileNotFoundException e) {
+			return false;
+		}
+	}
+	
+	public static boolean copy(InputStream src, File dst) {
 		InputStream in = null;
 		OutputStream out = null;
 		boolean success = false;
 		try {
-		    in = new FileInputStream(src);
+		    in = src;
 		    out = new FileOutputStream(dst);
 	
 		    // Transfer bytes from in to out

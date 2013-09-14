@@ -22,7 +22,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -40,6 +39,7 @@ public class CropActivity extends FragmentActivity {
 	
 	public final static String EXTRA_DESTINATION_FILE = "extra_destination_file";
 	public final static String EXTRA_SOURCE = "extra_source_image";
+	public final static String EXTRA_SOURCE_IMAGE_URI = "extra_source_image_uri";
 	public final static String EXTRA_ROTATION = "extra_rotation";
 	public final static int EXTRA_SOURCE_IMAGE = 1;
 	public final static int EXTRA_SOURCE_CAMERA = 2;
@@ -102,8 +102,17 @@ public class CropActivity extends FragmentActivity {
      	// If we need to have a defined source of the image through the starting intent!
  		if(mSource == EXTRA_SOURCE_IMAGE) {
  			// if the activity starts for the first time go straight to image open
-         	if(savedInstanceState == null) openImage(); 
-         	else if(!savedInstanceState.containsKey(STATE_SOURCE)) openImage();
+ 			
+ 			if(savedInstanceState == null || !savedInstanceState.containsKey(STATE_SOURCE))
+ 			{
+ 				// if an image uri is already provided open it
+ 				if(getIntent().hasExtra(EXTRA_SOURCE_IMAGE_URI)) {
+ 					uri = Uri.parse(getIntent().getStringExtra(EXTRA_SOURCE_IMAGE_URI));
+ 					loadBitmap();
+ 				}
+ 				else openImage(); 
+ 			}
+ 				
          }
  		else if(mSource == EXTRA_SOURCE_CAMERA) {
  			// if the activity starts for the first time go straight to take photo
