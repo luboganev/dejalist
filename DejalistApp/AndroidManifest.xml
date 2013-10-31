@@ -50,9 +50,13 @@
             android:syncable="false" >
         </provider>
         <provider
-            android:name="com.luboganev.dejalist.data.PublicProvider"
-            android:authorities="com.luboganev.dejalist.public"
-            android:exported="true" >
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.luboganev.dejalist.productimagesprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/images_paths" />
         </provider>
 
         <service android:name="com.luboganev.dejalist.data.BackupIntentService" >

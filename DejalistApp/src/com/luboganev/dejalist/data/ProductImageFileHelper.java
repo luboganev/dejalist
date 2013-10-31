@@ -10,7 +10,6 @@ import java.io.OutputStream;
 
 import android.content.Context;
 import android.net.Uri;
-
 import com.luboganev.dejalist.Utils;
 
 public class ProductImageFileHelper {
@@ -20,13 +19,34 @@ public class ProductImageFileHelper {
 	private static final String PRODUCT_FILE_SUFFIX = ".jpg";
 	
 	private static final File getFreshFile(Context context) {
-		File imagesDir = context.getDir(PRODUCT_IMAGES_DIR, Context.MODE_PRIVATE);
+		File imagesDir = new File(context.getFilesDir(), PRODUCT_IMAGES_DIR);
+		if(!imagesDir.exists()) imagesDir.mkdirs();
 		Utils.currentTimestampInMillis();
 		return new File(imagesDir, PRODUCT_FILE_PREFIX+Utils.currentTimestampInMillis()+PRODUCT_FILE_SUFFIX);
 	}
 	
-	public static final File getFile(Context context, String filename) {
+	/**
+	 * This is a function which deletes the wrong folder with product images
+	 * which used to be created in a bad way. The Android SDK is so genius that 
+	 * it provides two methods: getDir and getFilesDir. However, It turns out that the 
+	 * getDir is completely unusable by any of the goodies like FileProvider. 
+	 * Therefore, we have to move all files to a new folder that is created by 
+	 * calling getFilesDir, and not getDir as it used to be :( This method should be
+	 * called once the whole move and the necessary DB changes are performed
+	 */
+	public static final void deleteWrongImagesFolder(Context context) {
 		File imagesDir = context.getDir(PRODUCT_IMAGES_DIR, Context.MODE_PRIVATE);
+		File[] allProductPhotosFiles = imagesDir.listFiles();
+		for (File file : allProductPhotosFiles) {
+			file.delete();
+		}
+		imagesDir.delete();
+	}
+	
+	public static final File getFile(Context context, String filename) {
+		File imagesDir = new File(context.getFilesDir(), PRODUCT_IMAGES_DIR);
+//		File imagesDir = context.getDir(PRODUCT_IMAGES_DIR, Context.MODE_PRIVATE);
+		if(!imagesDir.exists()) imagesDir.mkdirs();
 		return new File(imagesDir, filename);
 	}
 	
@@ -71,10 +91,12 @@ public class ProductImageFileHelper {
 	}
 	
 	public static void deleteAllProductImageFiles(Context context) {
-		File imagesDir = context.getDir(PRODUCT_IMAGES_DIR, Context.MODE_PRIVATE);
-		File[] allProductPhotosFiles = imagesDir.listFiles();
-		for (File file : allProductPhotosFiles) {
-			file.delete();
+		File imagesDir = new File(context.getFilesDir(), PRODUCT_IMAGES_DIR);
+		if(imagesDir.exists()) {
+			File[] allProductPhotosFiles = imagesDir.listFiles();
+			for (File file : allProductPhotosFiles) {
+				file.delete();
+			}
 		}
 	}
 	

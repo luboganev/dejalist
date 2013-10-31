@@ -49,7 +49,7 @@ public class Utils {
 	 * 	This variable defines the current mode of the application. 
 	 * 	When it is being released, the debug mode will be set to false.
 	 */
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 	
 	/**
 	 * 	Prints a debug message in the system log

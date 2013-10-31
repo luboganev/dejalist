@@ -34,6 +34,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
+import android.support.v4.content.FileProvider;
 import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.CursorAdapter;
@@ -50,11 +51,12 @@ import butterknife.InjectView;
 import butterknife.Views;
 
 import com.luboganev.dejalist.R;
+import com.luboganev.dejalist.Utils;
 import com.luboganev.dejalist.data.BackupIntentService;
 import com.luboganev.dejalist.data.DejalistContract;
 import com.luboganev.dejalist.data.DejalistContract.Categories;
 import com.luboganev.dejalist.data.DejalistContract.Products;
-import com.luboganev.dejalist.data.PublicProvider;
+import com.luboganev.dejalist.data.ProductImageFileHelper;
 import com.luboganev.dejalist.data.SelectionBuilder;
 import com.luboganev.dejalist.data.entities.Category;
 import com.luboganev.dejalist.data.entities.Product;
@@ -359,14 +361,14 @@ public class MainActivity extends FragmentActivity implements LoaderCallbacks<Cu
 	public void shareProduct(Product product) {
 		if(product.uri != null) {
 			Intent shareIntent = new Intent();
-			shareIntent.setAction(Intent.ACTION_SEND);
-			Uri uri = PublicProvider.BASE_CONTENT_URI.buildUpon()
-					.appendPath(PublicProvider.PATH_IMAGES)
-					.appendPath(new File(Uri.parse(product.uri).getPath()).getName())
-					.build();
-			shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-			shareIntent.setType("image/jpeg");
-			startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.dialog_share_product)));
+			String fileName = new File(Uri.parse(product.uri).getPath()).getName();
+			File sharedFile = ProductImageFileHelper.getFile(this, fileName);
+			Utils.d(this,sharedFile.toString());
+			Uri contentUri = FileProvider.getUriForFile(getApplicationContext(), "com.luboganev.dejalist.productimagesprovider", sharedFile);
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+            shareIntent.setType("image/jpeg");
+            startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.dialog_share_product)));
 		}
 		else {
 			Toast.makeText(getApplicationContext(), R.string.toast_no_image_to_share, Toast.LENGTH_SHORT).show();

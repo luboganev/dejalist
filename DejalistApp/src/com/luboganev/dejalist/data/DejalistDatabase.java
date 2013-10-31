@@ -2,6 +2,8 @@ package com.luboganev.dejalist.data;
 
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 
+import java.io.File;
+
 import nl.qbusict.cupboard.EntityCompartment;
 
 import com.luboganev.dejalist.R;
@@ -22,7 +24,7 @@ import android.provider.BaseColumns;
 public class DejalistDatabase extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "dejalist_db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
 	
 	interface Tables {
 		String PRODUCTS = "products";
@@ -91,39 +93,7 @@ public class DejalistDatabase extends SQLiteOpenHelper {
                 		+ Products.PRODUCT_DELETED + " INTEGER DEFAULT 0");
                 
                 // move the pictures from the external storage
-                Cursor c = db.query(
-                		Tables.PRODUCTS, 
-        				new String[]{Products._ID, Products.PRODUCT_URI}, 
-        				null,
-        				null,
-        				null, 
-        				null, 
-        				null);
-        		
-                if(c.getCount() > 0) {
-                	c.moveToFirst();
-                	long[] productIds = new long[c.getCount()];
-                	String[] productUris = new String[c.getCount()];
-                	
-                	int i=0;
-                	do {
-                		productIds[i] = c.getLong(0);
-                		productUris[i] = c.getString(1);
-                		i++;
-					} while (c.moveToNext());
-                	
-                	for (i = 0; i < productIds.length; i++) {
-                		// copy the product picture
-                		Uri productFileUri = ProductImageFileHelper.copyToANewProductImageFile(mContext, Uri.parse(productUris[i]));
-                		// update product uri
-                		ContentValues values = new ContentValues();
-                		values.put(Products.PRODUCT_URI, productFileUri.toString());
-                		db.update(Tables.PRODUCTS, values, Products._ID + " = ?", new String[] {String.valueOf(productIds[i])});
-                		// delete old picture
-                		ProductImageFileHelper.deleteProductImageFile(Uri.parse(productUris[i]));
-					}
-                }
-                c.close();
+                movePicturesAndUpdateDb(db);
 				
                 // add the new table for categories
 				db.execSQL("CREATE TABLE " + Tables.CATEGORIES + " (" +
@@ -134,9 +104,60 @@ public class DejalistDatabase extends SQLiteOpenHelper {
 				
 				// add the sample categories
 				insertSampleCategories(db);
+			case 2:
+				/**
+				 * This is change moves product images to a new internal folder because the old
+				 * used to be created in a bad way. This is necessary only in case of upgrading from
+				 * version 2 to version 3. Otherwise, the correct directory is being already used for
+				 * moving files when upgrading from version 1 to version 2
+				 */
+				if(oldVersion == 2) {
+					// move the pictures from the wrong internal folder to the new correct internal folder
+	                movePicturesAndUpdateDb(db);
+					// Finally get rid of all the old pictures and the wrong folder
+					ProductImageFileHelper.deleteWrongImagesFolder(mContext);
+				}
 			default:
 				break;
 		}
+	}
+	
+	private void movePicturesAndUpdateDb(SQLiteDatabase db) {
+        Cursor c = db.query(
+        		Tables.PRODUCTS, 
+				new String[]{Products._ID, Products.PRODUCT_URI}, 
+				null,
+				null,
+				null, 
+				null, 
+				null);
+		
+        if(c.getCount() > 0) {
+        	c.moveToFirst();
+        	long[] productIds = new long[c.getCount()];
+        	String[] productUris = new String[c.getCount()];
+        	
+        	int i=0;
+        	do {
+        		productIds[i] = c.getLong(0);
+        		productUris[i] = c.getString(1);
+        		i++;
+			} while (c.moveToNext());
+        	
+        	for (i = 0; i < productIds.length; i++) {
+        		// if no picture just move to the next product
+        		if(productUris[i] == null) continue;
+        		// copy the product picture
+        		Uri productFileUri = ProductImageFileHelper.copyToANewProductImageFile(mContext, Uri.parse(productUris[i]));
+        		// update product uri
+        		ContentValues values = new ContentValues();
+        		values.put(Products.PRODUCT_URI, productFileUri.toString());
+        		db.update(Tables.PRODUCTS, values, Products._ID + " = ?", new String[] {String.valueOf(productIds[i])});
+        		// delete old picture
+        		ProductImageFileHelper.deleteProductImageFile(Uri.parse(productUris[i]));
+			}
+        }
+        c.close();
 	}
 	
 	private void insertSampleCategories(SQLiteDatabase db) {
