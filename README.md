@@ -1,7 +1,7 @@
 Dejalist
 ============
 
-![Logo](DejalistApp/ic_launcher-web.png)
+![Logo](ic_launcher-web.png)
 
 This is the official repository containing the source code behind the Dejalist shopping list 
 Android application.
