@@ -6,11 +6,6 @@ Dejalist
 This is the official repository containing the source code behind the Dejalist shopping list 
 Android application.
 
-Download
---------
-
-You can download the latest version of Dejalist from [Google Play][1].
-
 About
 -----
 
@@ -19,14 +14,14 @@ everyday shopping planning, which is a particularly extremely high complexity pr
 a typical software developer ;) This app would not work and feel the same way if it weren't for 
 some great Android open-source projects that were used during the development.
 
-* [Android Holo ColorPicker][2]
-* [Android open source project][3]
-* [Android Quill][4]
-* [Butter Knife][5]
-* [Cupboard for Android][6]
-* [Picasso][7]
-* [Roman Nurik's Code - Done discard][8]
-* [Roman Nurik's Code - Undobar][9]
+* [Android Holo ColorPicker][1]
+* [Android open source project][2]
+* [Android Quill][3]
+* [Butter Knife][4]
+* [Cupboard for Android][5]
+* [Picasso][6]
+* [Roman Nurik's Code - Done discard][7]
+* [Roman Nurik's Code - Undobar][8]
 
 License
 -------
@@ -47,12 +42,11 @@ License
 
 
 
- [1]: https://play.google.com/store/apps/details?id=com.luboganev.dejalist
- [2]: https://github.com/LarsWerkman/HoloColorPicker
- [3]: http://source.android.com/
- [4]: https://code.google.com/p/android-quill/
- [5]: https://github.com/JakeWharton/butterknife
- [6]: https://bitbucket.org/qbusict/cupboard
- [7]: https://square.github.io/picasso/
- [8]: https://code.google.com/p/romannurik-code/source/browse/#git%2Fmisc%2Fdonediscard
- [9]: https://code.google.com/p/romannurik-code/source/browse/#git%2Fmisc%2Fundobar
+ [1]: https://github.com/LarsWerkman/HoloColorPicker
+ [2]: http://source.android.com/
+ [3]: https://code.google.com/p/android-quill/
+ [4]: https://github.com/JakeWharton/butterknife
+ [5]: https://bitbucket.org/qbusict/cupboard
+ [6]: https://square.github.io/picasso/
+ [7]: https://code.google.com/p/romannurik-code/source/browse/#git%2Fmisc%2Fdonediscard
+ [8]: https://code.google.com/p/romannurik-code/source/browse/#git%2Fmisc%2Fundobar
